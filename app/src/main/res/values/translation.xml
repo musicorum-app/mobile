@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bottom_navigation_item_home">Home</string>
+    <string name="bottom_navigation_item_discover">Discover</string>
+    <string name="bottom_navigation_item_scrobbling">Scrobble</string>
+    <string name="bottom_navigation_item_charts">Charts</string>
+    <string name="bottom_navigation_item_profile">Profile</string>
+
+    <!-- Home -->
+    <string name="home_page_scrobbles_text">%1$s scrobbles</string>
+    <string name="home_page_image_content_user">User profile image</string>
+</resources>
