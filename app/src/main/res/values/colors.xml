@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="kinda_black">#FF131313</color>
+    <color name="almost_black">#FF2F2F2F</color>
+    <color name="mostly_red">#FFB71C1C</color>
+    <color name="lighter_red">#FFEB5757</color>
+    <color name="fully_black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+</resources>
