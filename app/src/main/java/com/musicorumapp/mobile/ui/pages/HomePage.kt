@@ -11,6 +11,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,15 +52,9 @@ import com.musicorumapp.mobile.utils.rememberPredominantColor
 
 @Composable
 fun HomePage(
-    authenticationViewModel: AuthenticationViewModel?,
+    authenticationViewModel: AuthenticationViewModel? = null,
+    homePageViewModel: HomePageViewModel
 ) {
-
-    val homePageViewModel: HomePageViewModel =
-        viewModel(factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return HomePageViewModel(authenticationViewModel!!) as T
-            }
-        })
 
     val prefs = LocalContext.current.getSharedPreferences(
         Constants.AUTH_PREFS_KEY,
@@ -95,13 +91,14 @@ private val cardHeight = 140.dp
 @Composable
 fun UserCard(
     user: User? = null,
-    homePageViewModel: HomePageViewModel?
+    homePageViewModel: HomePageViewModel
 ) {
     val modifier = Modifier
         .fillMaxWidth()
         .height(cardHeight)
         .clip(Shapes.medium)
 
+    val predominantColor by homePageViewModel.predominantColor.observeAsState()
 
     val predominantColorState = rememberPredominantColor(
         colorFinder = {
@@ -112,7 +109,11 @@ fun UserCard(
             }
         }
     ) {
-        gradientBackgroundColorResolver(it)
+        val c = gradientBackgroundColorResolver(it)
+
+
+
+        c
     }
 
     if (user != null && !homePageViewModel?.colorFetched?.value!!) {
@@ -129,8 +130,8 @@ fun UserCard(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            predominantColorState.color,
-                            darkerColor(predominantColorState.color, 22)
+                            predominantColor ?: predominantColorState.color,
+                            darkerColor(predominantColor ?: predominantColorState.color, 22)
                         ),
 //                    start = Offset(0f, 0f),
 //                    end = Offset(1f, 1f),
@@ -174,29 +175,6 @@ fun UserCard(
                     )
                 }
             }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun UserCardPreview() {
-    MusicorumTheme {
-        Scaffold(modifier = Modifier.height(cardHeight)) {
-            UserCard(
-                user = User.fromSample(),
-                homePageViewModel = null
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun HomePagePreview() {
-    MusicorumTheme {
-        Scaffold {
-            HomePage(authenticationViewModel = null)
         }
     }
 }

@@ -29,9 +29,16 @@ fun MainNavigationHost(
             }
         })
 
+    val homePageViewModel: HomePageViewModel =
+        viewModel(factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return HomePageViewModel(authenticationViewModel!!) as T
+            }
+        })
+
     NavHost(navController = navController, startDestination = Page.Home.name) {
         composable(Page.Home.name) {
-             HomePage(authenticationViewModel = authenticationViewModel)
+             HomePage(authenticationViewModel = authenticationViewModel, homePageViewModel = homePageViewModel)
         }
         composable(Page.Discover.name) {
             DiscoverPage(authenticationViewModel = authenticationViewModel, discoverPageViewModel = discoverPageViewModel)

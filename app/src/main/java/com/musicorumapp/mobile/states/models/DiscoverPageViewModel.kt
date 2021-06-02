@@ -7,10 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.api.LastfmApi
-import com.musicorumapp.mobile.api.models.Album
-import com.musicorumapp.mobile.api.models.Artist
-import com.musicorumapp.mobile.api.models.Track
-import com.musicorumapp.mobile.api.models.User
+import com.musicorumapp.mobile.api.models.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -23,23 +20,94 @@ class DiscoverPageViewModel(
 
     private val _results = MutableLiveData(SearchResults())
 
+    private val _resourcesFetched = MutableLiveData(false)
+
     val searchState: LiveData<SearchState> = _searchState
     val results: LiveData<SearchResults> = _results
+    val resourcesFetched: LiveData<Boolean> = _resourcesFetched
 
-    fun search (query: String) {
+    fun search(query: String) {
+        _searchState.value = SearchState.LOADING
+        _resourcesFetched.value = false
         viewModelScope.launch {
             try {
+                val resultsData = SearchResults(hasResults = true)
+
                 awaitAll(
                     async {
-                        val controller = LastfmApi.searchArtists(query, 20)
+                        try {
+                            Log.i(Constants.LOG_TAG, "Searching for artists...")
+                            val controller = LastfmApi.searchArtists(query, 3)
 
-                        Log.i(Constants.LOG_TAG, controller.toString())
-                        Log.i(Constants.LOG_TAG, controller.getAllItems()[0].toString())
+                            resultsData.artists = controller
+                        } catch (e: Exception) {
+                            Log.w(Constants.LOG_TAG, "Discover search error: $e")
+                        }
                     },
-                    async {}
+                    async {
+                        try {
+                            Log.i(Constants.LOG_TAG, "Searching for albums...")
+                            val controller = LastfmApi.searchAlbums(query, 3)
+
+                            resultsData.albums = controller
+                        } catch (e: Exception) {
+                            Log.w(Constants.LOG_TAG, "Discover search error: $e")
+                        }
+                    },
+                    async {
+                        try {
+                            Log.i(Constants.LOG_TAG, "Searching for tracks...")
+                            val controller = LastfmApi.searchTracks(query, 3)
+
+                            resultsData.tracks = controller
+                        } catch (e: Exception) {
+                            Log.w(Constants.LOG_TAG, "Discover search error: $e")
+                        }
+                    },
+                    async {
+                        try {
+                            Log.i(Constants.LOG_TAG, "Searching for user...")
+                            val userResp = LastfmApi.getUserEndpoint().getUserInfo(query)
+
+                            resultsData.user = userResp.toUser()
+                        } catch (e: Exception) {
+                            Log.w(Constants.LOG_TAG, "Discover search error: $e")
+                        }
+                    }
                 )
+
+                _results.value = resultsData
+                _searchState.value = SearchState.RESULTS
+
+                awaitAll(
+                    async {
+                        try {
+                            Log.i(Constants.LOG_TAG, "Fetching artists resources...")
+                            if (resultsData.artists != null) {
+                                MusicorumResource.fetchArtistsResources(resultsData.artists!!.getAllItems())
+                            }
+                            null
+                        } catch (e: Exception) {
+                            Log.w(Constants.LOG_TAG, "Artists resources error: $e")
+                        }
+                    },
+                    async {
+                        try {
+                            Log.i(Constants.LOG_TAG, "Fetching tracks resources...")
+                            if (resultsData.tracks != null) {
+                                MusicorumResource.fetchTracksResources(resultsData.tracks!!.getAllItems())
+                            }
+                            null
+                        } catch (e: Exception) {
+                            Log.w(Constants.LOG_TAG, "Artists tracks error: $e")
+                        }
+                    },
+                )
+
+                _resourcesFetched.value = true
             } catch (e: Exception) {
-                Log.e(Constants.LOG_TAG, "Discover search error: $e")
+                Log.w(Constants.LOG_TAG, "Discover search error: $e")
+                _searchState.value = SearchState.ERROR
             }
         }
     }
@@ -51,8 +119,9 @@ class DiscoverPageViewModel(
 }
 
 data class SearchResults(
-    val artists: List<Artist> = emptyList(),
-    val tracks: List<Track> = emptyList(),
-    val albums: List<Album> = emptyList(),
-    val user: User? = null
+    val hasResults: Boolean = false,
+    var artists: PagingController<Artist>? = null,
+    var albums: PagingController<Album>? = null,
+    var tracks: PagingController<Track>? = null,
+    var user: User? = null
 )

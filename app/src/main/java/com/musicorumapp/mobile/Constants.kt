@@ -8,9 +8,11 @@ object Constants {
 
     const val AUTH_PREFS_KEY = "musicorum_app_auth_shared"
 
-    const val MUSICORUM_API_URL = "https://api.musicorumapp.com/mobile"
+    const val MUSICORUM_RESOURCES_URL = "https://resource.musicorumapp.com"
     const val MUSICORUM_URL_SCHEME = "musicorum"
     const val MUSICORUM_LOGIN_URL = "https://www.last.fm/api/auth?api_key=$LASTFM_KEY&cb=$MUSICORUM_URL_SCHEME://callback"
+
+    const val DEFAULT_ARTIST_IMAGE_URL = "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
 }
 
 object PrefConstantKeys {

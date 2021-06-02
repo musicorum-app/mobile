@@ -1,13 +1,15 @@
 package com.musicorumapp.mobile.api
 
 import com.musicorumapp.mobile.api.interceptors.*
+import com.musicorumapp.mobile.api.models.*
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import com.google.gson.GsonBuilder
-import com.musicorumapp.mobile.api.models.Artist
-import com.musicorumapp.mobile.api.models.SearchController
+import com.musicorumapp.mobile.utils.Utils
+import com.serjltt.moshi.adapters.FallbackOnNull
+import com.serjltt.moshi.adapters.Wrapped
+import com.squareup.moshi.Moshi
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 
 private const val LASTFM_API_URL = "https://ws.audioscrobbler.com/"
@@ -30,13 +32,12 @@ class LastfmApi {
             return Retrofit.Builder()
                 .client(client)
                 .baseUrl(LASTFM_API_URL)
-                .addConverterFactory(
-                    GsonConverterFactory.create(
-                        GsonBuilder()
-                            .setLenient()
-                            .create()
-                    )
-                )
+                .addConverterFactory(MoshiConverterFactory.create(
+                    Moshi.Builder()
+                        .add(Wrapped.ADAPTER_FACTORY)
+                        .add(FallbackOnNull.ADAPTER_FACTORY)
+                        .build()
+                ))
                 .build()
         }
 
@@ -52,17 +53,67 @@ class LastfmApi {
             return getInstance().create(LastfmArtistEndpoint::class.java)
         }
 
-        suspend fun searchArtists(query: String, perPage: Int = 50): SearchController<Artist> {
-            val controller = SearchController(
+        fun getAlbumsEndpoint(): LastfmAlbumEndpoint {
+            return getInstance().create(LastfmAlbumEndpoint::class.java)
+        }
+
+        fun getTracksEndpoint(): LastfmTrackEndpoint {
+            return getInstance().create(LastfmTrackEndpoint::class.java)
+        }
+
+        suspend fun searchArtists(query: String, perPage: Int = 30): PagingController<Artist> {
+            var totalResults = 0
+
+            val controller = PagingController(
                 perPage = perPage,
-                searchMethod = { pg ->
+                requester = { pg ->
                     val items = getArtistEndpoint().searchArtists(query, perPage, pg)
 
-                    items.results.matches.artist.map { it.toArtist() }
+                    totalResults = Utils.anyToInt(items.totalResults)
+
+                    items.matches.artist.map { it.toArtist() }
                 }
             )
+            controller.doRequest(1)
+            controller.totalResults = totalResults
 
-            controller.doSearch(1)
+            return controller
+        }
+
+        suspend fun searchAlbums(query: String, perPage: Int = 30): PagingController<Album> {
+            var totalResults = 0
+
+            val controller = PagingController(
+                perPage = perPage,
+                requester = { pg ->
+                    val items = getAlbumsEndpoint().searchAlbums(query, perPage, pg)
+
+                    totalResults = Utils.anyToInt(items.totalResults)
+
+                    items.matches.albums.map { it.toAlbum() }
+                }
+            )
+            controller.doRequest(1)
+            controller.totalResults = totalResults
+
+            return controller
+        }
+
+        suspend fun searchTracks(query: String, perPage: Int = 30): PagingController<Track> {
+            var totalResults = 0
+
+            val controller = PagingController(
+                perPage = perPage,
+                requester = { pg ->
+                    val items = getTracksEndpoint().searchTracks(query, perPage, pg)
+
+                    totalResults = Utils.anyToInt(items.totalResults)
+
+                    items.matches.tracks.map { it.toTrack() }
+                }
+            )
+            controller.doRequest(1)
+            controller.totalResults = totalResults
 
             return controller
         }
