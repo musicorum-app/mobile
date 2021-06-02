@@ -1,39 +1,121 @@
 package com.musicorumapp.mobile.api.models
 
-import com.google.gson.annotations.SerializedName
+import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.utils.Utils
+import com.squareup.moshi.Json
 
-class Artist (
+class Artist(
     val name: String,
-    val listeners: Int,
-): SearchableItem
+    val url: String,
+    val listeners: Int? = null,
+    val playCount: Int? = null,
+    val userPlayCount: Int? = null,
+    val similar: MutableList<Artist> = mutableListOf(),
+    val tags: MutableList<String> = mutableListOf(),
+    val wiki: Wiki? = null,
+) : PageableItem {
+    private val onResourcesChangeCallbacks: MutableList<(Artist) -> Unit> = mutableListOf()
 
-data class LastfmArtistSearchResponseRoot(
-    val results: LastfmArtistSearchResponse
+    var resource: ArtistResource? = null
+        set(value) {
+            field = value
+            onResourcesChangeCallbacks.forEach { it(this) }
+        }
+
+    fun getImageURL(): String? {
+        return resource?.image
+    }
+
+    fun onResourcesChange(cb: (Artist) -> Unit) {
+        onResourcesChangeCallbacks.add(cb)
+    }
+
+    companion object {
+        fun fromSample(): Artist {
+            return Artist(
+                name = "Doja Cat",
+                listeners = 361725,
+                url = "https://www.last.fm/music/Doja+Cat"
+            )
+        }
+    }
+}
+
+data class LastfmArtistInfoResponse(
+    val name: String,
+    val url: String,
+    val stats: LastfmArtistInfoResponseStats,
+    val similar: LastfmArtistInfoResponseSimilar,
+    val tags: LastfmArtistInfoResponseTags?,
+    val bio: WikiResponse?
 ) {
-    data class LastfmArtistSearchResponse(
-        @SerializedName("opensearch:totalResults")
-        val totalResults: Any,
+    data class LastfmArtistInfoResponseStats(
+        val listeners: Any,
+        val playcount: Any,
+        val userplaycount: Any,
+    )
 
-        @SerializedName("opensearch:startIndex")
-        val startIndex: Any,
-
-        @SerializedName("artistmatches")
-        val matches: LastfmArtistSearchMatchesResponse
+    data class LastfmArtistInfoResponseSimilar(
+        val artist: List<LastfmArtistInfoResponseSimilarItem>
     ) {
-        data class LastfmArtistSearchMatchesResponse(
-            val artist: List<LastfmArtistSearchMatchesItemResponse>
+        data class LastfmArtistInfoResponseSimilarItem(
+            val name: String,
+            val url: String
         ) {
-            data class LastfmArtistSearchMatchesItemResponse(
-                val name: String,
-                val listeners: Any,
-            ) {
-                fun toArtist(): Artist {
-                    return Artist(
-                        name = name,
-                        listeners =  Utils.anyToInt(listeners)
-                    )
-                }
+            fun toArtist(): Artist = Artist(
+                name = name,
+                url = url
+            )
+        }
+    }
+
+    data class LastfmArtistInfoResponseTags(
+        val tags: List<LastfmArtistInfoResponseTagsItem>?
+    ) {
+        data class LastfmArtistInfoResponseTagsItem(
+            val name: String,
+            val url: String
+        )
+    }
+
+    fun toArtist(): Artist {
+        return Artist(
+            name = name,
+            url = url,
+            listeners = Utils.anyToInt(stats.listeners),
+            playCount = Utils.anyToInt(stats.playcount),
+            userPlayCount = Utils.anyToInt(stats.userplaycount),
+            tags = tags?.tags?.map{ it.name}?.toMutableList() ?: mutableListOf(),
+            wiki = bio?.toWiki(),
+            similar = similar.artist.map { it.toArtist() }.toMutableList()
+        )
+    }
+}
+
+data class LastfmArtistSearchResponse(
+    @field:Json(name = "opensearch:totalResults")
+    val totalResults: Any,
+
+    @field:Json(name = "opensearch:startIndex")
+    val startIndex: Any,
+
+    @field:Json(name = "artistmatches")
+    val matches: LastfmArtistSearchMatchesResponse
+) {
+    data class LastfmArtistSearchMatchesResponse(
+        val artist: List<LastfmArtistSearchMatchesItemResponse>
+    ) {
+        data class LastfmArtistSearchMatchesItemResponse(
+            val name: String,
+            val listeners: Any,
+            val url: String
+        ) {
+            fun toArtist(): Artist {
+                return Artist(
+                    name = name,
+                    url = url,
+                    listeners = Utils.anyToInt(listeners)
+                )
             }
         }
     }

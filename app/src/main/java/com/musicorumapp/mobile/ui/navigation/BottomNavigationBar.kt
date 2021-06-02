@@ -23,7 +23,6 @@ import com.musicorumapp.mobile.ui.theme.LighterRed
 fun BottomNavigationBar(
     navController: NavHostController
 ) {
-    print("teste")
     Surface(
 //        backgroundColor = AlmostBlack,
 

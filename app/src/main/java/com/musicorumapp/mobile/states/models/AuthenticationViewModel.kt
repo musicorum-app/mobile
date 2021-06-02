@@ -35,7 +35,7 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             val res = LastfmApi.getAuthEndpoint().getSession(token)
 
-            authPrefs.setLastfmSessionToken(res.session.key)
+            authPrefs.setLastfmSessionToken(res.key)
             fetchUser(showSnackBar)
         }
     }
@@ -45,7 +45,7 @@ class AuthenticationViewModel(
     ) {
         viewModelScope.launch {
             try {
-                var usr = LastfmApi.getUserEndpoint().getUserInfo(authPrefs.getLastfmSessionToken().orEmpty())
+                var usr = LastfmApi.getUserEndpoint().getUserInfoFromToken(authPrefs.getLastfmSessionToken().orEmpty())
                 _user.value = usr.toUser()
                 _authenticationValidationState.value = AuthenticationValidationState.LOGGED_IN
             } catch (e: Exception) {

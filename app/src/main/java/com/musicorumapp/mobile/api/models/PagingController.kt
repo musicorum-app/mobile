@@ -1,15 +1,12 @@
 package com.musicorumapp.mobile.api.models
 
-import com.google.gson.annotations.SerializedName
-import com.musicorumapp.mobile.states.models.SearchResults
-import kotlin.reflect.typeOf
-
-class SearchController<T: SearchableItem> (
+class PagingController<T: PageableItem> (
     val perPage: Int = 20,
+    var totalResults: Int = 0,
     private val pages: MutableMap<Int, List<T>> = mutableMapOf(),
-    val searchMethod: suspend (page: Int) -> List<T>
+    val requester: suspend (page: Int) -> List<T>
 ) {
-    fun addPageContent(page: Int, items: List<T>): SearchController<T> {
+    fun addPageContent(page: Int, items: List<T>): PagingController<T> {
         pages[page] = items
         return this
     }
@@ -26,8 +23,8 @@ class SearchController<T: SearchableItem> (
         return items
     }
 
-    suspend fun doSearch(page: Int): List<T> {
-        val results = searchMethod(page)
+    suspend fun doRequest(page: Int): List<T> {
+        val results = requester(page)
         addPageContent(page, results)
         return results
     }
@@ -37,6 +34,6 @@ class SearchController<T: SearchableItem> (
         if (getAllItems().isNotEmpty()) {
             type = getAllItems().first().javaClass.simpleName
         }
-        return "SearchController<$type>(perPage = $perPage, pages = ${pages.size}, items = ${getAllItems().size})"
+        return "PagingController<$type>(perPage = $perPage, pages = ${pages.size}, items = ${getAllItems().size}, totalResults = ${totalResults})"
     }
 }

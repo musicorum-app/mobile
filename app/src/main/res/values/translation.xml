@@ -6,7 +6,24 @@
     <string name="bottom_navigation_item_charts">Charts</string>
     <string name="bottom_navigation_item_profile">Profile</string>
 
+    <!-- Common -->
+    <string name="view_more">View more</string>
+
+    <string name="artists">Artists</string>
+    <string name="artist">Artist</string>
+    <string name="albums">Albums</string>
+    <string name="album">Album</string>
+    <string name="tracks">Tracks</string>
+    <string name="track">Track</string>
+    <string name="users">Users</string>
+    <string name="user">User</string>
+
+
     <!-- Home -->
     <string name="home_page_scrobbles_text">%1$s scrobbles</string>
     <string name="home_page_image_content_user">User profile image</string>
+
+    <!-- Discover -->
+    <string name="discover_page_results_text">%1$s results</string>
+    <string name="discover_page_no_results">Nothing found</string>
 </resources>
