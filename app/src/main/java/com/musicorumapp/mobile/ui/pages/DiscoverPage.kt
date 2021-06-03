@@ -53,7 +53,7 @@ fun DiscoverPage(
             .padding(top = 6.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Title(text = stringResource(id = R.string.bottom_navigation_item_discover))
+        Title(text = stringResource(id = R.string.search), showBackButton = true)
 
         Spacer(modifier = Modifier.height(6.dp))
         TextField(

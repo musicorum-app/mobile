@@ -32,12 +32,6 @@ sealed class Page(
         PageIconResolveable(material = AppMaterialIcons.Home)
     )
 
-    object Discover : Page(
-        "discover",
-        R.string.bottom_navigation_item_discover,
-        PageIconResolveable(material = AppMaterialIcons.Search)
-    )
-
     object Scrobbling : Page(
         "scrobbling",
         R.string.bottom_navigation_item_scrobbling,
@@ -59,7 +53,6 @@ sealed class Page(
 
 val mainPages = listOf(
     Page.Home,
-    Page.Discover,
     Page.Scrobbling,
     Page.Charts,
     Page.Profile
