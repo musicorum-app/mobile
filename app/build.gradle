@@ -82,6 +82,7 @@ dependencies {
     implementation 'com.serjltt.moshi:moshi-lazy-adapters:2.2'
 
     implementation "com.github.ajalt.colormath:colormath:2.1.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

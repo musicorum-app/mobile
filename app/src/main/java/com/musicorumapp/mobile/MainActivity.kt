@@ -67,6 +67,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        setTheme(R.style.Theme_Musicorum_NoActionBar)
+
         setContent {
             MusicorumTheme {
                 ProvideWindowInsets {
