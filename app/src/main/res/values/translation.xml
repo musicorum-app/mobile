@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bottom_navigation_item_home">Home</string>
-    <string name="bottom_navigation_item_discover">Discover</string>
     <string name="bottom_navigation_item_scrobbling">Scrobble</string>
     <string name="bottom_navigation_item_charts">Charts</string>
     <string name="bottom_navigation_item_profile">Profile</string>
@@ -17,6 +16,10 @@
     <string name="track">Track</string>
     <string name="users">Users</string>
     <string name="user">User</string>
+
+    <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="back">Back</string>
 
 
     <!-- Home -->

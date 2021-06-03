@@ -23,45 +23,54 @@ import com.musicorumapp.mobile.ui.theme.LighterRed
 fun BottomNavigationBar(
     navController: NavHostController
 ) {
-    Surface(
-//        backgroundColor = AlmostBlack,
-
-    ) {
-        Column(
-            modifier = Modifier
-                .navigationBarsPadding()
-        ) {
-            Row(
+    if (mainPages.map { it.name }.contains(currentRoute(navController = navController))) {
+        Surface{
+            Column(
                 modifier = Modifier
-                    .height(56.dp)
+                    .navigationBarsPadding()
             ) {
-                mainPages.forEach {
-                    val title = stringResource(id = it.titleResource)
-                    val currentRoute = currentRoute(navController = navController)
-                    val selected = currentRoute == it.name
+                Row(
+                    modifier = Modifier
+                        .height(56.dp)
+                ) {
+                    mainPages.forEach {
+                        val title = stringResource(id = it.titleResource)
+                        val currentRoute = currentRoute(navController = navController)
+                        val selected = currentRoute == it.name
 
-                    BottomNavigationItem(
-                        selected = selected,
+                        BottomNavigationItem(
+                            selected = selected,
 
-                        icon = {
-                            if (it.icon.material != null) Icon(
-                                imageVector = it.icon.material,
-                                contentDescription = title
+                            icon = {
+                                if (it.icon.material != null) Icon(
+                                    imageVector = it.icon.material,
+                                    contentDescription = title
+                                )
+                                else if (it.icon.drawable != null) Icon(
+                                    painter = painterResource(id = it.icon.drawable),
+                                    contentDescription = title
+                                )
+                            },
+                            onClick = {
+                                if (!selected) {
+                                    navController.navigate(it.name) {
+                                        popUpTo(navController.graph.startDestinationRoute.orEmpty()) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            },
+                            label = { Text(title,
+                                overflow = TextOverflow.Ellipsis,
+                                softWrap = false,
+//                            fontSize = 10.sp
+                            ) },
+                            alwaysShowLabel = false,
+
                             )
-                            else if (it.icon.drawable != null) Icon(
-                                painter = painterResource(id = it.icon.drawable),
-                                contentDescription = title
-                            )
-                        },
-                        onClick = {
-                                  if (!selected) {
-                                      navController.navigate(it.name)
-                                  }
-                        },
-                        label = { Text(title, overflow = TextOverflow.Ellipsis, softWrap = false, fontSize = 10.sp) },
-                        alwaysShowLabel = false,
-
-                    )
+                    }
                 }
             }
         }

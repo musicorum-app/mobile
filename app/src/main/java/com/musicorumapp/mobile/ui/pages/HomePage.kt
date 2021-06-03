@@ -71,7 +71,7 @@ fun HomePage(
             .padding(top = 6.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Title(text = stringResource(id = R.string.bottom_navigation_item_home))
+        Title(text = stringResource(id = R.string.bottom_navigation_item_home), showSearch = true, showSettings = true)
 
         Spacer(modifier = Modifier.height(6.dp))
 
