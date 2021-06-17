@@ -24,13 +24,6 @@ fun MainNavigationHost(
     authenticationViewModel: AuthenticationViewModel?
 ) {
 
-    val discoverPageViewModel: DiscoverPageViewModel =
-        viewModel(factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return DiscoverPageViewModel(authenticationViewModel!!) as T
-            }
-        })
-
     val homePageViewModel: HomePageViewModel =
         viewModel(factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -73,8 +66,7 @@ fun MainNavigationHost(
             composable(ComposableRoutes.Search) {
                 PageAnimation {
                     DiscoverPage(
-                    authenticationViewModel = authenticationViewModel,
-                    discoverPageViewModel = discoverPageViewModel
+                    authenticationViewModel = authenticationViewModel
                 )
                 }
             }

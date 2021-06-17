@@ -12,7 +12,6 @@ import androidx.compose.ui.unit.IntSize
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun PageAnimation(content: @Composable () -> Unit) {
-    println("a TRANSITION")
     val visible = remember { mutableStateOf(false) }
 
     DisposableEffect("2") {
@@ -26,17 +25,11 @@ fun PageAnimation(content: @Composable () -> Unit) {
 
     AnimatedVisibility(
         visible = visible.value,
-        enter = fadeIn() + expandIn(
-            expandFrom = Alignment.TopStart,
-            initialSize = {
-                IntSize(
-                    width = (it.width * 0.8).toInt(),
-                    height = (it.height * 0.8).toInt()
-                )
-            },
+        enter = fadeIn() + slideInHorizontally(
+            initialOffsetX = { -60 }
 
         ),
-        exit = fadeOut() + shrinkOut(shrinkTowards = Alignment.Center)
+        exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.CenterHorizontally)
     ) {
         content()
     }

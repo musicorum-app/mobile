@@ -24,6 +24,7 @@ class HomePageViewModel(
         viewModelScope.launch {
             predominantColorState.resolveColorsFromURL(url) // TODO = better image placeholder
             _colorFetched.value = true
+            _predominantColor.value = predominantColorState.color
         }
     }
 }

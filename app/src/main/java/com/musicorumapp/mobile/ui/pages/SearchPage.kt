@@ -25,6 +25,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.states.models.AuthenticationViewModel
@@ -35,9 +38,15 @@ import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 
 @Composable
 fun DiscoverPage(
-    authenticationViewModel: AuthenticationViewModel?,
-    discoverPageViewModel: DiscoverPageViewModel
+    authenticationViewModel: AuthenticationViewModel?
 ) {
+
+    val discoverPageViewModel: DiscoverPageViewModel =
+        viewModel(factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return DiscoverPageViewModel(authenticationViewModel!!) as T
+            }
+        })
 
     val searchValue = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
