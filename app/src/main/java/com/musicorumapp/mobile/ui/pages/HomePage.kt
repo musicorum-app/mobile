@@ -44,6 +44,7 @@ import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.api.models.Artist
 import com.musicorumapp.mobile.api.models.LastfmImages
 import com.musicorumapp.mobile.states.LocalAuth
+import com.musicorumapp.mobile.states.LocalNavigationContext
 import com.musicorumapp.mobile.states.models.HomePageViewModel
 import com.musicorumapp.mobile.ui.components.ArtistListItem
 import com.musicorumapp.mobile.ui.components.NetworkImage
@@ -66,6 +67,7 @@ fun HomePage(
     val authPrefs = AuthenticationPreferences(prefs)
 
     val authContent = LocalAuth.current
+    val navigationContext = LocalNavigationContext.current
 
 
     Column(
@@ -88,7 +90,8 @@ fun HomePage(
         val artist = Artist.fromSample()
 
         ArtistListItem(artist = artist, modifier = Modifier.clickable {
-
+            val id = navigationContext.addArtist(artist)
+            navigationContext.navigationController?.navigate("artist/$id")
         })
     }
 }

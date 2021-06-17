@@ -57,3 +57,11 @@ val mainPages = listOf(
     Page.Charts,
     Page.Profile
 )
+
+val pagesWithBottomBar = listOf(
+    Page.Home.name,
+    Page.Scrobbling.name,
+    Page.Charts.name,
+    Page.Profile.name,
+//    "artist/{storeId}"
+)
