@@ -3,6 +3,7 @@ package com.musicorumapp.mobile.ui.pages
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,9 +41,11 @@ import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 import com.musicorumapp.mobile.ui.theme.Shapes
 import com.musicorumapp.mobile.R
+import com.musicorumapp.mobile.api.models.Artist
 import com.musicorumapp.mobile.api.models.LastfmImages
 import com.musicorumapp.mobile.states.LocalAuth
 import com.musicorumapp.mobile.states.models.HomePageViewModel
+import com.musicorumapp.mobile.ui.components.ArtistListItem
 import com.musicorumapp.mobile.ui.components.NetworkImage
 import com.musicorumapp.mobile.ui.theme.KindaBlack
 import com.musicorumapp.mobile.utils.calculateColorContrast
@@ -82,7 +85,11 @@ fun HomePage(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        Text(authContent.user?.displayName ?: "Unknown")
+        val artist = Artist.fromSample()
+
+        ArtistListItem(artist = artist, modifier = Modifier.clickable {
+
+        })
     }
 }
 
@@ -98,7 +105,7 @@ fun UserCard(
         .height(cardHeight)
         .clip(Shapes.medium)
 
-    val predominantColor by homePageViewModel.predominantColor.observeAsState()
+    val predominantColor = homePageViewModel.predominantColor
 
     val predominantColorState = rememberPredominantColor(
         colorFinder = {
@@ -109,18 +116,16 @@ fun UserCard(
             }
         }
     ) {
-        val c = gradientBackgroundColorResolver(it)
-
-
-
-        c
+        gradientBackgroundColorResolver(it)
     }
 
     if (user != null && !homePageViewModel?.colorFetched?.value!!) {
-        homePageViewModel.fetchColors(
-            predominantColorState,
-            url = user.images.bestImage ?: "https://i.imgur.com/U25KSgp.png"
-        )
+        user.images.bestImage?.let {
+            homePageViewModel.fetchColors(
+                predominantColorState,
+                url = it
+            )
+        }
     }
 
     Crossfade(targetState = user == null) {
@@ -130,8 +135,8 @@ fun UserCard(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            predominantColor ?: predominantColorState.color,
-                            darkerColor(predominantColor ?: predominantColorState.color, 22)
+                            predominantColor.value ?: predominantColorState.color,
+                            darkerColor(predominantColor.value ?: predominantColorState.color, 22)
                         ),
 //                    start = Offset(0f, 0f),
 //                    end = Offset(1f, 1f),
