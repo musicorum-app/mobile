@@ -7,14 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import com.musicorumapp.mobile.states.LocalNavigationContext
 import com.musicorumapp.mobile.states.LocalNavigationContextContent
 import com.musicorumapp.mobile.states.models.AuthenticationViewModel
 import com.musicorumapp.mobile.states.models.DiscoverPageViewModel
 import com.musicorumapp.mobile.states.models.HomePageViewModel
 import com.musicorumapp.mobile.ui.components.PageAnimation
+import com.musicorumapp.mobile.ui.pages.ArtistPage
 import com.musicorumapp.mobile.ui.pages.DiscoverPage
 import com.musicorumapp.mobile.ui.pages.HomePage
 
@@ -40,9 +43,9 @@ fun MainNavigationHost(
             composable(Page.Home.name) {
                 PageAnimation {
                     HomePage(
-                    authenticationViewModel = authenticationViewModel,
-                    homePageViewModel = homePageViewModel
-                )
+                        authenticationViewModel = authenticationViewModel,
+                        homePageViewModel = homePageViewModel
+                    )
                 }
             }
             composable(Page.Scrobbling.name) {
@@ -61,13 +64,22 @@ fun MainNavigationHost(
                 }
             }
 
-
+            composable(
+                "artist/{storeId}",
+                arguments = listOf(navArgument("storeId") { type = NavType.StringType })
+            ) {
+                val storeId = it.arguments?.getString("storeId")
+                val artist = LocalNavigationContext.current.artistsStore[storeId]
+                PageAnimation {
+                    ArtistPage(artist = artist)
+                }
+            }
 
             composable(ComposableRoutes.Search) {
                 PageAnimation {
                     DiscoverPage(
-                    authenticationViewModel = authenticationViewModel
-                )
+                        authenticationViewModel = authenticationViewModel
+                    )
                 }
             }
         }

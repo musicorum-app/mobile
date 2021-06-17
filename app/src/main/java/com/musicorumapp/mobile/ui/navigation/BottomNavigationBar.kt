@@ -1,5 +1,6 @@
 package com.musicorumapp.mobile.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
+import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.ui.theme.AlmostBlack
 import com.musicorumapp.mobile.ui.theme.LighterRed
 
@@ -23,8 +25,8 @@ import com.musicorumapp.mobile.ui.theme.LighterRed
 fun BottomNavigationBar(
     navController: NavHostController
 ) {
-    if (mainPages.map { it.name }.contains(currentRoute(navController = navController))) {
-        Surface{
+    if (pagesWithBottomBar.contains(currentRoute(navController = navController).orEmpty())) {
+        Surface {
             Column(
                 modifier = Modifier
                     .navigationBarsPadding()
@@ -36,6 +38,8 @@ fun BottomNavigationBar(
                     mainPages.forEach {
                         val title = stringResource(id = it.titleResource)
                         val currentRoute = currentRoute(navController = navController)
+                        val root = navController.graph.startDestinationRoute.orEmpty()
+                        Log.d(Constants.LOG_TAG, root)
                         val selected = currentRoute == it.name
 
                         BottomNavigationItem(
@@ -62,11 +66,14 @@ fun BottomNavigationBar(
                                     }
                                 }
                             },
-                            label = { Text(title,
-                                overflow = TextOverflow.Ellipsis,
-                                softWrap = false,
+                            label = {
+                                Text(
+                                    title,
+                                    overflow = TextOverflow.Ellipsis,
+                                    softWrap = false,
 //                            fontSize = 10.sp
-                            ) },
+                                )
+                            },
                             alwaysShowLabel = false,
 
                             )
@@ -79,6 +86,6 @@ fun BottomNavigationBar(
 
 @Preview(showBackground = true)
 @Composable
-fun BottomNavigationBarPreview () {
+fun BottomNavigationBarPreview() {
     BottomNavigationBar(navController = rememberNavController())
 }

@@ -21,8 +21,6 @@ fun PageAnimation(content: @Composable () -> Unit) {
         }
     }
 
-    println(visible.value)
-
     AnimatedVisibility(
         visible = visible.value,
         enter = fadeIn() + slideInHorizontally(
