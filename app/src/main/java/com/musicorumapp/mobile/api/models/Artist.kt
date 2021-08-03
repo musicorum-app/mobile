@@ -7,14 +7,17 @@ import com.squareup.moshi.Json
 class Artist(
     val name: String,
     val url: String,
-    val listeners: Int? = null,
-    val playCount: Int? = null,
-    val userPlayCount: Int? = null,
+    var listeners: Int? = null,
+    var playCount: Int? = null,
+    var userPlayCount: Int? = null,
     val similar: MutableList<Artist> = mutableListOf(),
     val tags: MutableList<String> = mutableListOf(),
-    val wiki: Wiki? = null,
+    var wiki: Wiki? = null,
 ) : PageableItem {
     private val onResourcesChangeCallbacks: MutableList<(Artist) -> Unit> = mutableListOf()
+
+    val imageURL: String?
+        get() = resource?.image
 
     var resource: ArtistResource? = null
         set(value) {
@@ -22,12 +25,12 @@ class Artist(
             onResourcesChangeCallbacks.forEach { it(this) }
         }
 
-    fun getImageURL(): String? {
-        return resource?.image
-    }
-
     fun onResourcesChange(cb: (Artist) -> Unit) {
         onResourcesChangeCallbacks.add(cb)
+    }
+
+    suspend fun fetchInfo() {
+        listeners = 999
     }
 
     companion object {
