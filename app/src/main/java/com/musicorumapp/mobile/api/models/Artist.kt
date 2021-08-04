@@ -1,6 +1,5 @@
 package com.musicorumapp.mobile.api.models
 
-import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.utils.Utils
 import com.squareup.moshi.Json
 
@@ -27,10 +26,6 @@ class Artist(
 
     fun onResourcesChange(cb: (Artist) -> Unit) {
         onResourcesChangeCallbacks.add(cb)
-    }
-
-    suspend fun fetchInfo() {
-        listeners = 999
     }
 
     companion object {

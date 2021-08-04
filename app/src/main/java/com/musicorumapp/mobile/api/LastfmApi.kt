@@ -1,14 +1,19 @@
 package com.musicorumapp.mobile.api
 
-import com.musicorumapp.mobile.api.interceptors.*
-import com.musicorumapp.mobile.api.models.*
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
+import com.musicorumapp.mobile.api.interceptors.LastfmKeyInterceptor
+import com.musicorumapp.mobile.api.interceptors.LastfmMethodInterceptor
+import com.musicorumapp.mobile.api.interceptors.SignedRequestInterceptor
+import com.musicorumapp.mobile.api.models.Album
+import com.musicorumapp.mobile.api.models.Artist
+import com.musicorumapp.mobile.api.models.PagingController
+import com.musicorumapp.mobile.api.models.Track
 import com.musicorumapp.mobile.utils.Utils
 import com.serjltt.moshi.adapters.FallbackOnNull
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
+import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 

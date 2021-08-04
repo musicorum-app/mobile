@@ -7,13 +7,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -22,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -30,6 +31,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.R
+import com.musicorumapp.mobile.states.LocalNavigationContext
 import com.musicorumapp.mobile.states.models.AuthenticationViewModel
 import com.musicorumapp.mobile.states.models.DiscoverPageViewModel
 import com.musicorumapp.mobile.states.models.SearchResults
@@ -125,6 +127,7 @@ private fun ResultsView(
     resourcesFetched: Boolean?
 ) {
     if (results.hasResults) {
+        val navigationContext = LocalNavigationContext.current
 
         Log.i(Constants.LOG_TAG, "----- RESULTS VIEW RECOMPOSE")
 
@@ -139,7 +142,10 @@ private fun ResultsView(
             ) {
                 Column {
                     results.artists?.getAllItems()?.take(3)?.forEach {
-                        ArtistListItem(artist = it, modifier = Modifier.clickable { })
+                        ArtistListItem(artist = it, modifier = Modifier.clickable {
+                            val id = navigationContext.addArtist(it)
+                            navigationContext.navigationController?.navigate("artist/$id")
+                        })
                     }
                 }
             }

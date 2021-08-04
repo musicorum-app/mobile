@@ -14,7 +14,6 @@ import androidx.navigation.compose.navArgument
 import com.musicorumapp.mobile.states.LocalNavigationContext
 import com.musicorumapp.mobile.states.LocalNavigationContextContent
 import com.musicorumapp.mobile.states.models.AuthenticationViewModel
-import com.musicorumapp.mobile.states.models.DiscoverPageViewModel
 import com.musicorumapp.mobile.states.models.HomePageViewModel
 import com.musicorumapp.mobile.ui.components.PageAnimation
 import com.musicorumapp.mobile.ui.pages.ArtistPage

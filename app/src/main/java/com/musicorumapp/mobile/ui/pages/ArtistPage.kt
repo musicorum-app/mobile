@@ -4,20 +4,15 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.runtime.Composable;
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.coil.rememberCoilPainter
 import com.musicorumapp.mobile.api.models.Artist
-import com.musicorumapp.mobile.api.models.MusicorumResource
 import com.musicorumapp.mobile.states.LocalAuth
 import com.musicorumapp.mobile.states.LocalNavigationContext
 import com.musicorumapp.mobile.states.models.ArtistPageViewModel
-import com.musicorumapp.mobile.states.models.DiscoverPageViewModel
 import com.musicorumapp.mobile.ui.components.FadeableAppBar
 import com.musicorumapp.mobile.ui.components.GradientContentHeader
 import com.musicorumapp.mobile.ui.theme.AppMaterialIcons
@@ -29,30 +24,25 @@ fun ArtistPage(
     if (artist == null) {
         ArtistNotFound()
     } else {
-        ArtistContent(artist)
+        ArtistContent(
+            artist,
+            viewModel = hiltViewModel()
+        )
     }
 }
 
 
 @Composable
-fun ArtistContent(artist: Artist) {
+fun ArtistContent(
+    artist: Artist,
+    viewModel: ArtistPageViewModel
+) {
     val painter = rememberCoilPainter(
         request = artist.imageURL.orEmpty(),
         fadeIn = true
     )
 
     val user = LocalAuth.current.user
-    val artistPageViewModel: ArtistPageViewModel =
-        viewModel(factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return ArtistPageViewModel(artist, user!!) as T
-            }
-        })
-
-    LaunchedEffect("asd") {
-        MusicorumResource.fetchArtistsResources(listOf(artist))
-
-    }
 
     artist.onResourcesChange { painter.request = it.imageURL }
 
@@ -78,10 +68,4 @@ fun ArtistContent(artist: Artist) {
 @Composable
 fun ArtistNotFound() {
     Text("not found x.x")
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ArtistContentPreview() {
-    ArtistContent(artist = Artist.fromSample())
 }

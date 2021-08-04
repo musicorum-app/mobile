@@ -1,9 +1,6 @@
 package com.musicorumapp.mobile.api
 
 import com.musicorumapp.mobile.Constants
-import com.musicorumapp.mobile.api.interceptors.LastfmKeyInterceptor
-import com.musicorumapp.mobile.api.interceptors.LastfmMethodInterceptor
-import com.musicorumapp.mobile.api.interceptors.SignedRequestInterceptor
 import com.serjltt.moshi.adapters.FallbackOnNull
 import com.serjltt.moshi.adapters.Wrapped
 import com.squareup.moshi.Moshi
@@ -11,7 +8,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-
 
 
 class MusicorumApi {

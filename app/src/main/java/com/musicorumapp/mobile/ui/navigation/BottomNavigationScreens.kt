@@ -1,16 +1,9 @@
 package com.musicorumapp.mobile.ui.navigation
 
-import android.content.Context
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.ui.theme.AppMaterialIcons
 
