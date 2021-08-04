@@ -25,7 +25,7 @@ interface LastfmArtistEndpoint {
     suspend fun artistGetInfo(
         @Query("artist") artist: String,
         @Query("user") user: String,
-        @Query("lang") lang: String?
+        @Query("lang") lang: String? = null
     ): LastfmArtistInfoResponse
 
 

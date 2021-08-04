@@ -1,6 +1,5 @@
 package com.musicorumapp.mobile.api.models
 
-import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.utils.Utils
 import com.squareup.moshi.Json
 

@@ -17,10 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.authentication.AuthenticationPreferences
-import com.musicorumapp.mobile.states.models.AuthenticationValidationState
 import com.musicorumapp.mobile.states.models.AuthenticationViewModel
 import com.musicorumapp.mobile.ui.theme.KindaBlack
-import com.musicorumapp.mobile.ui.theme.MostlyRed
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 
 @Composable

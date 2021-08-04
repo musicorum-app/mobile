@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -32,8 +34,10 @@ import com.musicorumapp.mobile.ui.LoginScreen
 import com.musicorumapp.mobile.ui.navigation.BottomNavigationBar
 import com.musicorumapp.mobile.ui.navigation.MainNavigationHost
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,14 +109,17 @@ fun AuthSwitcher(
     )
 
     if (validationState == AuthenticationValidationState.NONE) {
-        if (authPrefs.checkIfTokenExists()) {
-            authenticationViewModel.fetchUser {
-                showSnackBar(it)
+        when {
+            authPrefs.checkIfTokenExists() -> {
+                authenticationViewModel.fetchUser {
+                    showSnackBar(it)
+                }
             }
-        } else if (token != null) {
-            authenticationViewModel.authenticateFromToken(token) { showSnackBar(it) }
-        } else
-            authenticationViewModel.setAuthenticationValidationState(AuthenticationValidationState.LOGGED_OUT)
+            token != null -> {
+                authenticationViewModel.authenticateFromToken(token) { showSnackBar(it) }
+            }
+            else -> authenticationViewModel.setAuthenticationValidationState(AuthenticationValidationState.LOGGED_OUT)
+        }
 
     }
 

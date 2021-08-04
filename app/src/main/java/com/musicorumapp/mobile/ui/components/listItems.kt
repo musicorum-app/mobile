@@ -1,11 +1,12 @@
 package com.musicorumapp.mobile.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +20,8 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.imageloading.ImageLoadState
 import com.musicorumapp.mobile.api.models.*
-import com.musicorumapp.mobile.ui.theme.*
+import com.musicorumapp.mobile.ui.theme.MusicorumTheme
+import com.musicorumapp.mobile.ui.theme.SecondaryTextColor
 
 private val roundedImageClip = RoundedCornerShape(4.dp)
 
@@ -77,12 +79,12 @@ fun ArtistListItem(
 ) {
 
     val painter = rememberCoilPainter(
-        artist.getImageURL(),
+        artist.imageURL,
         previewPlaceholder = LastfmEntity.ARTIST.asDrawableSource(),
         fadeIn = true,
     )
 
-    artist.onResourcesChange { painter.request = it.getImageURL() }
+    artist.onResourcesChange { painter.request = it.imageURL }
 
     ListItem(
         modifier = modifier,
