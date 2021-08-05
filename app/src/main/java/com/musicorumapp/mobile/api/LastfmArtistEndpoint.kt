@@ -21,10 +21,11 @@ interface LastfmArtistEndpoint {
 
     @GET("/")
     @LastfmMethod("artist.getInfo")
+    @SignedRequest
     @Wrapped(path = ["artist"])
     suspend fun artistGetInfo(
         @Query("artist") artist: String,
-        @Query("user") user: String,
+        @Query("user") user: String?,
         @Query("lang") lang: String? = null
     ): LastfmArtistInfoResponse
 

@@ -1,15 +1,15 @@
 package com.musicorumapp.mobile.states.models
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.api.LastfmApi
 import com.musicorumapp.mobile.api.models.User
 import com.musicorumapp.mobile.authentication.AuthenticationPreferences
+import com.musicorumapp.mobile.states.SessionState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 object AuthenticationValidationState {
     const val NONE = 0
@@ -17,9 +17,11 @@ object AuthenticationValidationState {
     const val LOGGED_IN = 2 // MAIN SCREEN LOADED
     const val AUTHENTICATING = 3 // MAIN SCREEN LOGGING IN
 }
-
-class AuthenticationViewModel(
-    private val authPrefs: AuthenticationPreferences
+@HiltViewModel
+class AuthenticationViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val authPrefs: AuthenticationPreferences,
+    private val sessionState: SessionState
 ): ViewModel() {
     private val _user = MutableLiveData<User?>(null)
     private val _authenticationValidationState = MutableLiveData(AuthenticationValidationState.AUTHENTICATING)
@@ -45,8 +47,9 @@ class AuthenticationViewModel(
     ) {
         viewModelScope.launch {
             try {
-                var usr = LastfmApi.getUserEndpoint().getUserInfoFromToken(authPrefs.getLastfmSessionToken().orEmpty())
-                _user.value = usr.toUser()
+                val usr = LastfmApi.getUserEndpoint().getUserInfoFromToken(authPrefs.getLastfmSessionToken().orEmpty()).toUser()
+                _user.value = usr
+                sessionState.currentUser = usr
                 _authenticationValidationState.value = AuthenticationValidationState.LOGGED_IN
             } catch (e: Exception) {
                 Log.e(Constants.LOG_TAG, e.toString())

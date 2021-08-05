@@ -30,7 +30,7 @@ fun GradientContentHeader(
     title: String,
     ) {
 
-    val imageSize = LocalConfiguration.current.screenWidthDp.dp - (PaddingSpacing.HorizontalMainPadding * 2)
+    val imageSize = LocalConfiguration.current.screenWidthDp.dp - (PaddingSpacing.HorizontalMainPadding * 4)
 
     Image(
         painter = painter,
@@ -59,18 +59,22 @@ fun GradientContentHeader(
     Box(
         modifier = Modifier
             .statusBarsPadding()
-            .padding(top = 260.dp)
+            .padding(top = 240.dp)
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = PaddingSpacing.HorizontalMainPadding),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = PaddingSpacing.HorizontalMainPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painter,
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(imageSize, imageSize).clip(CircleShape)
+                modifier = Modifier
+                    .size(imageSize, imageSize)
+                    .clip(CircleShape)
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(title,
@@ -80,6 +84,7 @@ fun GradientContentHeader(
                 textAlign = TextAlign.Center,
                 maxLines = 1
             )
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

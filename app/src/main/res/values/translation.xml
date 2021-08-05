@@ -17,6 +17,10 @@
     <string name="users">Users</string>
     <string name="user">User</string>
 
+    <string name="listeners">Listeners</string>
+    <string name="scrobbles">Scrobbles</string>
+    <string name="your_scrobbles">Your scrobbles</string>
+
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
@@ -29,4 +33,7 @@
     <!-- Discover -->
     <string name="discover_page_results_text">%1$s results</string>
     <string name="discover_page_no_results">Nothing found</string>
+
+    <!-- Artist -->
+
 </resources>
