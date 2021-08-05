@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
@@ -28,6 +29,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.musicorumapp.mobile.authentication.AuthenticationPreferences
 import com.musicorumapp.mobile.states.LocalAuth
 import com.musicorumapp.mobile.states.LocalAuthContent
+import com.musicorumapp.mobile.states.LocalSnackbarContext
+import com.musicorumapp.mobile.states.LocalSnackbarContextContent
 import com.musicorumapp.mobile.states.models.AuthenticationValidationState
 import com.musicorumapp.mobile.states.models.AuthenticationViewModel
 import com.musicorumapp.mobile.ui.LoginScreen
@@ -63,14 +66,6 @@ class MainActivity : ComponentActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val authenticationViewModel by viewModels<AuthenticationViewModel> {
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    return AuthenticationViewModel(authPrefs) as T
-                }
-            }
-        }
-
         setTheme(R.style.Theme_Musicorum_NoActionBar)
 
         setContent {
@@ -78,8 +73,7 @@ class MainActivity : ComponentActivity() {
                 ProvideWindowInsets {
                     AuthSwitcher(
                         token = gotToken,
-                        authPrefs = authPrefs,
-                        authenticationViewModel = authenticationViewModel
+                        authPrefs = authPrefs
                     )
                 }
             }
@@ -92,8 +86,8 @@ class MainActivity : ComponentActivity() {
 fun AuthSwitcher(
     authPrefs: AuthenticationPreferences,
     token: String?,
-    authenticationViewModel: AuthenticationViewModel,
 ) {
+    val authenticationViewModel: AuthenticationViewModel = hiltViewModel()
     val scaffoldState = rememberScaffoldState()
     val snackbarCoroutineScope = rememberCoroutineScope()
 
@@ -128,7 +122,10 @@ fun AuthSwitcher(
 
     val navController = rememberNavController()
 
-    CompositionLocalProvider(LocalAuth provides LocalAuthContent(authenticationViewModel.user.value)) {
+    CompositionLocalProvider(
+        LocalAuth provides LocalAuthContent(authenticationViewModel.user.value),
+        LocalSnackbarContext provides LocalSnackbarContextContent(scaffoldState.snackbarHostState)
+    ) {
         Scaffold(
             scaffoldState = scaffoldState,
             bottomBar = {
@@ -141,7 +138,9 @@ fun AuthSwitcher(
         ) {
 
             Box(
-                modifier = Modifier.navigationBarsWithImePadding().padding(bottom = 56.dp)
+                modifier = Modifier
+                    .navigationBarsWithImePadding()
+                    .padding(bottom = 56.dp)
             ) {
                 if (
                     validationState == AuthenticationValidationState.AUTHENTICATING

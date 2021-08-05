@@ -12,12 +12,12 @@ class Utils {
         }
 
         fun anyToInt(x: Any): Int {
-            if (x is Int) {
-                return x
-            } else if (x is String) {
-                return x.toInt()
+            return when (x) {
+                is Int -> x
+                is String -> x.toInt()
+                is Double -> x.toInt()
+                else -> 0
             }
-            return 0
         }
     }
 }
