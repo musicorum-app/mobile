@@ -21,6 +21,7 @@ class Artist(
     var resource: ArtistResource? = null
         set(value) {
             field = value
+            println("SETTING ARTIST RESOURCE")
             onResourcesChangeCallbacks.forEach { it(this) }
         }
 
@@ -68,7 +69,7 @@ data class LastfmArtistInfoResponse(
     }
 
     data class LastfmArtistInfoResponseTags(
-        val tags: List<LastfmArtistInfoResponseTagsItem>?
+        val tag: List<LastfmArtistInfoResponseTagsItem>?
     ) {
         data class LastfmArtistInfoResponseTagsItem(
             val name: String,
@@ -77,13 +78,14 @@ data class LastfmArtistInfoResponse(
     }
 
     fun toArtist(): Artist {
+        println("TAGS: ${tags?.tag}")
         return Artist(
             name = name,
             url = url,
             listeners = Utils.anyToInt(stats.listeners),
             playCount = Utils.anyToInt(stats.playcount),
             userPlayCount = Utils.anyToInt(stats.userplaycount),
-            tags = tags?.tags?.map{ it.name}?.toMutableList() ?: mutableListOf(),
+            tags = tags?.tag?.map{ it.name}?.toMutableList() ?: mutableListOf(),
             wiki = bio?.toWiki(),
             similar = similar.artist.map { it.toArtist() }.toMutableList()
         )

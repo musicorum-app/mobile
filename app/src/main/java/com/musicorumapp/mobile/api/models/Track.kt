@@ -19,12 +19,7 @@ data class Track(
             onResourcesChangeCallbacks.forEach { it(this) }
         }
 
-    fun getImageURL(): String? {
-        println(images.bestImage)
-        println(resource?.cover)
-        println(images.bestImage ?: resource?.cover)
-        return images.bestImage ?: resource?.cover
-    }
+    fun getImageURL(): String? = images.bestImage ?: resource?.cover
 
     fun onResourcesChange(cb: (Track) -> Unit) {
         onResourcesChangeCallbacks.add(cb)
