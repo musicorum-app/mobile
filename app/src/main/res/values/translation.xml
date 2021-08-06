@@ -17,9 +17,14 @@
     <string name="users">Users</string>
     <string name="user">User</string>
 
+    <string name="top_tracks">Top tracks</string>
+    <string name="top_albums">Top albums</string>
+    <string name="top_artists">Top artists</string>
+
     <string name="listeners">Listeners</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="your_scrobbles">Your scrobbles</string>
+
 
     <string name="settings">Settings</string>
     <string name="search">Search</string>

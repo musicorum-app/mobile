@@ -1,6 +1,7 @@
 package com.musicorumapp.mobile.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -236,9 +237,9 @@ fun ListItemPreview() {
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                ArtistListItem(artist = Artist.fromSample())
+                ArtistListItem(artist = Artist.fromSample(), modifier = Modifier.clickable {  })
                 Divider()
-                TrackListItem(track = Track.fromSample())
+                TrackListItem(track = Track.fromSample(), modifier = Modifier.clickable {  })
             }
         }
     }

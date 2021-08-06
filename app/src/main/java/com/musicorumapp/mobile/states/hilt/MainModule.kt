@@ -2,8 +2,10 @@ package com.musicorumapp.mobile.states.hilt
 
 import android.content.Context
 import com.musicorumapp.mobile.Constants
+import com.musicorumapp.mobile.api.LastfmAlbumEndpoint
 import com.musicorumapp.mobile.api.LastfmApi
 import com.musicorumapp.mobile.api.LastfmArtistEndpoint
+import com.musicorumapp.mobile.api.LastfmTrackEndpoint
 import com.musicorumapp.mobile.authentication.AuthenticationPreferences
 import com.musicorumapp.mobile.repos.ArtistRepository
 import com.musicorumapp.mobile.states.SessionState
@@ -21,6 +23,14 @@ object MainModule {
     @Singleton
     @Provides
     fun provideLastfmArtistEndpoint (): LastfmArtistEndpoint = LastfmApi.getArtistEndpoint()
+
+    @Singleton
+    @Provides
+    fun provideLastfmAlbumEndpoint (): LastfmAlbumEndpoint = LastfmApi.getAlbumsEndpoint()
+
+    @Singleton
+    @Provides
+    fun provideLastfmTrackEndpoint (): LastfmTrackEndpoint = LastfmApi.getTracksEndpoint()
 
     @Singleton
     @Provides

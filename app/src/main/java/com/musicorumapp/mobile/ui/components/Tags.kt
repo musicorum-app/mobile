@@ -1,53 +1,88 @@
 package com.musicorumapp.mobile.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
+import com.musicorumapp.mobile.ui.theme.SkeletonPrimaryColor
+import java.util.*
 
 @Composable
 fun Tags(
     tags: List<String>? = null
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.width(PaddingSpacing.HorizontalMainPadding))
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.width(PaddingSpacing.HorizontalMainPadding))
 
-        if (tags != null) {
-            tags.forEach { TagItem(it) }
-        } else {
-            for (x in 1..10) TagItem()
+            if (tags != null) {
+                tags.forEach { TagItem(it, isLast = it === tags.last()) }
+            } else {
+                for (x in 1..10) TagItem(isLast = x === 10)
+            }
+
+            Spacer(modifier = Modifier.width(PaddingSpacing.HorizontalMainPadding))
         }
-
-        Spacer(modifier = Modifier.width(PaddingSpacing.HorizontalMainPadding))
     }
 }
 
 
 @Composable
 fun TagItem(
-    value: String? = null
+    value: String? = null,
+    isLast: Boolean = false
 ) {
+    val state: Int = remember { Random().nextInt(60) + 40 }
+
+    val placeholderModifier = Modifier
+        .width(state.dp)
+
+    val tagModifier = Modifier
+        .background(SkeletonPrimaryColor)
+
     Box(
         modifier = Modifier
+            .padding(end = if (isLast) 0.dp else 6.dp)
+            .clip(RoundedCornerShape(30.dp))
             .placeholder(
-                visible = value != null,
-                highlight = PlaceholderHighlight.fade()
+                visible = value == null,
+                highlight = PlaceholderHighlight.fade(),
+                shape = RoundedCornerShape(30.dp),
             )
+            .composed { if (value == null) placeholderModifier else tagModifier }
+            .padding(horizontal = 12.dp, vertical = 2.dp)
+            .height(22.dp)
     ) {
-        Text(value.orEmpty())
+        Text(
+            value.orEmpty(),
+            modifier = Modifier
+                .offset(y = (-1).dp)
+        )
     }
 }
 
-@Preview(showBackground = true, widthDp = 400, heightDp = 100)
+@Preview(showBackground = true, widthDp = 400, heightDp = 50)
 @Composable
 fun TagsContentPreview() {
     MusicorumTheme {
@@ -67,12 +102,36 @@ fun TagsContentPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 400, heightDp = 100)
+@Preview(showBackground = true, widthDp = 400, heightDp = 50)
 @Composable
 fun TagsLoadingPreview() {
     MusicorumTheme {
         Scaffold {
             Tags()
+        }
+    }
+}
+
+
+@Preview(showBackground = true, widthDp = 400, heightDp = 50)
+@Composable
+fun TagsCheckPreview() {
+    MusicorumTheme {
+        Scaffold {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .horizontalScroll(rememberScrollState())
+            ) {
+                TagItem("Example")
+                TagItem("Example")
+                TagItem()
+                TagItem()
+                TagItem("Example")
+                TagItem()
+                TagItem("Example")
+            }
         }
     }
 }

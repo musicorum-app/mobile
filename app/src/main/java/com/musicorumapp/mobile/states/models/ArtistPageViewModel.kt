@@ -2,9 +2,7 @@ package com.musicorumapp.mobile.states.models
 
 import androidx.compose.material.SnackbarHostState
 import androidx.lifecycle.*
-import com.musicorumapp.mobile.api.models.Artist
-import com.musicorumapp.mobile.api.models.MusicorumResource
-import com.musicorumapp.mobile.api.models.User
+import com.musicorumapp.mobile.api.models.*
 import com.musicorumapp.mobile.repos.ArtistRepository
 import com.musicorumapp.mobile.states.SessionState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,28 +17,28 @@ class ArtistPageViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _artist = MutableLiveData<Artist?>(null)
+    private val _topTracks = MutableLiveData<PagingController<Track>?>(null)
 
     val artist: LiveData<Artist?> = _artist
+    val topTracks: LiveData<PagingController<Track>?> = _topTracks
 
     fun start(snackbarHostState: SnackbarHostState?, __artist: Artist) {
-        println(__artist)
         viewModelScope.launch {
             try {
-
-                println("VIEWMODEL TEST: $artistRepository")
-                val user =
-                    sessionState.currentUser ?: throw Exception("User not defined in session")
+                val user = sessionState.currentUser
+                    ?: throw Exception("User not defined in session")
 
                 artistRepository.getArtistInfo(__artist, user.userName)
                 _artist.value = __artist
-
-                println(__artist.listeners)
 
                 if (__artist.imageURL == null) {
                     MusicorumResource.fetchArtistsResources(listOf(__artist))
                 }
 
-                println(artist.value?.listeners)
+                _topTracks.value = artistRepository.getArtistTopTracks(__artist.name)
+
+                MusicorumResource.fetchTracksResources(_topTracks.value!!.getAllItems())
+
             } catch (e: Exception) {
                 println(e)
                 snackbarHostState?.showSnackbar(e.toString())

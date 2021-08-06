@@ -49,7 +49,7 @@ fun Section(
                     title,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.h5,
+                    style = MaterialTheme.typography.h6,
                     modifier = if (subTitle != null) Modifier.height(32.dp) else Modifier
                 )
                 if (subTitle != null) {
