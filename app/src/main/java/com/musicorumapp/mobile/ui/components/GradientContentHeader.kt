@@ -11,12 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil.compose.ImagePainter
 import com.google.accompanist.imageloading.LoadPainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
@@ -26,20 +28,23 @@ private val backgroundHeight = 520.dp
 
 @Composable
 fun GradientContentHeader(
-    painter: LoadPainter<Any>,
     title: String,
+    mainImagePainter: Painter,
+    backgroundPainter: Painter? = null,
     ) {
 
     val imageSize = LocalConfiguration.current.screenWidthDp.dp - (PaddingSpacing.HorizontalMainPadding * 4)
 
-    Image(
-        painter = painter,
-        contentDescription = "",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(backgroundHeight)
-    )
+    if (backgroundPainter != null) {
+        Image(
+            painter = backgroundPainter,
+            contentDescription = "",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(backgroundHeight)
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -69,7 +74,7 @@ fun GradientContentHeader(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painter,
+                painter = mainImagePainter,
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

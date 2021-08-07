@@ -29,12 +29,15 @@ import com.musicorumapp.mobile.ui.theme.SecondaryTextColor
 fun Section(
     title: String,
     modifier: Modifier = Modifier,
+    headerModifier: Modifier = Modifier,
     subTitle: String? = null,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
 
-    val modif = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
+    if (onClick != null) {
+        headerModifier.clickable(onClick = onClick)
+    }
 
     Column(modifier = modifier) {
         Row(
@@ -42,7 +45,7 @@ fun Section(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .composed { modif }
+                .composed { headerModifier }
         ) {
             Column {
                 Text(
