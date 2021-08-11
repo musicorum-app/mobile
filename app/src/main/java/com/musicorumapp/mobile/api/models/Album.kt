@@ -25,9 +25,8 @@ data class Album(
             onResourcesChangeCallbacks.forEach { it(this) }
         }
 
-    fun getImageURL(): String {
-        return images.bestImage ?: resource?.cover ?: Constants.DEFAULT_ARTIST_IMAGE_URL
-    }
+    val imageURL: String?
+        get() = images.bestImage ?: resource?.cover
 
     fun onResourcesChange(cb: (Album) -> Unit) {
         onResourcesChangeCallbacks.add(cb)
@@ -112,9 +111,10 @@ data class LastfmAlbumFromArtistTopAlbumsResponseItem(
     val name: String,
     val playcount: Any,
     val url: String,
-    val artist: LastfmAlbumFromArtistTopAlbumsResponseArtistItem
+    val artist: LastfmAlbumFromArtistTopAlbumsResponseArtistItem,
+    val image: List<ImageResourceSerializable>,
 
-) {
+    ) {
     data class LastfmAlbumFromArtistTopAlbumsResponseArtistItem(
         val name: String,
         val url: String
@@ -125,7 +125,7 @@ data class LastfmAlbumFromArtistTopAlbumsResponseItem(
         playCount = Utils.anyToInt(playcount),
         url = url,
         artist = artist.name,
-        images = LastfmImages.fromEmpty(LastfmEntity.ALBUM)
+        images = LastfmImages.fromSerializable(image, LastfmEntity.ALBUM)
     )
 }
 

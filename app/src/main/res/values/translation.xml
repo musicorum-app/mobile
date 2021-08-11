@@ -40,5 +40,6 @@
     <string name="discover_page_no_results">Nothing found</string>
 
     <!-- Artist -->
+    <string name="similar_artists">Similar artists</string>
 
 </resources>

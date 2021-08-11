@@ -3,6 +3,7 @@ package com.musicorumapp.mobile.repos
 import com.musicorumapp.mobile.api.LastfmApi
 import com.musicorumapp.mobile.api.LastfmArtistEndpoint
 import com.musicorumapp.mobile.api.LastfmTrackEndpoint
+import com.musicorumapp.mobile.api.models.Album
 import com.musicorumapp.mobile.api.models.Artist
 import com.musicorumapp.mobile.api.models.PagingController
 import com.musicorumapp.mobile.api.models.Track
@@ -35,7 +36,19 @@ class ArtistRepository @Inject constructor(
         val controller = PagingController(
             perPage = perPage,
             requester = { pg ->
-                artistEndpoint.getTopTracks(artist, limit = perPage).map { it.toTrack() }
+                artistEndpoint.getTopTracks(artist, limit = perPage, page = pg).map { it.toTrack() }
+            }
+        )
+        controller.doRequest(1)
+
+        return controller
+    }
+
+    suspend fun getArtistTopAlbums(artist: String, perPage: Int = 20): PagingController<Album> {
+        val controller = PagingController(
+            perPage = perPage,
+            requester = { pg ->
+                artistEndpoint.getTopAlbums(artist, limit = perPage, page = pg).map { it.toAlbum() }
             }
         )
         controller.doRequest(1)

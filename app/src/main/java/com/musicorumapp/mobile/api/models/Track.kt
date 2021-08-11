@@ -10,7 +10,7 @@ data class Track(
     val playCount: Int? = null,
     val listeners: Int? = null,
     var images: LastfmImages
-): PageableItem {
+) : PageableItem {
     private val onResourcesChangeCallbacks: MutableList<(Track) -> Unit> = mutableListOf()
 
     var resource: TrackResource? = null
@@ -19,11 +19,10 @@ data class Track(
             onResourcesChangeCallbacks.forEach { it(this) }
         }
 
-    fun getImageURL(): String? = images.bestImage ?: resource?.cover
+    val imageURL: String?
+        get() = images.bestImage ?: resource?.cover
 
-    fun onResourcesChange(cb: (Track) -> Unit) {
-        onResourcesChangeCallbacks.add(cb)
-    }
+    fun onResourcesChange(cb: (Track) -> Unit) = onResourcesChangeCallbacks.add(cb)
 
     companion object {
         fun fromSample(): Track = Track(
@@ -41,7 +40,7 @@ data class TrackFromArtistTopTracksItem(
     val url: String,
     val artist: TrackFromArtistTopTracksArtistItem,
 
-) {
+    ) {
     data class TrackFromArtistTopTracksArtistItem(
         val name: String,
         val url: String
