@@ -12,6 +12,7 @@ import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsHeight
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -31,7 +32,9 @@ fun FadeableAppBar(
         navigationIcon = navigationIcon,
         actions = actions
     ) {
-        Box(modifier = Modifier.alpha(alpha)) {
+        Box(modifier = Modifier.graphicsLayer(
+            alpha = alpha
+        )) {
             content()
         }
     }

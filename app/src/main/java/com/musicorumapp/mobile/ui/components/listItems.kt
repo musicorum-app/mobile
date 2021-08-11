@@ -1,5 +1,6 @@
 package com.musicorumapp.mobile.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,9 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -18,8 +22,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.imageloading.ImageLoadState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.fade
+import com.google.accompanist.placeholder.material.placeholder
+import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.api.models.*
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 import com.musicorumapp.mobile.ui.theme.SecondaryTextColor
@@ -31,6 +40,7 @@ fun ListItem(
     title: String,
     modifier: Modifier = Modifier,
     subTitle: String? = null,
+    placeholder: Boolean = false,
     subtitleIcon: @Composable () -> Unit = {},
     leftImage: @Composable () -> Unit = {},
 ) {
@@ -51,7 +61,12 @@ fun ListItem(
                 title,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                modifier = Modifier.height(20.dp)
+                modifier = Modifier
+                    .placeholder(
+                        visible = placeholder,
+                        highlight = PlaceholderHighlight.fade()
+                    )
+                    .height(20.dp)
             )
             if (subTitle != null) {
                 Row(
@@ -65,7 +80,12 @@ fun ListItem(
                         maxLines = 1,
                         fontSize = 13.sp,
                         color = SecondaryTextColor,
-                        modifier = Modifier.padding(top = 2.dp)
+                        modifier = Modifier
+                            .placeholder(
+                                visible = placeholder,
+                                highlight = PlaceholderHighlight.fade()
+                            )
+                            .padding(top = 2.dp)
                     )
                 }
             }
@@ -124,12 +144,12 @@ fun AlbumListItem(
 ) {
 
     val painter = rememberCoilPainter(
-        album.getImageURL(),
+        album.imageURL,
         previewPlaceholder = LastfmEntity.ALBUM.asDrawableSource(),
         fadeIn = true,
     )
 
-    album.onResourcesChange { painter.request = it.getImageURL() }
+    album.onResourcesChange { painter.request = it.imageURL }
 
     ListItem(
         modifier = modifier,
@@ -154,24 +174,32 @@ fun AlbumListItem(
 
 @Composable
 fun TrackListItem(
-    track: Track,
+    track: Track?,
     modifier: Modifier = Modifier
 ) {
+    val imageURL = remember {
+        mutableStateOf(track?.imageURL)
+    }
 
-    val painter = rememberCoilPainter(
-        track.getImageURL(),
-        previewPlaceholder = LastfmEntity.ALBUM.asDrawableSource(),
-        fadeIn = true,
+    val painter = rememberImagePainter(
+        imageURL.value,
+        builder = {
+            crossfade(true)
+            placeholder(LastfmEntity.TRACK.asDrawableSource())
+        }
     )
 
-    track.onResourcesChange {
-        println("BEST: " + it.getImageURL())
-        painter.request = it.getImageURL() }
+    LaunchedEffect(track) {
+        track?.onResourcesChange {
+            imageURL.value = track?.imageURL
+        }
+    }
 
     ListItem(
         modifier = modifier,
-        title = track.name,
-        subTitle = track.artist,
+        title = track?.name.orEmpty(),
+        subTitle = track?.artist,
+        placeholder = track?.name == null,
         leftImage = {
             Box(
                 modifier = Modifier
@@ -183,17 +211,13 @@ fun TrackListItem(
                         .fillMaxSize()
                 )
 
-                Image(painter = painter, contentDescription = track.name)
+                Image(
+                    painter = painterResource(id = LastfmEntity.TRACK.asDrawableSource()),
+                    contentDescription = track?.name
+                )
 
-                when (painter.loadState) {
-                    is ImageLoadState.Success -> {}
-                    else -> {
-                        Image(
-                            painter = painterResource(id = LastfmEntity.TRACK.asDrawableSource()),
-                            contentDescription = track.name
-                        )
-                    }
-                }
+                Image(painter = painter, contentDescription = track?.name)
+
             }
         }
     )
@@ -231,7 +255,7 @@ fun UserListItem(
 fun ListItemPreview() {
     MusicorumTheme {
         Scaffold(
-            modifier = Modifier.height(200.dp)
+            modifier = Modifier.height(400.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
@@ -240,6 +264,8 @@ fun ListItemPreview() {
                 ArtistListItem(artist = Artist.fromSample(), modifier = Modifier.clickable {  })
                 Divider()
                 TrackListItem(track = Track.fromSample(), modifier = Modifier.clickable {  })
+                Divider()
+                TrackListItem(track = null, modifier = Modifier.clickable {  })
             }
         }
     }

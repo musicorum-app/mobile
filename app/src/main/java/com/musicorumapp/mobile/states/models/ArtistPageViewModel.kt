@@ -17,10 +17,14 @@ class ArtistPageViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _artist = MutableLiveData<Artist?>(null)
+    private val _fetched = MutableLiveData(false)
     private val _topTracks = MutableLiveData<PagingController<Track>?>(null)
+    private val _topAlbums = MutableLiveData<PagingController<Album>?>(null)
 
+    val fetched: LiveData<Boolean> = _fetched
     val artist: LiveData<Artist?> = _artist
     val topTracks: LiveData<PagingController<Track>?> = _topTracks
+    val topAlbums: LiveData<PagingController<Album>?> = _topAlbums
 
     fun start(snackbarHostState: SnackbarHostState?, __artist: Artist) {
         viewModelScope.launch {
@@ -31,13 +35,22 @@ class ArtistPageViewModel @Inject constructor(
                 artistRepository.getArtistInfo(__artist, user.userName)
                 _artist.value = __artist
 
+                MusicorumResource.fetchArtistsResources(__artist.similar)
+
                 if (__artist.imageURL == null) {
                     MusicorumResource.fetchArtistsResources(listOf(__artist))
                 }
 
                 _topTracks.value = artistRepository.getArtistTopTracks(__artist.name)
+                _topAlbums.value = artistRepository.getArtistTopAlbums(__artist.name)
+
+                println(" ----- TOP ARTISTS PAGING CONTROLER")
+                println(_topAlbums.value)
+                println(_topAlbums.value?.getPageContent(1))
 
                 MusicorumResource.fetchTracksResources(_topTracks.value!!.getAllItems())
+
+                _fetched.value = true
 
             } catch (e: Exception) {
                 println(e)
