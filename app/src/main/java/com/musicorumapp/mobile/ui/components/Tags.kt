@@ -1,6 +1,7 @@
 package com.musicorumapp.mobile.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
+import com.musicorumapp.mobile.ui.theme.KindaBlack
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 import com.musicorumapp.mobile.ui.theme.SkeletonPrimaryColor
@@ -26,7 +28,8 @@ import java.util.*
 
 @Composable
 fun Tags(
-    tags: List<String>? = null
+    tags: List<String>? = null,
+    color: Color? = null
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -37,7 +40,7 @@ fun Tags(
             Spacer(modifier = Modifier.width(PaddingSpacing.HorizontalMainPadding))
 
             if (tags != null) {
-                tags.forEach { TagItem(it, isLast = it === tags.last()) }
+                tags.forEach { TagItem(it, isLast = it === tags.last(), _color = color) }
             } else {
                 for (x in 1..10) TagItem(isLast = x === 10)
             }
@@ -51,20 +54,24 @@ fun Tags(
 @Composable
 fun TagItem(
     value: String? = null,
-    isLast: Boolean = false
+    isLast: Boolean = false,
+    _color: Color? = null
 ) {
     val state: Int = remember { Random().nextInt(60) + 40 }
+    val color: Color = _color ?: SkeletonPrimaryColor
 
     val placeholderModifier = Modifier
         .width(state.dp)
 
     val tagModifier = Modifier
-        .background(SkeletonPrimaryColor)
+        .background(color.copy(alpha = 0.25f))
+
 
     Box(
         modifier = Modifier
             .padding(end = if (isLast) 0.dp else 6.dp)
             .clip(RoundedCornerShape(30.dp))
+            .border(1.dp, color, shape = RoundedCornerShape(30.dp))
             .placeholder(
                 visible = value == null,
                 highlight = PlaceholderHighlight.fade(),
@@ -125,12 +132,12 @@ fun TagsCheckPreview() {
                     .horizontalScroll(rememberScrollState())
             ) {
                 TagItem("Example")
-                TagItem("Example")
+                TagItem("Example", _color = Color.Red)
                 TagItem()
                 TagItem()
-                TagItem("Example")
+                TagItem("Example", _color = Color.Blue)
                 TagItem()
-                TagItem("Example")
+                TagItem("Example", _color = null)
             }
         }
     }
