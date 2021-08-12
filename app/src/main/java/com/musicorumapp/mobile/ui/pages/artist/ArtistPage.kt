@@ -11,17 +11,22 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.ImageLoader
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
@@ -40,9 +45,12 @@ import com.musicorumapp.mobile.states.models.ArtistPageViewModel
 import com.musicorumapp.mobile.ui.components.*
 import com.musicorumapp.mobile.ui.pages.artist.SimilarArtists
 import com.musicorumapp.mobile.ui.theme.AppMaterialIcons
+import com.musicorumapp.mobile.ui.theme.KindaBlack
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 import com.musicorumapp.mobile.utils.Utils
+import com.musicorumapp.mobile.utils.calculateColorContrast
+import com.musicorumapp.mobile.utils.rememberPredominantColor
 
 @Composable
 fun ArtistPage(
@@ -73,12 +81,24 @@ fun ArtistContent(
     val artist by viewModel.artist.observeAsState(_artist)
     val topTracks by viewModel.topTracks.observeAsState()
     val topAlbums by viewModel.topAlbums.observeAsState()
+    val predominantColor by viewModel.predominantColor.observeAsState()
+    val imageBitmap by viewModel.imageBitmap.observeAsState()
 
     val snackbarContext = LocalSnackbarContext.current
     val scrollState = rememberScrollState()
 
+    val predominantColorState = rememberPredominantColor(
+        colorFinder = {
+            it.lightVibrantSwatch ?: it.vibrantSwatch ?: it.swatches.maxByOrNull { s ->
+                calculateColorContrast(
+                    Color(s.rgb), KindaBlack
+                )
+            }
+        }
+    )
+
     val painter = rememberImagePainter(
-        artist?.imageURL,
+        imageBitmap,
         builder = {
             crossfade(true)
             placeholder(LastfmEntity.ARTIST.asDrawableSource())
@@ -86,15 +106,21 @@ fun ArtistContent(
     )
 
     val backgroundPainter = rememberImagePainter(
-        topAlbums?.getPageContent(1)?.first()?.imageURL,
+        data = topAlbums?.getPageContent(1)?.first()?.images?.getCustomSizeImage(600),
         builder = {
             crossfade(true)
-        }
+        },
     )
 
+    val context = LocalContext.current
+
     LaunchedEffect(fetched) {
-        println("FETCHED VALUE --- $fetched")
-        if (!fetched) viewModel.start(snackbarContext.snackbarHostState, _artist)
+        if (!fetched) viewModel.start(
+            context,
+            predominantColorState,
+            snackbarContext.snackbarHostState,
+            _artist
+        )
     }
     val navContext = LocalNavigationContext.current
 
@@ -106,8 +132,14 @@ fun ArtistContent(
         scrollState = scrollState,
         mainImagePainter = painter,
         backgroundPainter = backgroundPainter,
+        predominantColor = predominantColor
     )
-    ArtistAppBar(scrollState = scrollState, navContext = navContext, name = artist?.name)
+    ArtistAppBar(
+        scrollState = scrollState,
+        navContext = navContext,
+        name = artist?.name,
+        mainImagePainter = painter
+    )
 }
 
 @Composable
@@ -116,7 +148,8 @@ fun ArtistContentInside(
     topTracks: PagingController<Track>?,
     scrollState: ScrollState,
     mainImagePainter: Painter,
-    backgroundPainter: Painter
+    backgroundPainter: Painter,
+    predominantColor: Color?
 ) {
 
     val top5tracks = topTracks?.getAllItems()?.take(5)
@@ -125,7 +158,8 @@ fun ArtistContentInside(
         modifier = Modifier.verticalScroll(scrollState)
     ) {
         Box {
-            GradientContentHeader(artist?.name.orEmpty(),
+            GradientContentHeader(
+                artist?.name.orEmpty(),
                 mainImagePainter = mainImagePainter,
                 backgroundPainter = backgroundPainter
             )
@@ -139,7 +173,7 @@ fun ArtistContentInside(
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Tags(artist?.tags)
+            Tags(artist?.tags, color = predominantColor)
             Spacer(modifier = Modifier.height(25.dp))
             Divider()
             Spacer(modifier = Modifier.height(25.dp))
@@ -176,10 +210,11 @@ fun ArtistContentInside(
 fun ArtistAppBar(
     scrollState: ScrollState,
     navContext: LocalNavigationContextContent,
+    mainImagePainter: Painter,
     name: String?
 ) {
     FadeableAppBar(
-        alpha = Utils.interpolateValues(scrollState.value.toFloat(), 1100f, 1300f, 0f, 1f)
+        alpha = Utils.interpolateValues(scrollState.value.toFloat(), 1100f, 1500f, 0f, 1f)
             .coerceIn(0f, 1f),
         navigationIcon = {
             IconButton(onClick = {
@@ -189,6 +224,37 @@ fun ArtistAppBar(
             }
         }
     ) {
-        Text(name.orEmpty(), overflow = TextOverflow.Ellipsis, maxLines = 1)
+        val size = 32.dp
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+
+            Box(
+                modifier = Modifier
+                    .padding(end = 6.dp)
+                    .clip(RoundedCornerShape(size))
+                    .size(size)
+            ) {
+                Image(
+                    painter = painterResource(id = LastfmEntity.ARTIST.asDrawableSource()),
+                    contentDescription = null,
+                    modifier = Modifier.size(size)
+                )
+                Image(
+                    painter = mainImagePainter,
+                    contentDescription = null,
+                    modifier = Modifier.size(size)
+                )
+            }
+
+            Text(
+                name.orEmpty(),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                modifier = Modifier.offset(y = 2.dp)
+            )
+        }
     }
 }

@@ -21,6 +21,12 @@ data class LastfmImages(
             return if (last == "") null else last
         }
 
+    fun getCustomSizeImage (size: Int): String? {
+        if (images.isEmpty()) return null
+        val last = images.last()
+        return if (last == "") null else last.replace("/300x300/", "/${size}x$size/")
+    }
+
     companion object {
         fun fromSerializable(images: List<ImageResourceSerializable>, type: LastfmEntity): LastfmImages {
             return LastfmImages(

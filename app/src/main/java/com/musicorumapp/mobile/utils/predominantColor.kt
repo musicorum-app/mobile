@@ -1,6 +1,7 @@
 package com.musicorumapp.mobile.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
@@ -61,6 +62,19 @@ class PredominantColorState(
             }
         }
     }
+
+    suspend fun resolveColorsFromBitmap(bitmap: Bitmap) {
+        withContext(Dispatchers.Default) {
+            val palette = fetchImageColorsFromBitmap(bitmap)
+
+            if (palette != null) {
+                val swatch = colorFinder(palette)
+
+                color = if (swatch != null) colorResolver(Color(swatch.rgb)) else defaultColor
+                onColor = getTextColorFromContrastOf(color)
+            }
+        }
+    }
 }
 
 private suspend fun fetchImageColors(
@@ -80,15 +94,15 @@ private suspend fun fetchImageColors(
         else -> null
     }
 
-    return bitmap?.let {
-        val palette = Palette.Builder(it)
-            .resizeBitmapArea(0)
-//            .clearFilters()
-            .maximumColorCount(8)
-            .generate()
+    return bitmap?.let { fetchImageColorsFromBitmap(it) }
+}
 
-        palette
-    }
+private fun fetchImageColorsFromBitmap(bitmap: Bitmap): Palette? {
+    return Palette.Builder(bitmap)
+        .resizeBitmapArea(0)
+//            .clearFilters()
+        .maximumColorCount(8)
+        .generate()
 }
 
 private fun composeColorToAndroidColorInt(color: Color): Int {
