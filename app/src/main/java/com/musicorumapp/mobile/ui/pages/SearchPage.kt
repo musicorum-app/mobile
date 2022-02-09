@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -40,16 +41,8 @@ import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 
 @Composable
 fun DiscoverPage(
-    authenticationViewModel: AuthenticationViewModel?
+    discoverPageViewModel: DiscoverPageViewModel = viewModel()
 ) {
-
-    val discoverPageViewModel: DiscoverPageViewModel =
-        viewModel(factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return DiscoverPageViewModel(authenticationViewModel!!) as T
-            }
-        })
-
     val searchValue = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     val localFocusManager = LocalFocusManager.current
