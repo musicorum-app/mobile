@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.api.models.Artist
@@ -47,7 +48,7 @@ import com.musicorumapp.mobile.utils.rememberPredominantColor
 @Composable
 fun HomePage(
     authenticationViewModel: AuthenticationViewModel? = null,
-    homePageViewModel: HomePageViewModel
+    homePageViewModel: HomePageViewModel = viewModel()
 ) {
 
     val prefs = LocalContext.current.getSharedPreferences(

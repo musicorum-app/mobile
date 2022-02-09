@@ -7,9 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.res.painterResource
-import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.imageloading.ImageLoadState
-import com.google.accompanist.imageloading.LoadPainter
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter
+import coil.compose.rememberImagePainter
 import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.api.models.LastfmImages
 import com.musicorumapp.mobile.ui.theme.SkeletonPrimaryColor
@@ -18,7 +18,7 @@ import com.musicorumapp.mobile.ui.theme.SkeletonPrimaryColor
 fun NetworkImageComponent(
     contentDescription: String,
     modifier: Modifier = Modifier,
-    painter: LoadPainter<Any>
+    painter: ImagePainter
 ) {
     Box(
         modifier = Modifier
@@ -39,9 +39,8 @@ fun NetworkImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val painter = rememberCoilPainter(
+    val painter = rememberImagePainter(
         url,
-        fadeIn = true,
     )
 
     NetworkImageComponent(
@@ -51,6 +50,7 @@ fun NetworkImage(
     )
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun LastfmImageComponent(
     images: LastfmImages?,
@@ -59,11 +59,8 @@ fun LastfmImageComponent(
 ) {
     val painterID = images?.type?.asDrawableSource() ?: R.drawable.ic_placeholder_user
 
-    val painter = rememberCoilPainter(
-        images?.bestImage,
-        fadeIn = true,
-        previewPlaceholder = painterID
-
+    val painter = rememberImagePainter(
+        images?.bestImage
         )
 
     Box(
@@ -74,8 +71,8 @@ fun LastfmImageComponent(
             contentDescription = contentDescription,
         )
 
-        when (painter.loadState) {
-            is ImageLoadState.Success -> {
+        when (painter.state) {
+            is ImagePainter.State.Success -> {
 
             }
             else -> {

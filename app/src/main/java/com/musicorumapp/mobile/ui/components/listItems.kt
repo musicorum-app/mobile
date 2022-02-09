@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.imageloading.ImageLoadState
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
@@ -93,19 +93,18 @@ fun ListItem(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ArtistListItem(
     artist: Artist,
     modifier: Modifier = Modifier
 ) {
 
-    val painter = rememberCoilPainter(
+    val painter = rememberImagePainter(
         artist.imageURL,
-        previewPlaceholder = LastfmEntity.ARTIST.asDrawableSource(),
-        fadeIn = true,
     )
 
-    artist.onResourcesChange { painter.request = it.imageURL }
+//    artist.onResourcesChange { painter.request = it.imageURL }
 
     ListItem(
         modifier = modifier,
@@ -123,8 +122,8 @@ fun ArtistListItem(
 
                 Image(painter = painter, contentDescription = artist.name)
 
-                when (painter.loadState) {
-                    is ImageLoadState.Success -> {}
+                when (painter.state) {
+                    is ImagePainter.State.Success -> {}
                     else -> {
                         Image(
                             painter = painterResource(id = LastfmEntity.ARTIST.asDrawableSource()),
@@ -143,13 +142,13 @@ fun AlbumListItem(
     modifier: Modifier = Modifier
 ) {
 
-    val painter = rememberCoilPainter(
+    val painter = rememberImagePainter(
         album.imageURL,
-        previewPlaceholder = LastfmEntity.ALBUM.asDrawableSource(),
-        fadeIn = true,
+//        previewPlaceholder = LastfmEntity.ALBUM.asDrawableSource(),
+//        fadeIn = true,
     )
 
-    album.onResourcesChange { painter.request = it.imageURL }
+//    album.onResourcesChange { painter.request = it.imageURL }
 
     ListItem(
         modifier = modifier,

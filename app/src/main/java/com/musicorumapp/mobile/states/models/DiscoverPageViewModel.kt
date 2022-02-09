@@ -8,13 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.api.LastfmApi
 import com.musicorumapp.mobile.api.models.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
-class DiscoverPageViewModel(
-    private val authenticationViewModel: AuthenticationViewModel
-) : ViewModel() {
+class DiscoverPageViewModel() : ViewModel() {
 
     private val _searchState = MutableLiveData(SearchState.NONE)
 

@@ -18,8 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.ImagePainter
-import com.google.accompanist.imageloading.LoadPainter
 import com.google.accompanist.insets.statusBarsPadding
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 

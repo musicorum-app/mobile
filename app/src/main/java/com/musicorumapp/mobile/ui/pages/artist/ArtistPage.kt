@@ -1,10 +1,7 @@
-package com.musicorumapp.mobile.ui.pages
+package com.musicorumapp.mobile.ui.pages.artist
 
 import android.util.Log
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.ScrollScope
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -20,24 +17,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import coil.ImageLoader
-import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
-import coil.request.ImageRequest
-import com.google.accompanist.coil.rememberCoilPainter
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
-import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.api.models.*
-import com.musicorumapp.mobile.states.LocalAuth
 import com.musicorumapp.mobile.states.LocalNavigationContext
 import com.musicorumapp.mobile.states.LocalNavigationContextContent
 import com.musicorumapp.mobile.states.LocalSnackbarContext
