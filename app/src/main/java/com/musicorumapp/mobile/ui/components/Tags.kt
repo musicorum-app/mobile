@@ -2,13 +2,13 @@ package com.musicorumapp.mobile.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
-import com.musicorumapp.mobile.ui.theme.KindaBlack
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
 import com.musicorumapp.mobile.ui.theme.SkeletonPrimaryColor
@@ -89,6 +88,7 @@ fun TagItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, widthDp = 400, heightDp = 50)
 @Composable
 fun TagsContentPreview() {
@@ -109,6 +109,7 @@ fun TagsContentPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, widthDp = 400, heightDp = 50)
 @Composable
 fun TagsLoadingPreview() {
@@ -120,6 +121,7 @@ fun TagsLoadingPreview() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, widthDp = 400, heightDp = 50)
 @Composable
 fun TagsCheckPreview() {

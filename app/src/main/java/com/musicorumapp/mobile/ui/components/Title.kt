@@ -1,7 +1,7 @@
 package com.musicorumapp.mobile.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
@@ -35,7 +35,9 @@ fun Title(
 
     if (topPadding) padding.height(8.dp)
 
-    Box(modifier = Modifier.statusBarsPadding().composed { padding }) {
+    Box(modifier = Modifier
+        .statusBarsPadding()
+        .composed { padding }) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -60,7 +62,7 @@ fun Title(
 
                 Text(
                     text,
-                    style = MaterialTheme.typography.h5,
+                    style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -90,6 +92,7 @@ fun Title(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun TitlePreview() {

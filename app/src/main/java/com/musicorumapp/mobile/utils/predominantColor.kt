@@ -3,7 +3,7 @@ package com.musicorumapp.mobile.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 fun rememberPredominantColor(
     context: Context = LocalContext.current,
     defaultColor: Color = SkeletonPrimaryColor,
-    defaultOnColor: Color = MaterialTheme.colors.onSurface,
+    defaultOnColor: Color = MaterialTheme.colorScheme.primary,
     colorFinder: (palette: Palette) -> Palette.Swatch? = { it.swatches.first() },
     colorResolver: (color: Color) -> Color = { it }
 ): PredominantColorState = remember {

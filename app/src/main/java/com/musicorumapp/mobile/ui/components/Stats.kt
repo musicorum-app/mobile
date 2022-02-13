@@ -1,14 +1,11 @@
 package com.musicorumapp.mobile.ui.components
 
 import android.icu.text.CompactDecimalFormat
-import android.icu.text.NumberFormat
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +57,7 @@ fun Stats(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, widthDp = 400, heightDp = 100)
 @Composable
 fun StatsPreview() {

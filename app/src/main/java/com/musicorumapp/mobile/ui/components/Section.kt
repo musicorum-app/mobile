@@ -4,10 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,13 +49,13 @@ fun Section(
                     title,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.headlineSmall,
                     modifier = if (subTitle != null) Modifier.height(32.dp) else Modifier
                 )
                 if (subTitle != null) {
                     Text(
                         subTitle,
-                        style = MaterialTheme.typography.subtitle1,
+                        style = MaterialTheme.typography.labelMedium,
                         overflow = TextOverflow.Ellipsis,
                         lineHeight = 11.sp,
                         color = SecondaryTextColor
@@ -77,6 +74,7 @@ fun Section(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview(showBackground = true)
 fun SectionComposePreview() {

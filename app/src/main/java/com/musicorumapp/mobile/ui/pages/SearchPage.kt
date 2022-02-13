@@ -10,7 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,14 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.musicorumapp.mobile.Constants
 import com.musicorumapp.mobile.R
 import com.musicorumapp.mobile.states.LocalNavigationContext
-import com.musicorumapp.mobile.states.models.AuthenticationViewModel
 import com.musicorumapp.mobile.states.models.DiscoverPageViewModel
 import com.musicorumapp.mobile.states.models.SearchResults
 import com.musicorumapp.mobile.ui.components.*
@@ -60,30 +56,30 @@ fun DiscoverPage(
         Title(text = stringResource(id = R.string.search), showBackButton = true)
 
         Spacer(modifier = Modifier.height(6.dp))
-        TextField(
-            value = searchValue.value,
-            onValueChange = { searchValue.value = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color(0xFF484848),
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-            ),
-            shape = RoundedCornerShape(6.dp),
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search,
-            ),
-            singleLine = true,
-            keyboardActions = KeyboardActions {
-                Log.i(Constants.LOG_TAG, searchValue.value)
-                discoverPageViewModel.search(searchValue.value)
-                localFocusManager.clearFocus()
-            },
-            readOnly = searchState == DiscoverPageViewModel.SearchState.LOADING
-        )
+//        TextField(
+//            value = searchValue.value,
+//            onValueChange = { searchValue.value = it },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .focusRequester(focusRequester),
+//            colors = TextFieldDefaults.textFieldColors(
+//                backgroundColor = Color(0xFF484848),
+//                unfocusedIndicatorColor = Color.Transparent,
+//                focusedIndicatorColor = Color.Transparent,
+//            ),
+//            shape = RoundedCornerShape(6.dp),
+//            maxLines = 1,
+//            keyboardOptions = KeyboardOptions(
+//                imeAction = ImeAction.Search,
+//            ),
+//            singleLine = true,
+//            keyboardActions = KeyboardActions {
+//                Log.i(Constants.LOG_TAG, searchValue.value)
+//                discoverPageViewModel.search(searchValue.value)
+//                localFocusManager.clearFocus()
+//            },
+//            readOnly = searchState == DiscoverPageViewModel.SearchState.LOADING
+//        )
         Spacer(modifier = Modifier.height(12.dp))
         Crossfade(targetState = searchState) {
             when (it) {
@@ -113,7 +109,6 @@ fun DiscoverPage(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ResultsView(
     results: SearchResults,

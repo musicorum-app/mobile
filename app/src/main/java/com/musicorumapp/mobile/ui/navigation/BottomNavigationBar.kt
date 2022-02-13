@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,15 +22,15 @@ fun BottomNavigationBar(
     navController: NavHostController
 ) {
     if (pagesWithBottomBar.contains(currentRoute(navController = navController).orEmpty())) {
-        Surface {
-            Column(
-                modifier = Modifier
-                    .navigationBarsPadding()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .height(56.dp)
-                ) {
+        NavigationBar() {
+//            Column(
+//                modifier = Modifier
+//                    .navigationBarsPadding()
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .height(56.dp)
+//                ) {
                     mainPages.forEach {
                         val title = stringResource(id = it.titleResource)
                         val currentRoute = currentRoute(navController = navController)
@@ -41,7 +38,7 @@ fun BottomNavigationBar(
                         Log.d(Constants.LOG_TAG, root)
                         val selected = currentRoute == it.name
 
-                        BottomNavigationItem(
+                        NavigationBarItem(
                             selected = selected,
 
                             icon = {
@@ -78,8 +75,8 @@ fun BottomNavigationBar(
                             )
                     }
                 }
-            }
-        }
+//            }
+//        }
     }
 }
 

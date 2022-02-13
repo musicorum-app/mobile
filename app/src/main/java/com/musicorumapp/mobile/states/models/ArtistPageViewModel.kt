@@ -2,7 +2,7 @@ package com.musicorumapp.mobile.states.models
 
 import android.content.Context
 import android.graphics.Bitmap
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.*

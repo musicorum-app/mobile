@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,6 @@ import com.musicorumapp.mobile.ui.components.PulsatingSkeleton
 import com.musicorumapp.mobile.ui.components.Title
 import com.musicorumapp.mobile.ui.theme.KindaBlack
 import com.musicorumapp.mobile.ui.theme.PaddingSpacing
-import com.musicorumapp.mobile.ui.theme.Shapes
 import com.musicorumapp.mobile.utils.calculateColorContrast
 import com.musicorumapp.mobile.utils.darkerColor
 import com.musicorumapp.mobile.utils.gradientBackgroundColorResolver
@@ -97,7 +96,6 @@ fun UserCard(
     val modifier = Modifier
         .fillMaxWidth()
         .height(cardHeight)
-        .clip(Shapes.medium)
 
     val predominantColor = homePageViewModel.predominantColor
 
@@ -168,7 +166,7 @@ fun UserCard(
                             R.string.home_page_scrobbles_text,
                             user?.playCount.toString()
                         ),
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = predominantColorState.onColor,
                         overflow = TextOverflow.Ellipsis
                     )
