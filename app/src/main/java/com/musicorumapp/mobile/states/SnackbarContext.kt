@@ -1,6 +1,6 @@
 package com.musicorumapp.mobile.states
 
-import androidx.compose.material.SnackbarHostState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.compositionLocalOf
 import com.google.android.material.snackbar.Snackbar
 

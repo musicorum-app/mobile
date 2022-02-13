@@ -5,25 +5,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.primarySurface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.statusBarsHeight
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.fade
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.placeholder
 
 @Composable
 fun FadeableAppBar(
     alpha: Float = 1f,
-    navigationIcon: @Composable (() -> Unit)? = null,
+    navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -43,11 +35,11 @@ fun FadeableAppBar(
 @Composable
 fun FadeableAppBarContent(
     alpha: Float,
-    navigationIcon: @Composable (() -> Unit)?,
+    navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val color = MaterialTheme.colors.primarySurface.copy(alpha = alpha)
+    val color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = alpha)
     Column {
         Box(
             modifier = Modifier
@@ -55,12 +47,10 @@ fun FadeableAppBarContent(
                 .statusBarsHeight()
                 .background(color)
         )
-        TopAppBar(
+        SmallTopAppBar(
             title = content,
             navigationIcon = navigationIcon,
-            actions = actions,
-            backgroundColor = color,
-            elevation = 0.dp
+            actions = actions
         )
     }
 }

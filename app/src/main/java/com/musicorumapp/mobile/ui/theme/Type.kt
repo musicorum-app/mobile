@@ -1,12 +1,12 @@
 package com.musicorumapp.mobile.ui.theme
 
-import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.musicorumapp.mobile.R
+import androidx.compose.material3.Typography
 
 
 val PoppinsFontFamily = FontFamily(
@@ -20,21 +20,9 @@ val PoppinsFontFamily = FontFamily(
 )
 
 val Typography = Typography(
-    defaultFontFamily = PoppinsFontFamily,
-    body1 = TextStyle(
+    bodyMedium = TextStyle(
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontSize = 16.sp,
+        fontFamily = PoppinsFontFamily
     )
-    /* Other default text styles to override
-    button = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    )
-    */
 )

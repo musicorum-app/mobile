@@ -1,10 +1,9 @@
 package com.musicorumapp.mobile.ui.pages.artist
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -18,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
 import com.musicorumapp.mobile.R
@@ -28,7 +26,6 @@ import com.musicorumapp.mobile.states.LocalNavigationContextContent
 import com.musicorumapp.mobile.states.LocalSnackbarContext
 import com.musicorumapp.mobile.states.models.ArtistPageViewModel
 import com.musicorumapp.mobile.ui.components.*
-import com.musicorumapp.mobile.ui.pages.artist.SimilarArtists
 import com.musicorumapp.mobile.ui.theme.AppMaterialIcons
 import com.musicorumapp.mobile.ui.theme.KindaBlack
 import com.musicorumapp.mobile.ui.theme.MusicorumTheme

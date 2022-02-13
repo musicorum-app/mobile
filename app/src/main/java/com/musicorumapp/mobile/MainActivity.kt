@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.remember
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -19,8 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -82,19 +82,20 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AuthSwitcher(
     authPrefs: AuthenticationPreferences,
     token: String?,
 ) {
     val authenticationViewModel: AuthenticationViewModel = hiltViewModel()
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val snackbarCoroutineScope = rememberCoroutineScope()
 
 
     fun showSnackBar(content: String) {
         snackbarCoroutineScope.launch {
-            scaffoldState.snackbarHostState.showSnackbar(content)
+            snackbarHostState.showSnackbar(content)
         }
     }
 
@@ -124,16 +125,18 @@ fun AuthSwitcher(
 
     CompositionLocalProvider(
         LocalAuth provides LocalAuthContent(authenticationViewModel.user.value),
-        LocalSnackbarContext provides LocalSnackbarContextContent(scaffoldState.snackbarHostState)
+        LocalSnackbarContext provides LocalSnackbarContextContent(snackbarHostState)
     ) {
         Scaffold(
-            scaffoldState = scaffoldState,
             bottomBar = {
                 if (
                     validationState == AuthenticationValidationState.AUTHENTICATING
                     || validationState == AuthenticationValidationState.LOGGED_IN
                 )
                     BottomNavigationBar(navController = navController)
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
             }
         ) {
 
