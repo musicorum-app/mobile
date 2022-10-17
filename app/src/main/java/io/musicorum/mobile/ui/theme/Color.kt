@@ -7,6 +7,9 @@ val KindaBlack = Color(0xFF2F2F2F)
 val MostlyRed = Color(0xFFB71C1C)
 val LighterRed = Color(0xFFEB5757)
 
+val LightGray = Color(0xFF454545)
+val DarkGray = Color(0xFF2A2A2A)
+
 val SecondaryTextColor = Color(0xFFA0A0A0)
 
 val SkeletonPrimaryColor = Color(0xFF242424)

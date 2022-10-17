@@ -31,21 +31,25 @@ val Typography = Typography(
         titleLarge = TextStyle(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 32.sp
+                fontSize = 22.sp
         ),
         titleMedium = TextStyle(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 24.sp
         ),
-        labelMedium = TextStyle(
-                fontFamily = Poppins,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp
-        ),
-        bodyMedium = TextStyle(
-                fontFamily = Poppins,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-        )
+    labelMedium = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 20.sp
+    )
 )

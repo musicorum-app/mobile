@@ -8,7 +8,7 @@ import io.musicorum.mobile.serialization.TopTracks
 enum class FetchPeriod(period: String) {
     WEEK("7day"),
     MONTH("1month"),
-    THREE_MONTHS("3month"),
+    TRIMESTER("3month"),
     SEMESTER("6month"),
     YEAR("12month");
 

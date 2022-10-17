@@ -7,19 +7,19 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.musicorum.mobile.ktor.endpoints.AuthEndpoint
-import io.musicorum.mobile.screens.Discover
-import io.musicorum.mobile.screens.Home
-import io.musicorum.mobile.screens.Login
-import io.musicorum.mobile.screens.Preload
+import io.musicorum.mobile.screens.*
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
-import io.musicorum.mobile.viewmodels.UserViewModel
-import kotlinx.coroutines.*
+import io.musicorum.mobile.viewmodels.HomeViewModel
+import io.musicorum.mobile.viewmodels.MostListenedViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class, DelicateCoroutinesApi::class)
@@ -33,7 +33,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberAnimatedNavController()
-            val userViewModel: UserViewModel = viewModel()
+            val homeViewModel: HomeViewModel = viewModel()
+            val mostListenedViewModel: MostListenedViewModel = viewModel()
 
             deepLinkData.let {
                 if (it?.getQueryParameter("token") != null) {
@@ -53,15 +54,25 @@ class MainActivity : ComponentActivity() {
                     composable("preload") {
                         Preload(sharedPref = sharedPref, nav = navController)
                     }
-                    composable("login", enterTransition = { slideInVertically() }) {
+                    composable("login", enterTransition = { slideInHorizontally() }) {
                         Login()
 
                     }
-                    composable("home", enterTransition = { slideInVertically() }) {
+                    composable("home", enterTransition = { slideInHorizontally() }) {
                         Home(
                             nav = navController,
-                            userViewModel = userViewModel,
+                            homeViewModel = homeViewModel,
                             sharedPref = sharedPref
+                        )
+                    }
+                    composable("recentScrobbles") {
+                        RecentScrobbles(homeViewModel = homeViewModel, nav = navController)
+                    }
+                    composable("mostListened") {
+                        MostListened(
+                            nav = navController,
+                            homeViewModel = homeViewModel,
+                            mostListenedViewModel = mostListenedViewModel
                         )
                     }
                     composable("discover") {
