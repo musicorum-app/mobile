@@ -4,10 +4,10 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,43 +30,40 @@ import com.google.accompanist.placeholder.placeholder
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.components.HorizontalTrackList
 import io.musicorum.mobile.components.LabelType
-import io.musicorum.mobile.components.TrackCard
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
-import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.ui.theme.KindaBlack
-import io.musicorum.mobile.ui.theme.SkeletonPrimaryColor
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.utils.darkenColor
-import io.musicorum.mobile.viewmodels.UserViewModel
+import io.musicorum.mobile.viewmodels.HomeViewModel
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(nav: NavHostController, userViewModel: UserViewModel, sharedPref: SharedPreferences) {
-    val user = userViewModel.user.observeAsState()
-    val recentTracks = userViewModel.recentTracks.observeAsState()
-    val palette = userViewModel.userPalette.observeAsState()
-    val weekTracks = userViewModel.weekTracks.observeAsState()
+fun Home(nav: NavHostController, homeViewModel: HomeViewModel, sharedPref: SharedPreferences) {
+    val user = homeViewModel.user.observeAsState()
+    val recentTracks = homeViewModel.recentTracks.observeAsState()
+    val palette = homeViewModel.userPalette.observeAsState()
+    val weekTracks = homeViewModel.weekTracks.observeAsState()
     val ctx = LocalContext.current
 
     LaunchedEffect(key1 = user.value) {
         if (user.value == null) {
-            userViewModel.fetchUser(sharedPref)
+            homeViewModel.fetchUser(sharedPref)
         } else {
-            if (userViewModel.userPalette.value == null) {
-                userViewModel.getPalette(user.value!!.user.image[2].url, ctx)
+            if (homeViewModel.userPalette.value == null) {
+                homeViewModel.getPalette(user.value!!.user.image[2].url, ctx)
             }
             if (recentTracks.value == null) {
-                userViewModel.fetchRecentTracks(
+                homeViewModel.fetchRecentTracks(
                     user.value!!.user.name,
                     "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
-                    null
+                    15
                 )
             }
             if (weekTracks.value == null) {
-                userViewModel.fetchTopTracks(user.value!!.user.name, FetchPeriod.WEEK)
+                homeViewModel.fetchTopTracks(user.value!!.user.name, FetchPeriod.WEEK)
             }
         }
     }
@@ -97,23 +94,52 @@ fun Home(nav: NavHostController, userViewModel: UserViewModel, sharedPref: Share
                     )
                 }
                 Spacer(Modifier.height(20.dp))
-                Text(
-                    text = "Recent scrobbled",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Recent scrobbles",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                    IconButton(onClick = {
+                        nav.navigate("recentScrobbles") {
+                            launchSingleTop = true
+                        }
+                    }) {
+                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                    }
+                }
                 HorizontalTrackList(
                     tracks = recentTracks.value?.recentTracks?.tracks,
                     labelType = LabelType.DATE
                 )
 
                 Spacer(Modifier.height(20.dp))
-                Text(
-                    text = "Most listened • last 7 days",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 20.dp)
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Most listened • last 7 days",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                    IconButton(onClick = {
+                        nav.navigate("mostListened") {
+                            launchSingleTop = true
+                        }
+                    }) {
+                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                    }
+                }
+                HorizontalTrackList(
+                    tracks = weekTracks.value?.topTracks?.tracks,
+                    labelType = LabelType.ARTIST_NAME
                 )
-                HorizontalTrackList(tracks = weekTracks.value?.topTracks?.tracks, labelType = LabelType.ARTIST_NAME)
             }
         }
     }
@@ -144,6 +170,7 @@ private fun UserCard(user: UserData, palette: Palette, recentTracks: RecentTrack
                 contentDescription = "user img",
                 modifier = Modifier
                     .shadow(elevation = 20.dp, shape = CircleShape)
+                    .aspectRatio(1f)
                     .clip(CircleShape),
                 alignment = Alignment.CenterStart
             )

@@ -41,7 +41,10 @@ fun TrackCard(track: Track, labelType: LabelType) {
         Image(
             painter = rememberAsyncImagePainter(track.image[3].url),
             null,
-            modifier = Modifier.clip(RoundedCornerShape(6.dp)).fillMaxWidth().height(150.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(6.dp))
+                .aspectRatio(1f)
         )
         Text(
             text = track.name,
@@ -67,13 +70,5 @@ fun TrackCard(track: Track, labelType: LabelType) {
         } else if (labelType == LabelType.ARTIST_NAME) {
             Text(track.artist.displayName, modifier = Modifier.alpha(0.55f), style = label)
         }
-    }
-}
-
-private fun String.limitedTo(chars: Int = 10): String {
-    return if (this.length > chars) {
-        this.substring(0..this.length - 3) + "..."
-    } else {
-        this
     }
 }

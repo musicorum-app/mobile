@@ -18,7 +18,7 @@ import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.launch
 
-class UserViewModel : ViewModel() {
+class HomeViewModel : ViewModel() {
     val user: MutableLiveData<User> by lazy { MutableLiveData<User>() }
     val userPalette: MutableLiveData<Palette> by lazy { MutableLiveData<Palette>() }
     val recentTracks: MutableLiveData<RecentTracks> by lazy { MutableLiveData<RecentTracks>() }
@@ -55,8 +55,10 @@ class UserViewModel : ViewModel() {
             //weekTracks.value = topTracksRes
             val musicorumTrRes = MusicorumTrackEndpoint().fetchTracks(topTracksRes.topTracks.tracks)
             musicorumTrRes.forEachIndexed { i, tr ->
-                val url = tr.resources[0].bestImageUrl
-                topTracksRes.topTracks.tracks[i].image.onEach { img -> img.url = url}
+                val url = tr.resources?.get(0)?.bestImageUrl
+                topTracksRes.topTracks.tracks[i].image.onEach { img ->
+                    img.url = url ?: return@onEach
+                }
             }
             weekTracks.value = topTracksRes
         }
