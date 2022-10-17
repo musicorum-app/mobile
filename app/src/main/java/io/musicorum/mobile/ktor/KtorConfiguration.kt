@@ -74,7 +74,7 @@ class KtorConfiguration {
                     protocol = URLProtocol.HTTPS
                     host = "api-v2.musicorumapp.com"
                     path("/v2/resources")
-                    parameters.append("api_key", "QJEP8D6EAGVjvACq1RJPsgAhfslRkTA2")
+                    parameters.append("api_key", BuildConfig.MUSICORUM_API_KEY)
                 }
             }
         }
