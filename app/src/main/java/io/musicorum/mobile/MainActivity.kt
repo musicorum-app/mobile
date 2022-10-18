@@ -6,7 +6,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -48,35 +53,40 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-
             MusicorumMobileTheme {
-                AnimatedNavHost(navController = navController, startDestination = "preload") {
-                    composable("preload") {
-                        Preload(sharedPref = sharedPref, nav = navController)
-                    }
-                    composable("login", enterTransition = { slideInHorizontally() }) {
-                        Login()
-
-                    }
-                    composable("home", enterTransition = { slideInHorizontally() }) {
-                        Home(
-                            nav = navController,
-                            homeViewModel = homeViewModel,
-                            sharedPref = sharedPref
-                        )
-                    }
-                    composable("recentScrobbles") {
-                        RecentScrobbles(homeViewModel = homeViewModel, nav = navController)
-                    }
-                    composable("mostListened") {
-                        MostListened(
-                            nav = navController,
-                            homeViewModel = homeViewModel,
-                            mostListenedViewModel = mostListenedViewModel
-                        )
-                    }
-                    composable("discover") {
-                        Discover(nav = navController)
+                Surface(Modifier.fillMaxSize()) {
+                    AnimatedNavHost(
+                        navController = navController,
+                        startDestination = "preload",
+                        enterTransition = { slideInHorizontally(tween(800)) { fullWidth -> fullWidth } },
+                        exitTransition = { slideOutHorizontally(tween(800)) { fullWidth -> -fullWidth / 2 } },
+                        popExitTransition = { slideOutHorizontally(tween(800)) { fullWidth -> fullWidth / 2 } },
+                        popEnterTransition = { slideInHorizontally(tween(800)) { fullWidth -> -fullWidth } }
+                    ) {
+                        composable("preload") {
+                            Preload(sharedPref = sharedPref, nav = navController)
+                        }
+                        composable("login") { Login() }
+                        composable("home") {
+                            Home(
+                                nav = navController,
+                                homeViewModel = homeViewModel,
+                                sharedPref = sharedPref
+                            )
+                        }
+                        composable("recentScrobbles") {
+                            RecentScrobbles(homeViewModel = homeViewModel, nav = navController)
+                        }
+                        composable("mostListened") {
+                            MostListened(
+                                nav = navController,
+                                homeViewModel = homeViewModel,
+                                mostListenedViewModel = mostListenedViewModel
+                            )
+                        }
+                        composable("discover") {
+                            Discover(nav = navController)
+                        }
                     }
                 }
             }

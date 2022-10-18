@@ -69,78 +69,76 @@ fun Home(nav: NavHostController, homeViewModel: HomeViewModel, sharedPref: Share
     }
 
     Scaffold(bottomBar = { BottomNavBar(current = "Home", nav = nav) }) {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            Column(Modifier.padding(it)) {
-                Text(
-                    text = "Home",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(start = 20.dp, top = 10.dp)
-                )
-                if (user.value != null && palette.value != null) {
-                    UserCard(user.value!!.user, palette.value!!, recentTracks.value)
+        Column(Modifier.padding(it)) {
+            Text(
+                text = "Home",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(start = 20.dp, top = 10.dp)
+            )
+            if (user.value != null && palette.value != null) {
+                UserCard(user.value!!.user, palette.value!!, recentTracks.value)
 
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .padding(20.dp, 20.dp, 20.dp)
-                            .clip(RoundedCornerShape(15.dp))
-                            .placeholder(
-                                true,
-                                color = KindaBlack,
-                                highlight = PlaceholderHighlight.shimmer()
-                            )
-                    )
-                }
-                Spacer(Modifier.height(20.dp))
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Recent scrobbles",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                    IconButton(onClick = {
-                        nav.navigate("recentScrobbles") {
-                            launchSingleTop = true
-                        }
-                    }) {
-                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
-                    }
-                }
-                HorizontalTrackList(
-                    tracks = recentTracks.value?.recentTracks?.tracks,
-                    labelType = LabelType.DATE
-                )
-
-                Spacer(Modifier.height(20.dp))
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Most listened • last 7 days",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(start = 20.dp)
-                    )
-                    IconButton(onClick = {
-                        nav.navigate("mostListened") {
-                            launchSingleTop = true
-                        }
-                    }) {
-                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
-                    }
-                }
-                HorizontalTrackList(
-                    tracks = weekTracks.value?.topTracks?.tracks,
-                    labelType = LabelType.ARTIST_NAME
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(20.dp, 20.dp, 20.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .placeholder(
+                            true,
+                            color = KindaBlack,
+                            highlight = PlaceholderHighlight.shimmer()
+                        )
                 )
             }
+            Spacer(Modifier.height(20.dp))
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Recent scrobbles",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+                IconButton(onClick = {
+                    nav.navigate("recentScrobbles") {
+                        launchSingleTop = true
+                    }
+                }) {
+                    Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                }
+            }
+            HorizontalTrackList(
+                tracks = recentTracks.value?.recentTracks?.tracks,
+                labelType = LabelType.DATE
+            )
+
+            Spacer(Modifier.height(20.dp))
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Most listened • last 7 days",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+                IconButton(onClick = {
+                    nav.navigate("mostListened") {
+                        launchSingleTop = true
+                    }
+                }) {
+                    Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                }
+            }
+            HorizontalTrackList(
+                tracks = weekTracks.value?.topTracks?.tracks,
+                labelType = LabelType.ARTIST_NAME
+            )
         }
     }
 }

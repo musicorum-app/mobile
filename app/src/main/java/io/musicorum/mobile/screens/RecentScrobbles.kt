@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -49,29 +52,28 @@ fun RecentScrobbles(
                 nav = nav
             )
         },
-        modifier = Modifier.background(LightGray)
+        modifier = Modifier
+            .background(LightGray)
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
-        Surface(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(it)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .padding(start = 15.dp, end = 15.dp, top = 15.dp)
         ) {
-            Column(modifier = Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp)) {
-                if (recentTracks.value == null) {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    val tracks = recentTracks.value!!.tracks
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp), state = state) {
-                        items(tracks) { track ->
-                            TrackRow(track = track)
-                        }
+            if (recentTracks.value == null) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                val tracks = recentTracks.value!!.tracks
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp), state = state) {
+                    items(tracks) { track ->
+                        TrackRow(track = track)
                     }
                 }
             }
