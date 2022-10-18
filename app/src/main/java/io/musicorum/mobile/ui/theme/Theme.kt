@@ -13,8 +13,8 @@ private val ColorPalette = darkColorScheme(
     primary = MostlyRed,
     secondary = MostlyRed,
     tertiary = LighterRed,
-    background = KindaBlack,
-    surface = AlmostBlack,
+    background = AlmostBlack,
+    surface = KindaBlack,
     onPrimary = Color.White,
     onBackground = Color.White,
 )
