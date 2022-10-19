@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MusicorumMobile" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Musicorum.SplashScreenTheme" parent="Theme.Musicorum">
+        <item name="android:statusBarColor">@color/ic_launcher_background</item>
+        <item name="android:navigationBarColor">@color/ic_launcher_background</item>
+        <item name="android:colorBackground">@color/ic_launcher_background</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
+    </style>
+
+    <style name="Theme.Musicorum" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
