@@ -50,7 +50,6 @@ fun MostListened(
             )
         }
     ) {
-
         if (mostListened.value == null) {
             Row(
                 modifier = Modifier
@@ -66,7 +65,9 @@ fun MostListened(
             LazyColumn(
                 state = state,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp)
+                modifier = Modifier
+                    .padding(it)
+                    .padding(15.dp)
             ) {
                 items(mostListened.value!!.topTracks.tracks) { track ->
                     TrackRow(track = track)
