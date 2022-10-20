@@ -15,7 +15,7 @@ import io.musicorum.mobile.components.BottomNavBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Discover(nav: NavHostController) {
+fun Account(nav: NavHostController) {
     Scaffold(bottomBar = { BottomNavBar(nav) }) {
         Row(
             Modifier

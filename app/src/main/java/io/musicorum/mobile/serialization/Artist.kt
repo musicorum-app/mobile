@@ -6,7 +6,7 @@ import kotlinx.serialization.SerialName
 data class Artist(
     @SerialName("#text")
     private val nameText: String? = null,
-    private val name: String? = null,
+    private val _name: String? = null,
 ) {
-    val displayName = nameText ?: name ?: "Unknown"
+    val name = nameText ?: _name ?: "Unknown"
 }

@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.musicorum.mobile.ktor.endpoints.AuthEndpoint
 import io.musicorum.mobile.screens.*
+import io.musicorum.mobile.screens.individual.Track
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
 import io.musicorum.mobile.viewmodels.HomeViewModel
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
@@ -64,7 +67,10 @@ class MainActivity : ComponentActivity() {
                         popEnterTransition = { slideInHorizontally(tween(800)) { fullWidth -> -fullWidth } }
                     ) {
                         composable("preload") {
-                            Preload(sharedPref = sharedPref, nav = navController)
+                            Preload(
+                                sharedPref = sharedPref,
+                                nav = navController
+                            )
                         }
                         composable("login") { Login() }
                         composable("home") {
@@ -79,13 +85,26 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("mostListened") {
                             MostListened(
-                                nav = navController,
                                 homeViewModel = homeViewModel,
-                                mostListenedViewModel = mostListenedViewModel
+                                mostListenedViewModel = mostListenedViewModel,
+                                nav = navController
                             )
                         }
-                        composable("discover") {
-                            Discover(nav = navController)
+                        composable("discover") { Discover(nav = navController) }
+                        composable("scrobbling") { Scrobbling(nav = navController) }
+                        composable("charts") { Charts(nav = navController) }
+                        composable("account") { Account(nav = navController) }
+
+                        composable(
+                            "track/{trackData}",
+                            arguments = listOf(navArgument("trackData") {
+                                type = NavType.StringType
+                            })
+                        ) {
+                            Track(
+                                it.arguments?.getString("trackData"),
+                                homeViewModel = homeViewModel
+                            )
                         }
                     }
                 }

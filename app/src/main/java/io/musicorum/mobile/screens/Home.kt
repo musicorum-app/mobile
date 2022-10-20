@@ -1,6 +1,7 @@
 package io.musicorum.mobile.screens
 
 import android.content.SharedPreferences
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -39,9 +40,9 @@ import io.musicorum.mobile.utils.darkenColor
 import io.musicorum.mobile.viewmodels.HomeViewModel
 import java.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun Home(nav: NavHostController, homeViewModel: HomeViewModel, sharedPref: SharedPreferences) {
+fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHostController) {
     val user = homeViewModel.user.observeAsState()
     val recentTracks = homeViewModel.recentTracks.observeAsState()
     val palette = homeViewModel.userPalette.observeAsState()
@@ -68,7 +69,7 @@ fun Home(nav: NavHostController, homeViewModel: HomeViewModel, sharedPref: Share
         }
     }
 
-    Scaffold(bottomBar = { BottomNavBar(current = "Home", nav = nav) }) {
+    Scaffold(bottomBar = { BottomNavBar(nav) }) {
         Column(Modifier.padding(it)) {
             Text(
                 text = "Home",
@@ -113,7 +114,8 @@ fun Home(nav: NavHostController, homeViewModel: HomeViewModel, sharedPref: Share
             }
             HorizontalTrackList(
                 tracks = recentTracks.value?.recentTracks?.tracks,
-                labelType = LabelType.DATE
+                labelType = LabelType.DATE,
+                nav = nav
             )
 
             Spacer(Modifier.height(20.dp))
@@ -137,7 +139,8 @@ fun Home(nav: NavHostController, homeViewModel: HomeViewModel, sharedPref: Share
             }
             HorizontalTrackList(
                 tracks = weekTracks.value?.topTracks?.tracks,
-                labelType = LabelType.ARTIST_NAME
+                labelType = LabelType.ARTIST_NAME,
+                nav = nav
             )
         }
     }

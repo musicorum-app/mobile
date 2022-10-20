@@ -24,6 +24,6 @@ suspend fun getBitmap(url: String, context: Context): Bitmap {
 fun createPalette(bmp: Bitmap) = Palette.from(bmp).generate()
 
 fun darkenColor(color: Int, factor: Float): Color {
-     val darken = ColorUtils.blendARGB(color, Color.Black.toArgb(), factor)
+    val darken = ColorUtils.blendARGB(color, Color.Black.toArgb(), factor)
     return Color(darken)
 }
