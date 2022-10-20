@@ -25,6 +25,12 @@ val Heading2 = TextStyle(
     fontSize = 28.sp
 )
 
+val Heading4 = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight.Bold,
+    fontSize = 20.sp
+)
+
 val Body1 = TextStyle(
     fontFamily = Poppins,
     fontWeight = FontWeight(500),
@@ -34,6 +40,12 @@ val Body1 = TextStyle(
 val Body2 = TextStyle(
     fontFamily = Poppins,
     fontWeight = FontWeight(500),
+    fontSize = 12.sp
+)
+
+val Subtitle1 = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight(400),
     fontSize = 12.sp
 )
 

@@ -3,7 +3,9 @@ package io.musicorum.mobile.screens.individual
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -23,9 +25,7 @@ import coil.compose.rememberAsyncImagePainter
 import io.musicorum.mobile.components.Statistic
 import io.musicorum.mobile.components.TagList
 import io.musicorum.mobile.serialization.NavigationTrack
-import io.musicorum.mobile.ui.theme.AlmostBlack
-import io.musicorum.mobile.ui.theme.Body1
-import io.musicorum.mobile.ui.theme.Heading2
+import io.musicorum.mobile.ui.theme.*
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.viewmodels.HomeViewModel
@@ -84,12 +84,14 @@ fun Track(
             }
         } else {
             val t = track.value!!
+            val screenScrollState = rememberScrollState()
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(AlmostBlack),
+                    .background(AlmostBlack)
+                    .verticalScroll(screenScrollState),
                 verticalArrangement = Arrangement.Center
             ) {
                 Image(
@@ -131,12 +133,31 @@ fun Track(
                     TagList(tags = t.topTags.tags, coverPalette, !paletteReady)
                 }
                 if (similarTracks.value != null) {
-                    Row {
-                        Text("Similar Tracks")
-                    }
-                    similarTracks.value!!.similarTracks.tracks.forEach {
-                        Row {
-                            Text(it.name)
+                    Divider(Modifier.padding(vertical = 30.dp))
+                    Column(
+                        Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text("Similar Tracks", style = Heading4)
+                        Spacer(Modifier.height(10.dp))
+                        similarTracks.value!!.similarTracks.tracks.forEach {
+                            Row {
+                                Image(
+                                    painter = rememberAsyncImagePainter(it.image?.get(0)?.url),
+                                    "",
+                                    modifier = Modifier.size(50.dp).clip(RoundedCornerShape(6.dp))
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Column {
+                                    Text(it.name, style = Body1)
+                                    Text(
+                                        it.artist.name,
+                                        style = Subtitle1,
+                                        modifier = Modifier.alpha(0.55f)
+                                    )
+                                }
+                            }
                         }
                     }
                 }

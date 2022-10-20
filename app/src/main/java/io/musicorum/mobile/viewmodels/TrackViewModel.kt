@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.SimilarTracksEndpoint
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
+import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.serialization.SimilarTrack
 import io.musicorum.mobile.serialization.Track
 import kotlinx.coroutines.launch
@@ -28,6 +29,13 @@ class TrackViewModel : ViewModel() {
     suspend fun fetchSimilar(baseTrack: Track, limit: Int?, autoCorrect: Boolean?) {
         viewModelScope.launch {
             val res = SimilarTracksEndpoint().fetchSimilar(baseTrack, limit, autoCorrect)
+            val resourceRes = MusicorumTrackEndpoint().fetchTracks(res.similarTracks.tracks)
+            resourceRes.forEachIndexed { index, trackResponse ->
+                val imageUrl = trackResponse.resources?.get(0)?.bestImageUrl
+                res.similarTracks.tracks[index].image?.onEach { it ->
+                    it.url = imageUrl ?: return@onEach
+                }
+            }
             similar.value = res
         }
     }
