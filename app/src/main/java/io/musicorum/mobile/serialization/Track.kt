@@ -1,6 +1,9 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.long
 
 @kotlinx.serialization.Serializable
 data class Track(
@@ -17,11 +20,11 @@ data class Track(
     private val _userPlayCount: String? = null,
     val date: TrackDate? = null,
     @SerialName("playcount")
-    private val _playCount: String? = null,
+    private val _playCount: JsonElement? = null,
     private val _listeners: String? = null
 ) {
     val userPlayCount = _userPlayCount?.toLongOrNull()
-    val playCount = _playCount?.toLongOrNull()
+    val playCount: Long? = (_playCount as? JsonPrimitive)?.long
     val listeners = _listeners?.toLongOrNull()
 }
 

@@ -13,6 +13,7 @@ class SimilarTracksEndpoint {
             parameter("method", "track.getSimilar")
             parameter("artist", baseTrack.artist.name)
             parameter("track", baseTrack.name)
+            parameter("limit", limit)
             parameter("autocorrect", autoCorrectValue)
         }.body()
         return res
