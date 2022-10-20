@@ -51,6 +51,7 @@ fun Track(
         val ctx = LocalContext.current
         var coverPalette: Palette? by remember { mutableStateOf(null) }
         var paletteReady by remember { mutableStateOf(false) }
+        val similarTracks = trackViewModel.similar.observeAsState()
         LaunchedEffect(key1 = track.value) {
             if (track.value == null) {
                 trackViewModel.fetchTrack(
@@ -60,6 +61,8 @@ fun Track(
                     null
                 )
             } else {
+                trackViewModel.fetchSimilar(track.value!!, 5, null)
+
                 launch {
                     if (!track.value!!.album?.images.isNullOrEmpty()) {
                         val bmp = getBitmap(track.value!!.album!!.images!![0].url, ctx)
@@ -126,6 +129,16 @@ fun Track(
                 Spacer(modifier = Modifier.height(20.dp))
                 if (t.topTags != null) {
                     TagList(tags = t.topTags.tags, coverPalette, !paletteReady)
+                }
+                if (similarTracks.value != null) {
+                    Row {
+                        Text("Similar Tracks")
+                    }
+                    similarTracks.value!!.similarTracks.tracks.forEach {
+                        Row {
+                            Text(it.name)
+                        }
+                    }
                 }
             }
         }

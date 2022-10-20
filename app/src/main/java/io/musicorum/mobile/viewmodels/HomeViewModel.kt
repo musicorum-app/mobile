@@ -55,7 +55,7 @@ class HomeViewModel : ViewModel() {
             //weekTracks.value = topTracksRes
             val musicorumTrRes = MusicorumTrackEndpoint().fetchTracks(topTracksRes.topTracks.tracks)
             musicorumTrRes.forEachIndexed { i, tr ->
-                val url = tr.resources?.get(0)?.bestImageUrl
+                val url = tr.resources?.getOrNull(0)?.bestImageUrl
                 topTracksRes.topTracks.tracks[i].image?.onEach { img ->
                     img.url = url ?: return@onEach
                 }
