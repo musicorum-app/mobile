@@ -15,7 +15,7 @@ import io.musicorum.mobile.components.BottomNavBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Discover(nav: NavHostController) {
+fun Scrobbling(nav: NavHostController) {
     Scaffold(bottomBar = { BottomNavBar(nav) }) {
         Row(
             Modifier
@@ -23,7 +23,7 @@ fun Discover(nav: NavHostController) {
                 .fillMaxSize(), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                "This section is coming soon! Stay tuned for updates.",
+                "This section is coming soon! Stay tuned for updates",
                 textAlign = TextAlign.Center
             )
         }

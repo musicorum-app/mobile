@@ -17,7 +17,7 @@ class MusicorumTrackEndpoint {
 
     suspend fun fetchTracks(tracks: List<Track>): List<TrackResponse> {
         val trackList: MutableList<BodyTrack> = mutableListOf()
-        tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist.displayName)) }
+        tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist.name)) }
         val req: HttpResponse = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/tracks")
             contentType(ContentType.Application.Json)

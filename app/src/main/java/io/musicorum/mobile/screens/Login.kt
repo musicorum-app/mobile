@@ -2,6 +2,7 @@ package io.musicorum.mobile.screens
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.musicorum.mobile.BuildConfig
+import io.musicorum.mobile.ui.theme.AlmostBlack
 
 @Composable
 fun Login() {
@@ -28,7 +30,8 @@ fun Login() {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.background(AlmostBlack)
     ) {
         Text(
             text = "Welcome to the Musicorum app",

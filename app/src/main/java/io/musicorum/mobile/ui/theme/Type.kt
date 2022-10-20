@@ -10,34 +10,52 @@ import io.musicorum.mobile.R
 
 
 val Poppins = FontFamily(
-        Font(R.font.poppins_black, FontWeight.Black),
-        Font(R.font.poppins_bold, FontWeight.Bold),
-        Font(R.font.poppins_medium, FontWeight.Medium),
-        Font(R.font.poppins_light, FontWeight.Light),
-        Font(R.font.poppins_regular),
-        Font(R.font.poppins_semibold, FontWeight.SemiBold),
-        Font(R.font.poppins_thin, FontWeight.Thin)
+    Font(R.font.poppins_black, FontWeight.Black),
+    Font(R.font.poppins_bold, FontWeight.Bold),
+    Font(R.font.poppins_medium, FontWeight.Medium),
+    Font(R.font.poppins_light, FontWeight.Light),
+    Font(R.font.poppins_regular),
+    Font(R.font.poppins_semibold, FontWeight.SemiBold),
+    Font(R.font.poppins_thin, FontWeight.Thin)
+)
+
+val Heading2 = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight(600),
+    fontSize = 28.sp
+)
+
+val Body1 = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight(500),
+    fontSize = 18.sp
+)
+
+val Body2 = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight(500),
+    fontSize = 12.sp
 )
 
 
 val Typography = Typography(
-        bodyLarge = TextStyle(
-                fontFamily = Poppins,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp
-        ),
-        titleLarge = TextStyle(
-                fontFamily = Poppins,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 22.sp
-        ),
-        titleMedium = TextStyle(
-                fontFamily = Poppins,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp
-        ),
+    bodyLarge = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp
+    ),
     labelMedium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,

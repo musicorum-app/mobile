@@ -28,9 +28,9 @@ import io.musicorum.mobile.viewmodels.MostListenedViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MostListened(
-    nav: NavHostController,
     homeViewModel: HomeViewModel,
-    mostListenedViewModel: MostListenedViewModel
+    mostListenedViewModel: MostListenedViewModel,
+    nav: NavHostController
 ) {
     val mostListened = mostListenedViewModel.mosListenedTracks.observeAsState()
     LaunchedEffect(key1 = mostListenedViewModel) {
@@ -45,8 +45,7 @@ fun MostListened(
         topBar = {
             MusicorumTopBar(
                 text = "Most Listened Tracks",
-                scrollBehavior = scrollBehavior,
-                nav = nav
+                scrollBehavior = scrollBehavior
             )
         }
     ) {
@@ -70,7 +69,7 @@ fun MostListened(
                     .padding(15.dp)
             ) {
                 items(mostListened.value!!.topTracks.tracks) { track ->
-                    TrackRow(track = track)
+                    TrackRow(track = track, nav = nav)
                 }
             }
         }
