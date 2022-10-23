@@ -13,9 +13,10 @@ data class Track(
     @SerialName("@attr")
     val attributes: TrackAttributes? = null,
     val url: String,
+    val wiki: Wiki? = null,
     @SerialName("toptags")
     val topTags: Tag? = null,
-    val album: Album? = null,
+    var album: Album? = null,
     @SerialName("userplaycount")
     private val _userPlayCount: String? = null,
     val date: TrackDate? = null,
@@ -24,7 +25,8 @@ data class Track(
     private val _listeners: String? = null
 ) {
     val userPlayCount = _userPlayCount?.toLongOrNull()
-    val playCount: Long? = (_playCount as? JsonPrimitive)?.long
+    val playCount: Long? =
+        (_playCount as? JsonPrimitive)?.long ?: (_playCount as? JsonPrimitive)?.content?.toLong()
     val listeners = _listeners?.toLongOrNull()
 }
 
