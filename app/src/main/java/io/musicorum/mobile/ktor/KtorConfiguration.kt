@@ -66,7 +66,7 @@ class KtorConfiguration {
                         Log.d("MUSICORUM", message)
                     }
                 }
-                level = LogLevel.INFO
+                level = LogLevel.ALL
             }
 
             defaultRequest {
