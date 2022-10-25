@@ -25,7 +25,9 @@ fun GradientHeader(backgroundUrl: String?, coverUrl: String?) {
             model = backgroundUrl,
             contentDescription = "",
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(headerHeight)
         )
         Box(
             modifier = Modifier
