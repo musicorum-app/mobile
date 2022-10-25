@@ -26,8 +26,21 @@ class TrackViewModel : ViewModel() {
             if (res.track.album == null) {
                 val musRes = MusicorumTrackEndpoint().fetchTracks(listOf(res.track))
                 val image =
-                    musRes[0].resources?.getOrNull(0)?.bestImageUrl?.let { Image("unknown", it) }!!
-                res.track.album = Album(res.track.name, listOf(image))
+                    musRes[0].resources?.getOrNull(0)?.bestImageUrl?.let { Image("unknown", it) }
+                if (image != null) {
+                    res.track.album = Album(null, res.track.name, listOf(image))
+                }
+            }
+            if (res.track.artist.images.isNullOrEmpty()) {
+                val musArtistRes =
+                    MusicorumArtistEndpoint().fetchArtist(listOf(res.track.artist))
+                val artistImage = musArtistRes[0].resources?.getOrNull(0)?.bestImageUrl?.let {
+                    Image("unknown", it)
+                }
+                if (artistImage != null) {
+                    res.track.artist =
+                        Artist(_name = res.track.artist.name, images = listOf(artistImage))
+                }
             }
             track.value = res.track
         }

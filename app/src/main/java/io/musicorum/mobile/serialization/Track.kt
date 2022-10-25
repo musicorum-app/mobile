@@ -7,7 +7,7 @@ import kotlinx.serialization.json.long
 
 @kotlinx.serialization.Serializable
 data class Track(
-    val artist: Artist,
+    var artist: Artist,
     val image: List<Image>? = null,
     val name: String,
     @SerialName("@attr")

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import io.musicorum.mobile.components.GradientHeader
 import io.musicorum.mobile.components.ItemInformation
@@ -28,6 +30,7 @@ import io.musicorum.mobile.components.Statistic
 import io.musicorum.mobile.components.TagList
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.ui.theme.*
+import io.musicorum.mobile.utils.Placeholders
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.viewmodels.HomeViewModel
@@ -100,7 +103,6 @@ fun Track(
         } else {
             val t = track.value!!
             val screenScrollState = rememberScrollState()
-            val cover = rememberAsyncImagePainter(t.album?.bestImageUrl)
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,8 +113,8 @@ fun Track(
                 verticalArrangement = Arrangement.Center
             ) {
                 GradientHeader(
-                    rememberAsyncImagePainter(model = artistCover.value),
-                    cover
+                    artistCover.value,
+                    t.album?.bestImageUrl
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
@@ -145,6 +147,70 @@ fun Track(
                 if (t.topTags != null) {
                     TagList(tags = t.topTags.tags, coverPalette, !paletteReady)
                 }
+                if (track.value!!.wiki != null) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(modifier = Modifier.padding(horizontal = 20.dp)) {
+                        ItemInformation(palette = coverPalette, info = track.value!!.wiki!!.summary)
+                    }
+                }
+                Divider(Modifier.padding(vertical = 20.dp))
+                Row(
+                    Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                ) {
+                    Column {
+                        Text(text = "Appears on", style = BodySmall)
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth(0.5f)
+                        ) {
+                            AsyncImage(
+                                track.value!!.album?.bestImageUrl,
+                                contentDescription = null,
+                                placeholder = Placeholders.TRACK.asPainter(),
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(RoundedCornerShape(6.dp))
+                            )
+                            Text(
+                                text = track.value!!.album?.name ?: "Unknown",
+                                style = BodyLarge,
+                                modifier = Modifier.padding(start = 10.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(15.dp))
+                    Column {
+                        Text(text = "From", style = BodySmall)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth()
+                        ) {
+                            Image(
+                                rememberAsyncImagePainter(track.value!!.artist.bestImageUrl),
+                                null,
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                            )
+                            Text(
+                                text = track.value!!.artist.name,
+                                style = BodyLarge,
+                                modifier = Modifier.padding(start = 10.dp),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
                 if (similarTracks.value != null) {
                     Divider(Modifier.padding(vertical = 20.dp))
                     Column(
@@ -175,12 +241,6 @@ fun Track(
                                 }
                             }
                         }
-                    }
-                }
-                if (track.value!!.wiki != null) {
-                    Divider(Modifier.padding(vertical = 12.dp))
-                    Row(modifier = Modifier.padding(horizontal = 20.dp)) {
-                        ItemInformation(palette = coverPalette, info = track.value!!.wiki!!.summary)
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
