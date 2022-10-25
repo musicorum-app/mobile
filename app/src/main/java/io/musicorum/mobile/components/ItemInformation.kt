@@ -13,18 +13,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.palette.graphics.Palette
 import io.musicorum.mobile.ui.theme.Body1
-import io.musicorum.mobile.ui.theme.Body2
-import io.musicorum.mobile.ui.theme.DarkGray
-import io.musicorum.mobile.ui.theme.Heading4
+import io.musicorum.mobile.ui.theme.LightGray
+import io.musicorum.mobile.ui.theme.Poppins
 import io.musicorum.mobile.utils.darkenColor
 
 @Composable
 fun ItemInformation(palette: Palette?, info: String) {
-    val primary = palette?.getDarkVibrantColor(0) ?: DarkGray.toArgb()
+    val primary = palette?.getVibrantColor(0) ?: LightGray.toArgb()
     val darken = darkenColor(primary, 0.50f)
     val buttonColors = ButtonDefaults.buttonColors(
         containerColor = Color.White.copy(alpha = 0.25f)
@@ -32,32 +33,32 @@ fun ItemInformation(palette: Palette?, info: String) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(
-                Brush.horizontalGradient(
-                    listOf(Color(primary), darken)
-                )
-
-            )
+            .background(Brush.horizontalGradient(listOf(Color(primary), darken)))
             .padding(20.dp)
     ) {
         Column {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                Text(text = "DID YOU KNOW?", style = Heading4)
-            }
             Text(
                 text = info,
-                maxLines = 7,
+                maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
                 style = Body1
             )
             Row(
-                Modifier
-                    .fillMaxWidth(),
+                Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.Bottom
             ) {
-                Button(onClick = { /*TODO*/ }, colors = buttonColors) {
-                    Text(text = "Read more", style = Body2)
+                Button(
+                    onClick = { /*TODO*/ },
+                    colors = buttonColors,
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 5.dp)
+                ) {
+                    Text(
+                        text = "READ MORE",
+                        fontFamily = Poppins,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

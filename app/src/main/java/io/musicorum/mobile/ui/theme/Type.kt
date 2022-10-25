@@ -43,6 +43,18 @@ val Body2 = TextStyle(
     fontSize = 12.sp
 )
 
+val BodySmall = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight.Medium,
+    fontSize = 12.sp
+)
+
+val BodyLarge = TextStyle(
+    fontFamily = Poppins,
+    fontWeight = FontWeight.Medium,
+    fontSize = 18.sp
+)
+
 val Subtitle1 = TextStyle(
     fontFamily = Poppins,
     fontWeight = FontWeight(400),

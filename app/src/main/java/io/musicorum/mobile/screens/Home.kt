@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -96,7 +97,10 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
             Spacer(Modifier.height(20.dp))
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .clickable { nav.navigate("recentScrobbles") },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -104,14 +108,11 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 20.dp)
                 )
-                IconButton(onClick = {
-                    nav.navigate("recentScrobbles") {
-                        launchSingleTop = true
-                    }
-                }) {
+                IconButton(onClick = { nav.navigate("recentScrobbles") }) {
                     Icon(Icons.Rounded.ChevronRight, contentDescription = null)
                 }
             }
+            Spacer(modifier = Modifier.height(10.dp))
             HorizontalTrackList(
                 tracks = recentTracks.value?.recentTracks?.tracks,
                 labelType = LabelType.DATE,
@@ -121,7 +122,10 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
             Spacer(Modifier.height(20.dp))
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+                    .clickable { nav.navigate("mostListened") },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -129,14 +133,11 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(start = 20.dp)
                 )
-                IconButton(onClick = {
-                    nav.navigate("mostListened") {
-                        launchSingleTop = true
-                    }
-                }) {
+                IconButton(onClick = { nav.navigate("mostListened") }) {
                     Icon(Icons.Rounded.ChevronRight, contentDescription = null)
                 }
             }
+            Spacer(modifier = Modifier.height(10.dp))
             HorizontalTrackList(
                 tracks = weekTracks.value?.topTracks?.tracks,
                 labelType = LabelType.ARTIST_NAME,

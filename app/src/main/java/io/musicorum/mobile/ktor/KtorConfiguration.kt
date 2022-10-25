@@ -24,7 +24,7 @@ class KtorConfiguration {
                 install(Logging) {
                     logger = object : Logger {
                         override fun log(message: String) {
-                            Log.d("KTOR", message)
+                            Log.d("LAST.FM", message)
                         }
                     }
                     level = LogLevel.INFO
