@@ -1,7 +1,5 @@
 package io.musicorum.mobile.screens
 
-import android.content.SharedPreferences
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import coil.compose.rememberAsyncImagePainter
@@ -31,6 +30,7 @@ import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.components.FriendActivity
 import io.musicorum.mobile.components.HorizontalTrackList
 import io.musicorum.mobile.components.LabelType
+import io.musicorum.mobile.dataStore
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
@@ -39,11 +39,13 @@ import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.utils.darkenColor
 import io.musicorum.mobile.viewmodels.HomeViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHostController) {
+fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
     val user = homeViewModel.user.observeAsState()
     val recentTracks = homeViewModel.recentTracks.observeAsState()
     val palette = homeViewModel.userPalette.observeAsState()
@@ -54,9 +56,13 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
 
     val screenState = rememberScrollState()
 
+
     LaunchedEffect(key1 = user.value) {
         if (user.value == null) {
-            homeViewModel.fetchUser(sharedPref)
+            val sessionKey = ctx.applicationContext.dataStore.data.map { prefs ->
+                prefs[stringPreferencesKey("session_key")]!!
+            }
+            homeViewModel.fetchUser(sessionKey.first())
         } else {
             if (homeViewModel.userPalette.value == null) {
                 homeViewModel.getPalette(user.value!!.user.bestImageUrl, ctx)
@@ -65,7 +71,8 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
                 homeViewModel.fetchRecentTracks(
                     user.value!!.user.name,
                     "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
-                    15
+                    15,
+                    false
                 )
             }
             if (weekTracks.value == null) {

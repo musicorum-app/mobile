@@ -18,6 +18,7 @@ data class Track(
     @SerialName("toptags")
     val topTags: Tag? = null,
     var album: Album? = null,
+    val loved: String? = null,
     @SerialName("userplaycount")
     private val _userPlayCount: String? = null,
     val date: TrackDate? = null,

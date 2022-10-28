@@ -17,7 +17,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackRow
@@ -64,10 +63,8 @@ fun MostListened(
         } else {
             LazyColumn(
                 state = state,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
                     .padding(it)
-                    .padding(15.dp)
             ) {
                 items(mostListened.value!!.topTracks.tracks) { track ->
                     TrackRow(track = track, nav = nav)

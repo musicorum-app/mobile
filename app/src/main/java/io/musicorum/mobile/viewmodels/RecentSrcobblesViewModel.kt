@@ -10,9 +10,14 @@ import kotlinx.coroutines.launch
 class RecentSrcobblesViewModel : ViewModel() {
     val recentTracks: MutableLiveData<RecentTracksData> by lazy { MutableLiveData<RecentTracksData>() }
 
-    suspend fun fetchRecentTracks(username: String, from: String?, limit: Int?) {
+    suspend fun fetchRecentTracks(
+        username: String,
+        from: String?,
+        limit: Int?,
+        extended: Boolean?
+    ) {
         viewModelScope.launch {
-            val res = RecentTracksEndpoint().getRecentTracks(username, from, limit)
+            val res = RecentTracksEndpoint().getRecentTracks(username, from, limit, extended)
             recentTracks.value = res.recentTracks
         }
     }

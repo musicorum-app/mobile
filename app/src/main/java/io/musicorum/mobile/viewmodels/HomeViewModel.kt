@@ -1,7 +1,6 @@
 package io.musicorum.mobile.viewmodels
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,20 +21,20 @@ class HomeViewModel : ViewModel() {
     val friends: MutableLiveData<List<UserData>> by lazy { MutableLiveData<List<UserData>>() }
     val friendsActivity: MutableLiveData<List<RecentTracks>> by lazy { MutableLiveData<List<RecentTracks>>() }
 
-    fun fetchUser(sharedPref: SharedPreferences) {
+    fun fetchUser(sessionKey: String) {
         viewModelScope.launch {
             Log.d("User view model", "user is ${user.value}")
-            val fetchedUser = UserEndpoint().getInfo(sharedPref)
+            val fetchedUser = UserEndpoint().getInfo(sessionKey)
             user.value = fetchedUser
             Log.d("User view model", "user is now ${user.value}")
         }
     }
 
-    fun fetchRecentTracks(username: String, from: String?, limit: Int?) {
+    fun fetchRecentTracks(username: String, from: String?, limit: Int?, extended: Boolean?) {
         viewModelScope.launch {
             recentTracks.value =
-                io.musicorum.mobile.ktor.endpoints.RecentTracksEndpoint()
-                    .getRecentTracks(username, from, limit)
+                RecentTracksEndpoint()
+                    .getRecentTracks(username, from, limit, extended)
         }
     }
 
@@ -52,9 +51,10 @@ class HomeViewModel : ViewModel() {
             val topTracksRes = TopTracksEndpoint().fetchTopTracks(username, period, 10)
             //weekTracks.value = topTracksRes
             val musicorumTrRes = MusicorumTrackEndpoint().fetchTracks(topTracksRes.topTracks.tracks)
-            musicorumTrRes.forEachIndexed { i, tr ->
-                val url = tr.resources?.getOrNull(0)?.bestImageUrl
+            musicorumTrRes.forEachIndexed { i, track ->
+                val url = track.resources?.getOrNull(0)?.bestImageUrl
                 topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
+                topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
             }
             weekTracks.value = topTracksRes
         }
@@ -67,7 +67,7 @@ class HomeViewModel : ViewModel() {
             val mutableList: MutableList<RecentTracks> = mutableListOf()
             friendsRes.friends.users.forEach { user ->
                 val friendRecentAct =
-                    RecentTracksEndpoint().getRecentTracks(user.name, null, 1)
+                    RecentTracksEndpoint().getRecentTracks(user.name, null, 1, false)
                 mutableList.add(friendRecentAct)
             }
             friendsActivity.value = mutableList.toList()
