@@ -12,8 +12,16 @@ data class User(
 @Serializable
 data class UserData(
     val name: String,
-    val image: List<Image>,
+    @SerialName("image")
+    val images: List<Image>,
     @SerialName("playcount")
     val scrobbles: String
-)
+) {
+    var bestImageUrl = images.find { it.size == "extralarge" }?.url
+        ?: images.find { it.size == "large" }?.url
+        ?: images.find { it.size == "medium" }?.url
+        ?: images.find { it.size == "small" }?.url
+        ?: images.find { it.size == "unknown" }?.url
+        ?: ""
+}
 

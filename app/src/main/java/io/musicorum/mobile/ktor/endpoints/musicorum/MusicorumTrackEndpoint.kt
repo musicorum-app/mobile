@@ -25,15 +25,15 @@ class MusicorumTrackEndpoint {
         }
         return json.decodeFromString(ListSerializer(TrackResponse.serializer()), req.bodyAsText())
     }
+
+    @kotlinx.serialization.Serializable
+    private data class Body(
+        val tracks: List<BodyTrack>
+    )
+
+    @kotlinx.serialization.Serializable
+    private data class BodyTrack(
+        val name: String,
+        val artist: String
+    )
 }
-
-@kotlinx.serialization.Serializable
-private data class Body(
-    val tracks: List<BodyTrack>
-)
-
-@kotlinx.serialization.Serializable
-private data class BodyTrack(
-    val name: String,
-    val artist: String
-)

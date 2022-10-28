@@ -28,7 +28,7 @@ class TrackViewModel : ViewModel() {
                 val image =
                     musRes[0].resources?.getOrNull(0)?.bestImageUrl?.let { Image("unknown", it) }
                 if (image != null) {
-                    res.track.album = Album(null, res.track.name, listOf(image))
+                    res.track.album = Album(null, res.track.name, null, listOf(image))
                 }
             }
             if (res.track.artist.images.isNullOrEmpty()) {
@@ -52,8 +52,8 @@ class TrackViewModel : ViewModel() {
             if (res.similarTracks.tracks.isNotEmpty()) {
                 val resourceRes = MusicorumTrackEndpoint().fetchTracks(res.similarTracks.tracks)
                 resourceRes.forEachIndexed { index, trackResponse ->
-                    val imageUrl = trackResponse.resources?.get(0)?.bestImageUrl
-                    res.similarTracks.tracks[index].image?.onEach { it ->
+                    val imageUrl = trackResponse.resources?.getOrNull(0)?.bestImageUrl
+                    res.similarTracks.tracks[index].images?.onEach { it ->
                         it.url = imageUrl ?: return@onEach
                     }
                 }

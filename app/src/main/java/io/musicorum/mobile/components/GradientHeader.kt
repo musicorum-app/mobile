@@ -8,12 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.ui.theme.AlmostBlack
-import io.musicorum.mobile.utils.Placeholders
 
 private val headerHeight = 400.dp
 
@@ -45,13 +43,8 @@ fun GradientHeader(backgroundUrl: String?, coverUrl: String?) {
         )
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(coverUrl)
-                    .crossfade(true)
-                    .build(),
+                model = defaultImageRequestBuilder(url = coverUrl),
                 contentDescription = "",
-                onError = { },
-                placeholder = Placeholders.TRACK.asPainter(),
                 modifier = Modifier
                     .padding(top = 200.dp)
                     .clip(RoundedCornerShape(12.dp))

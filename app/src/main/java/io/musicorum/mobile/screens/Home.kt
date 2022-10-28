@@ -2,9 +2,7 @@ package io.musicorum.mobile.screens
 
 import android.content.SharedPreferences
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,11 +28,13 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
 import io.musicorum.mobile.components.BottomNavBar
+import io.musicorum.mobile.components.FriendActivity
 import io.musicorum.mobile.components.HorizontalTrackList
 import io.musicorum.mobile.components.LabelType
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
+import io.musicorum.mobile.ui.theme.BodyMedium
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.utils.darkenColor
@@ -48,14 +48,18 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
     val recentTracks = homeViewModel.recentTracks.observeAsState()
     val palette = homeViewModel.userPalette.observeAsState()
     val weekTracks = homeViewModel.weekTracks.observeAsState()
+    val friends = homeViewModel.friends.observeAsState()
+    val friendsActivity = homeViewModel.friendsActivity.observeAsState()
     val ctx = LocalContext.current
+
+    val screenState = rememberScrollState()
 
     LaunchedEffect(key1 = user.value) {
         if (user.value == null) {
             homeViewModel.fetchUser(sharedPref)
         } else {
             if (homeViewModel.userPalette.value == null) {
-                homeViewModel.getPalette(user.value!!.user.image[2].url, ctx)
+                homeViewModel.getPalette(user.value!!.user.bestImageUrl, ctx)
             }
             if (recentTracks.value == null) {
                 homeViewModel.fetchRecentTracks(
@@ -67,11 +71,18 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
             if (weekTracks.value == null) {
                 homeViewModel.fetchTopTracks(user.value!!.user.name, FetchPeriod.WEEK)
             }
+            if (friends.value == null) {
+                homeViewModel.fetchFriends(user.value!!.user.name, 3)
+            }
         }
     }
 
     Scaffold(bottomBar = { BottomNavBar(nav) }) {
-        Column(Modifier.padding(it)) {
+        Column(
+            Modifier
+                .padding(it)
+                .verticalScroll(screenState)
+        ) {
             Text(
                 text = "Home",
                 style = MaterialTheme.typography.titleLarge,
@@ -105,7 +116,7 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
             ) {
                 Text(
                     text = "Recent scrobbles",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = BodyMedium,
                     modifier = Modifier.padding(start = 20.dp)
                 )
                 IconButton(onClick = { nav.navigate("recentScrobbles") }) {
@@ -130,7 +141,7 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
             ) {
                 Text(
                     text = "Most listened • last 7 days",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = BodyMedium,
                     modifier = Modifier.padding(start = 20.dp)
                 )
                 IconButton(onClick = { nav.navigate("mostListened") }) {
@@ -143,6 +154,29 @@ fun Home(homeViewModel: HomeViewModel, sharedPref: SharedPreferences, nav: NavHo
                 labelType = LabelType.ARTIST_NAME,
                 nav = nav
             )
+
+            if (friends.value != null && friendsActivity.value != null) {
+                Spacer(Modifier.height(20.dp))
+                Text(
+                    text = "Friends Activity",
+                    style = BodyMedium,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .padding(start = 20.dp)
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    friendsActivity.value!!.forEachIndexed { i, rt ->
+                        FriendActivity(
+                            track = rt.recentTracks.tracks[0],
+                            friendImageUrl = friends.value!![i].bestImageUrl
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -168,7 +202,7 @@ private fun UserCard(user: UserData, palette: Palette, recentTracks: RecentTrack
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = rememberAsyncImagePainter(user.image[2].url),
+                painter = rememberAsyncImagePainter(user.bestImageUrl),
                 contentDescription = "user img",
                 modifier = Modifier
                     .shadow(elevation = 20.dp, shape = CircleShape)

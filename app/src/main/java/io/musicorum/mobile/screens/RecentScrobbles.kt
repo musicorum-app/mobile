@@ -48,7 +48,8 @@ fun RecentScrobbles(
         topBar = {
             MusicorumTopBar(
                 text = "Recent Scrobbles",
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                nav = nav
             )
         },
         modifier = Modifier
@@ -58,7 +59,6 @@ fun RecentScrobbles(
         Column(
             modifier = Modifier
                 .padding(it)
-                .padding(start = 15.dp, end = 15.dp, top = 15.dp)
         ) {
             if (recentTracks.value == null) {
                 Row(
@@ -70,7 +70,7 @@ fun RecentScrobbles(
                 }
             } else {
                 val tracks = recentTracks.value!!.tracks
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(20.dp), state = state) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp), state = state) {
                     items(tracks) { track ->
                         TrackRow(track = track, nav)
                     }

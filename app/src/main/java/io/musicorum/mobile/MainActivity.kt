@@ -103,7 +103,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Track(
                                 it.arguments?.getString("trackData"),
-                                homeViewModel = homeViewModel
+                                homeViewModel = homeViewModel,
+                                nav = navController
                             )
                         }
                     }

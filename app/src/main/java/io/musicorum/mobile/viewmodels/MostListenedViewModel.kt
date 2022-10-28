@@ -18,7 +18,7 @@ class MostListenedViewModel : ViewModel() {
             val musicorumTrRes = MusicorumTrackEndpoint().fetchTracks(res.topTracks.tracks)
             musicorumTrRes.forEachIndexed { i, tr ->
                 val url = tr.resources?.getOrNull(0)?.bestImageUrl
-                res.topTracks.tracks[i].image?.onEach { img -> img.url = url ?: return@onEach }
+                res.topTracks.tracks[i].images?.onEach { img -> img.url = url ?: return@onEach }
             }
             mosListenedTracks.value = res
         }

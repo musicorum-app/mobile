@@ -1,17 +1,15 @@
 package io.musicorum.mobile.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.NavHostController
 import io.musicorum.mobile.ui.theme.DarkGray
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MusicorumTopBar(text: String, scrollBehavior: TopAppBarScrollBehavior) {
-    val nav = rememberAnimatedNavController()
+fun MusicorumTopBar(text: String, scrollBehavior: TopAppBarScrollBehavior, nav: NavHostController) {
     val color = TopAppBarDefaults.mediumTopAppBarColors(
         containerColor = DarkGray
     )

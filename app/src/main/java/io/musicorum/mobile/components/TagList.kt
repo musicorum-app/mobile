@@ -31,7 +31,7 @@ fun TagList(tags: List<TagData>, referencePalette: Palette?, visible: Boolean) {
             ?: Color.LightGray
     val background = darkenColor(borderColor.toArgb(), 0.70f)
     LazyRow(
-        Modifier.padding(horizontal = 20.dp),
+        Modifier.padding(start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

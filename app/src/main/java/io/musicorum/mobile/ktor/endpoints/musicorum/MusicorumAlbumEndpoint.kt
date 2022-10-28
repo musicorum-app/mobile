@@ -4,30 +4,32 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.musicorum.mobile.ktor.KtorConfiguration
-import io.musicorum.mobile.serialization.Artist
+import io.musicorum.mobile.serialization.Album
 import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 
-internal val json = Json {
-    ignoreUnknownKeys = true
-}
-
-class MusicorumArtistEndpoint {
-    suspend fun fetchArtist(artists: List<Artist>): List<TrackResponse> {
-        val artistsList = mutableListOf<String>()
-        artists.forEach { artist -> artistsList.add(artist.name) }
-        val body = Body(artistsList)
+class MusicorumAlbumEndpoint {
+    suspend fun fetchAlbums(albums: List<Album>): List<TrackResponse> {
+        val albumList: MutableList<RequestAlbum> = mutableListOf()
+        albums.forEach { album ->
+            albumList.add(RequestAlbum(album.name.replace("- Single", ""), album.artist!!))
+        }
         val res = KtorConfiguration.musicorumClient.post {
-            url("/v2/resources/artists")
+            url("/v2/resources/albums")
             contentType(ContentType.Application.Json)
-            setBody(body)
+            setBody(Body(albumList))
         }
         return json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
     }
 
     @kotlinx.serialization.Serializable
     private data class Body(
-        val artists: List<String>
+        val albums: List<RequestAlbum>
+    )
+
+    @kotlinx.serialization.Serializable
+    private data class RequestAlbum(
+        val name: String,
+        val artist: String
     )
 }
