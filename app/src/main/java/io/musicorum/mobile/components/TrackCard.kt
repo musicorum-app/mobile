@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.Poppins
-import io.musicorum.mobile.utils.Placeholders
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -57,9 +57,8 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
             ) { nav.navigate("track/$dest") }
     ) {
         AsyncImage(
-            model = track.bestImageUrl,
+            model = defaultImageRequestBuilder(url = track.bestImageUrl),
             contentDescription = null,
-            placeholder = Placeholders.TRACK.asPainter(),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(6.dp))

@@ -1,8 +1,8 @@
 package io.musicorum.mobile
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -12,6 +12,11 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -29,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userdata")
+
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class, DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +43,8 @@ class MainActivity : ComponentActivity() {
 
         val deepLinkData: Uri? = intent.data
         val sharedPref = this.getPreferences(MODE_PRIVATE)
+        val dataStore = this.applicationContext.dataStore
 
-        Log.d("ENV", BuildConfig.LASTFM_API_KEY)
 
         setContent {
             val navController = rememberAnimatedNavController()
@@ -48,9 +55,9 @@ class MainActivity : ComponentActivity() {
                 if (it?.getQueryParameter("token") != null) {
                     GlobalScope.launch(context = Dispatchers.Main) {
                         val sR = AuthEndpoint().getSession(it.getQueryParameter("token")!!)
-                        with(sharedPref.edit()) {
-                            putString("l_key", sR.session.key)
-                            apply()
+                        val sessionKey = stringPreferencesKey("session_key")
+                        dataStore.edit { userData ->
+                            userData[sessionKey] = sR.session.key
                         }
                         navController.navigate("home")
                     }
@@ -75,9 +82,8 @@ class MainActivity : ComponentActivity() {
                         composable("login") { Login() }
                         composable("home") {
                             Home(
-                                nav = navController,
                                 homeViewModel = homeViewModel,
-                                sharedPref = sharedPref
+                                nav = navController
                             )
                         }
                         composable("recentScrobbles") {

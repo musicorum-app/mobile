@@ -38,7 +38,8 @@ fun RecentScrobbles(
             recentSrcobblesViewModel.fetchRecentTracks(
                 homeViewModel.user.value!!.user.name,
                 "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
-                null
+                null,
+                true
             )
         }
     }
