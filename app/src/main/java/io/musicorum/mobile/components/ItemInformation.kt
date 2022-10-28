@@ -25,7 +25,7 @@ import io.musicorum.mobile.utils.darkenColor
 
 @Composable
 fun ItemInformation(palette: Palette?, info: String) {
-    val primary = palette?.getVibrantColor(0) ?: LightGray.toArgb()
+    val primary = palette?.getVibrantColor(LightGray.toArgb()) ?: LightGray.toArgb()
     val darken = darkenColor(primary, 0.50f)
     val buttonColors = ButtonDefaults.buttonColors(
         containerColor = Color.White.copy(alpha = 0.25f)

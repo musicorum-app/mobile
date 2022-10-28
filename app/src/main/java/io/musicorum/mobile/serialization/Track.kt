@@ -8,7 +8,8 @@ import kotlinx.serialization.json.long
 @kotlinx.serialization.Serializable
 data class Track(
     var artist: Artist,
-    val image: List<Image>? = null,
+    @SerialName("image")
+    var images: List<Image>? = null,
     val name: String,
     @SerialName("@attr")
     val attributes: TrackAttributes? = null,
@@ -28,6 +29,12 @@ data class Track(
     val playCount: Long? =
         (_playCount as? JsonPrimitive)?.long ?: (_playCount as? JsonPrimitive)?.content?.toLong()
     val listeners = _listeners?.toLongOrNull()
+    var bestImageUrl = images?.find { it.size == "extralarge" }?.url
+        ?: images?.find { it.size == "large" }?.url
+        ?: images?.find { it.size == "medium" }?.url
+        ?: images?.find { it.size == "small" }?.url
+        ?: images?.find { it.size == "unknown" }?.url
+        ?: ""
 }
 
 @kotlinx.serialization.Serializable

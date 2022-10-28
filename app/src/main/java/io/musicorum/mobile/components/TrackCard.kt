@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import io.musicorum.mobile.serialization.NavigationTrack
@@ -58,7 +57,7 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
             ) { nav.navigate("track/$dest") }
     ) {
         AsyncImage(
-            model = track.image?.get(3)?.url,
+            model = track.bestImageUrl,
             contentDescription = null,
             placeholder = Placeholders.TRACK.asPainter(),
             modifier = Modifier
@@ -73,7 +72,6 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
             style = label,
             modifier = Modifier
                 .padding(top = 7.dp)
-                .zIndex(1F)
                 .indication(interactionSource, null),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

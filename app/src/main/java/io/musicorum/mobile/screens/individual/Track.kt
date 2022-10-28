@@ -1,6 +1,5 @@
 package io.musicorum.mobile.screens.individual
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,13 +20,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
-import io.musicorum.mobile.components.GradientHeader
-import io.musicorum.mobile.components.ItemInformation
-import io.musicorum.mobile.components.Statistic
-import io.musicorum.mobile.components.TagList
+import io.musicorum.mobile.coil.PlaceholderType
+import io.musicorum.mobile.coil.defaultImageRequestBuilder
+import io.musicorum.mobile.components.*
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.ui.theme.*
 import io.musicorum.mobile.utils.Placeholders
@@ -44,7 +42,8 @@ import kotlinx.serialization.json.Json
 fun Track(
     trackData: String?,
     trackViewModel: TrackViewModel = viewModel(),
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    nav: NavHostController
 ) {
     if (trackData == null) {
         Row(
@@ -77,8 +76,14 @@ fun Track(
                 }
 
                 launch {
-                    if (!track.value!!.album?.images.isNullOrEmpty()) {
-                        val bmp = getBitmap(track.value!!.album!!.bestImageUrl, ctx)
+                    val album = track.value!!.album
+                    if (!album?.images.isNullOrEmpty()) {
+                        if (album?.bestImageUrl?.isEmpty() == true) {
+                            album.apply {
+                                bestImageUrl = this.fetchExternalImage()
+                            }
+                        }
+                        val bmp = getBitmap(album?.bestImageUrl, ctx)
                         coverPalette = createPalette(bmp)
                         paletteReady = true
                     } else {
@@ -169,7 +174,10 @@ fun Track(
                                 .fillMaxWidth(0.5f)
                         ) {
                             AsyncImage(
-                                track.value!!.album?.bestImageUrl,
+                                model = defaultImageRequestBuilder(
+                                    url = track.value!!.album?.bestImageUrl,
+                                    PlaceholderType.ALBUM
+                                ),
                                 contentDescription = null,
                                 placeholder = Placeholders.TRACK.asPainter(),
                                 modifier = Modifier
@@ -194,9 +202,12 @@ fun Track(
                                 .fillMaxHeight()
                                 .fillMaxWidth()
                         ) {
-                            Image(
-                                rememberAsyncImagePainter(track.value!!.artist.bestImageUrl),
-                                null,
+                            AsyncImage(
+                                model = defaultImageRequestBuilder(
+                                    url = track.value!!.artist.bestImageUrl,
+                                    PlaceholderType.ARTIST
+                                ),
+                                contentDescription = null,
                                 modifier = Modifier
                                     .size(44.dp)
                                     .clip(CircleShape)
@@ -215,31 +226,17 @@ fun Track(
                     Divider(Modifier.padding(vertical = 20.dp))
                     Column(
                         Modifier
-                            .padding(horizontal = 20.dp)
+                            .padding(horizontal = 5.dp)
                             .fillMaxWidth(),
                         horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Text("Similar Tracks", style = Heading4)
+                        Text(
+                            "Similar Tracks",
+                            style = Heading4,
+                            modifier = Modifier.padding(start = 15.dp)
+                        )
                         similarTracks.value!!.similarTracks.tracks.forEach {
-                            Row {
-                                Image(
-                                    painter = rememberAsyncImagePainter(it.image?.get(0)?.url),
-                                    "",
-                                    modifier = Modifier
-                                        .size(50.dp)
-                                        .clip(RoundedCornerShape(6.dp))
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Column {
-                                    Text(it.name, style = Body1)
-                                    Text(
-                                        it.artist.name,
-                                        style = Subtitle1,
-                                        modifier = Modifier.alpha(0.55f)
-                                    )
-                                }
-                            }
+                            TrackRow(track = it, nav = nav, false)
                         }
                     }
                 }

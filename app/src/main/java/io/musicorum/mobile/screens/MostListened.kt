@@ -45,7 +45,8 @@ fun MostListened(
         topBar = {
             MusicorumTopBar(
                 text = "Most Listened Tracks",
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                nav = nav
             )
         }
     ) {
