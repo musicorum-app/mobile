@@ -12,7 +12,7 @@ class MusicorumAlbumEndpoint {
     suspend fun fetchAlbums(albums: List<Album>): List<TrackResponse> {
         val albumList: MutableList<RequestAlbum> = mutableListOf()
         albums.forEach { album ->
-            albumList.add(RequestAlbum(album.name.replace("- Single", ""), album.artist!!))
+            albumList.add(RequestAlbum(album.albumName.replace("- Single", ""), album.artist!!))
         }
         val res = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/albums")

@@ -17,7 +17,7 @@ internal val json = Json {
 class MusicorumArtistEndpoint {
     suspend fun fetchArtist(artists: List<Artist>): List<TrackResponse> {
         val artistsList = mutableListOf<String>()
-        artists.forEach { artist -> artistsList.add(artist.name) }
+        artists.forEach { artist -> artistsList.add(artist.artistName) }
         val body = Body(artistsList)
         val res = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/artists")

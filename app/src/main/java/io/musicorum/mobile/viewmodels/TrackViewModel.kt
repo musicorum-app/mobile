@@ -28,7 +28,8 @@ class TrackViewModel : ViewModel() {
                 val image =
                     musRes[0].resources?.getOrNull(0)?.bestImageUrl?.let { Image("unknown", it) }
                 if (image != null) {
-                    res.track.album = Album(null, res.track.name, null, listOf(image))
+                    res.track.album =
+                        Album(null, res.track.name, null, listOf(image), tags = null, tracks = null)
                 }
             }
             if (res.track.artist.images.isNullOrEmpty()) {
@@ -39,7 +40,7 @@ class TrackViewModel : ViewModel() {
                 }
                 if (artistImage != null) {
                     res.track.artist =
-                        Artist(_name = res.track.artist.name, images = listOf(artistImage))
+                        Artist(name = res.track.artist.artistName, images = listOf(artistImage))
                 }
             }
             track.value = res.track
