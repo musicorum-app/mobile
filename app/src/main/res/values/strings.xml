@@ -1,3 +1,80 @@
 <resources>
     <string name="app_name">Musicorum</string>
+    <string name="bottom_navigation_item_home" translatable="false">Home</string>
+    <string name="bottom_navigation_item_scrobbling">Scrobbles</string>
+    <string name="bottom_navigation_item_charts" translatable="false">Charts</string>
+    <string name="bottom_navigation_item_profile">Profile</string>
+
+    <!-- Common -->
+    <string name="view_more">View more</string>
+
+    <string name="artists">Artists</string>
+    <string name="artist">Artist</string>
+    <string name="albums">Albums</string>
+    <string name="album">Album</string>
+    <string name="tracks">Tracks</string>
+    <string name="track">Track</string>
+    <string name="users">Users</string>
+    <string name="user">User</string>
+
+    <string name="top_tracks">Top tracks</string>
+    <string name="top_albums">Top albums</string>
+    <string name="top_artists">Top artists</string>
+
+    <plurals name="tracks_quantity">
+        <item quantity="zero">No tracks</item>
+        <item quantity="one">%1$s track</item>
+        <item quantity="other">%1$s tracks</item>
+    </plurals>
+
+    <plurals name="albums_quantity">
+        <item quantity="zero">No albums</item>
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s albums</item>
+    </plurals>
+
+    <plurals name="artists_quantity">
+        <item quantity="zero">No artists</item>
+        <item quantity="one">%1$s artist</item>
+        <item quantity="other">%1$s artists</item>
+    </plurals>
+
+    <string name="listeners">Listeners</string>
+    <string name="scrobbles">Scrobbles</string>
+    <string name="your_scrobbles">Your scrobbles</string>
+
+
+    <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="back">Back</string>
+
+
+    <!-- Home -->
+    <string name="home_page_scrobbles_text">%1$s scrobbles • last 7 days</string>
+    <string name="home_page_image_content_user">User profile image</string>
+
+    <!-- Discover -->
+    <plurals name="discover_page_results_text">
+        <item quantity="one">%1$s result</item>
+        <item quantity="other">%1$s results</item>
+    </plurals>
+    <string name="discover_page_no_results">Nothing found</string>
+
+    <!-- Artist -->
+    <string name="similar_artists">Similar artists</string>
+    <string name="recent_scrobbles">Recent scrobbles</string>
+    <string name="most_listened_week">Most listened • last 7 days</string>
+    <string name="friends_activity">Friends activity</string>
+    <plurals name="total_scrobbles_week">
+        <item quantity="one">%1$d scrobble • last 7 days</item>
+        <item quantity="other">%1$d scrobbles • last 7 days</item>
+    </plurals>
+    <string name="from">From</string>
+    <string name="appears_on">Appears on</string>
+    <string name="most_listened_tracks">Most listened tracks</string>
+    <string name="homescreen_welcome">Welcome to the Musicorum app</string>
+    <string name="homescreen_lfm_access">We need to access your Last.fm account to continue</string>
+    <string name="homescreen_login_button">LOG IN WITH LAST.FM</string>
+    <string name="scrobbling_now">Scrobbling now</string>
+    <string name="similar_tracks">Similar Tracks</string>
 </resources>

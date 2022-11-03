@@ -1,14 +1,15 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class TopTracks(
     @SerialName("toptracks")
     val topTracks: TopTracksData
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class TopTracksData(
     @SerialName("track")
     val tracks: List<Track>

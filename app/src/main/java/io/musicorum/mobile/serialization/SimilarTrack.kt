@@ -1,14 +1,15 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class SimilarTrack(
     @SerialName("similartracks")
     val similarTracks: SimilarTrackData
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class SimilarTrackData(
     @SerialName("track")
     val tracks: List<Track>

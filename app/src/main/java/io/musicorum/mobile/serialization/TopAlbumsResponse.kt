@@ -1,17 +1,29 @@
 package io.musicorum.mobile.serialization
 
-import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
-data class Album(
+@Serializable
+data class TopAlbumsResponse(
+    @SerialName("topalbums")
+    val topAlbums: InnerTopAlbumsResponse
+)
+
+@Serializable
+data class InnerTopAlbumsResponse(
+    @SerialName("album")
+    val albums: List<TopAlbum>
+)
+
+@Serializable
+data class TopAlbum(
     private val _name: String? = null,
     private val title: String? = null,
     @SerialName("#text")
     private val text: String? = null,
     @SerialName("image")
     val images: List<Image>? = null,
-    val artist: String? = null,
+    val artist: Artist? = null,
     @SerialName("playcount")
     val playCount: String? = null
 ) {
@@ -23,9 +35,4 @@ data class Album(
         ?: images?.find { it.size == "unknown" }?.url
         ?: ""
 
-    suspend fun fetchExternalImage(): String {
-        val musRes = MusicorumAlbumEndpoint().fetchAlbums(listOf(this))
-        return musRes[0].resources?.getOrNull(0)?.bestImageUrl ?: ""
-        // TODO fallback to a placeholder images URL
-    }
 }

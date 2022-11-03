@@ -2,11 +2,13 @@ package io.musicorum.mobile.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -16,7 +18,7 @@ import io.musicorum.mobile.ui.theme.AlmostBlack
 private val headerHeight = 400.dp
 
 @Composable
-fun GradientHeader(backgroundUrl: String?, coverUrl: String?) {
+fun GradientHeader(backgroundUrl: String?, coverUrl: String?, shape: Shape) {
 
     Box(modifier = Modifier.fillMaxWidth()) {
         AsyncImage(
@@ -47,7 +49,8 @@ fun GradientHeader(backgroundUrl: String?, coverUrl: String?) {
                 contentDescription = "",
                 modifier = Modifier
                     .padding(top = 200.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .shadow(10.dp, shape = shape, spotColor = Color.Black)
+                    .clip(shape)
                     .size(300.dp)
             )
         }

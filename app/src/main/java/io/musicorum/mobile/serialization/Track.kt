@@ -1,11 +1,12 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.long
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class Track(
     var artist: Artist,
     @SerialName("image")
@@ -38,13 +39,13 @@ data class Track(
         ?: ""
 }
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class TrackAttributes(
     @SerialName("nowplaying")
     val nowPlaying: String? = null
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class TrackDate(
     val uts: String
 )

@@ -15,7 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -23,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
+import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.*
@@ -55,15 +58,15 @@ fun Track(
         }
     } else {
         val partialTrack = Json.decodeFromString<NavigationTrack>(trackData)
-        val track = trackViewModel.track.observeAsState()
+        val track = trackViewModel.track.observeAsState().value
         val ctx = LocalContext.current
         var coverPalette: Palette? by remember { mutableStateOf(null) }
         var paletteReady by remember { mutableStateOf(false) }
-        val similarTracks = trackViewModel.similar.observeAsState()
-        val artistCover = trackViewModel.artistCover.observeAsState()
+        val similarTracks = trackViewModel.similar.observeAsState().value
+        val artistCover = trackViewModel.artistCover.observeAsState().value
 
-        LaunchedEffect(key1 = track.value) {
-            if (track.value == null) {
+        LaunchedEffect(key1 = track) {
+            if (track == null) {
                 trackViewModel.fetchTrack(
                     partialTrack.trackName,
                     partialTrack.trackArtist,
@@ -72,11 +75,11 @@ fun Track(
                 )
             } else {
                 launch {
-                    trackViewModel.fetchSimilar(track.value!!, 5, null)
+                    trackViewModel.fetchSimilar(track, 5, null)
                 }
 
                 launch {
-                    val album = track.value!!.album
+                    val album = track.album
                     if (!album?.images.isNullOrEmpty()) {
                         if (album?.bestImageUrl?.isEmpty() == true) {
                             album.apply {
@@ -91,11 +94,11 @@ fun Track(
                     }
                 }
                 launch {
-                    trackViewModel.fetchArtistCover(track.value!!.artist)
+                    trackViewModel.fetchArtistCover(track.artist)
                 }
             }
         }
-        if (track.value == null) {
+        if (track == null) {
             Row(
                 Modifier
                     .fillMaxSize()
@@ -106,7 +109,6 @@ fun Track(
                 CircularProgressIndicator()
             }
         } else {
-            val t = track.value!!
             val screenScrollState = rememberScrollState()
 
             Column(
@@ -118,44 +120,41 @@ fun Track(
                 verticalArrangement = Arrangement.Center
             ) {
                 GradientHeader(
-                    artistCover.value,
-                    t.album?.bestImageUrl
+                    artistCover,
+                    track.album?.bestImageUrl,
+                    RoundedCornerShape(6.dp)
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = t.name,
+                    text = track.name,
                     softWrap = true,
                     style = Heading2,
                     modifier = Modifier.padding(horizontal = 55.dp),
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = t.artist.name,
+                    text = track.artist.name,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = Body1,
                     modifier = Modifier.alpha(0.55f)
                 )
                 Divider(Modifier.padding(vertical = 18.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Statistic(number = t.listeners, label = "Listeners")
-                    Statistic(number = t.playCount, label = "Scrobbles")
-                    Statistic(number = t.userPlayCount, label = "Your scrobbles")
-                }
+                StatisticRow(
+                    short = true,
+                    stringResource(R.string.listeners) to track.listeners,
+                    stringResource(R.string.scrobbles) to track.playCount,
+                    stringResource(R.string.your_scrobbles) to track.userPlayCount
+                )
 
                 Spacer(modifier = Modifier.height(20.dp))
-                if (t.topTags != null) {
-                    TagList(tags = t.topTags.tags, coverPalette, !paletteReady)
+                if (track.topTags != null) {
+                    TagList(tags = track.topTags.tags, coverPalette, !paletteReady)
                 }
-                if (track.value!!.wiki != null) {
+                if (track.wiki != null) {
                     Spacer(modifier = Modifier.height(20.dp))
                     Row(modifier = Modifier.padding(horizontal = 20.dp)) {
-                        ItemInformation(palette = coverPalette, info = track.value!!.wiki!!.summary)
+                        ItemInformation(palette = coverPalette, info = track.wiki.summary)
                     }
                 }
                 Divider(Modifier.padding(vertical = 20.dp))
@@ -165,7 +164,7 @@ fun Track(
                         .fillMaxWidth()
                 ) {
                     Column {
-                        Text(text = "Appears on", style = BodySmall)
+                        Text(text = stringResource(R.string.appears_on), style = BodySmall)
                         Row(
                             horizontalArrangement = Arrangement.Start,
                             verticalAlignment = Alignment.CenterVertically,
@@ -175,7 +174,7 @@ fun Track(
                         ) {
                             AsyncImage(
                                 model = defaultImageRequestBuilder(
-                                    url = track.value!!.album?.bestImageUrl,
+                                    url = track.album?.bestImageUrl,
                                     PlaceholderType.ALBUM
                                 ),
                                 contentDescription = null,
@@ -185,7 +184,7 @@ fun Track(
                                     .clip(RoundedCornerShape(6.dp))
                             )
                             Text(
-                                text = track.value!!.album?.name ?: "Unknown",
+                                text = track.album?.name ?: "Unknown",
                                 style = BodyLarge,
                                 modifier = Modifier.padding(start = 10.dp),
                                 maxLines = 1,
@@ -195,7 +194,7 @@ fun Track(
                     }
                     Spacer(modifier = Modifier.width(15.dp))
                     Column {
-                        Text(text = "From", style = BodySmall)
+                        Text(text = stringResource(R.string.from), style = BodySmall)
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -204,16 +203,17 @@ fun Track(
                         ) {
                             AsyncImage(
                                 model = defaultImageRequestBuilder(
-                                    url = track.value!!.artist.bestImageUrl,
+                                    url = track.artist.bestImageUrl,
                                     PlaceholderType.ARTIST
                                 ),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(44.dp)
-                                    .clip(CircleShape)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
                             )
                             Text(
-                                text = track.value!!.artist.name,
+                                text = track.artist.name,
                                 style = BodyLarge,
                                 modifier = Modifier.padding(start = 10.dp),
                                 maxLines = 1,
@@ -222,7 +222,7 @@ fun Track(
                         }
                     }
                 }
-                if (similarTracks.value != null) {
+                if (similarTracks != null) {
                     Divider(Modifier.padding(vertical = 20.dp))
                     Column(
                         Modifier
@@ -231,11 +231,11 @@ fun Track(
                         horizontalAlignment = Alignment.Start,
                     ) {
                         Text(
-                            "Similar Tracks",
+                            stringResource(R.string.similar_tracks),
                             style = Heading4,
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        similarTracks.value!!.similarTracks.tracks.forEach {
+                        similarTracks.similarTracks.tracks.forEach {
                             TrackRow(track = it, nav = nav, false)
                         }
                     }
@@ -243,7 +243,5 @@ fun Track(
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
-
-
     }
 }

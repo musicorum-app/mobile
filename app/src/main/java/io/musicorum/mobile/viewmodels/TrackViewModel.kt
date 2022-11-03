@@ -3,7 +3,6 @@ package io.musicorum.mobile.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.musicorum.mobile.ktor.endpoints.SimilarTracksEndpoint
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
@@ -14,6 +13,7 @@ class TrackViewModel : ViewModel() {
     val track: MutableLiveData<Track> by lazy { MutableLiveData<Track>() }
     val similar: MutableLiveData<SimilarTrack> by lazy { MutableLiveData<SimilarTrack>() }
     val artistCover: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val error: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>(null) }
 
     suspend fun fetchTrack(
         trackName: String,
@@ -48,14 +48,16 @@ class TrackViewModel : ViewModel() {
 
     suspend fun fetchSimilar(baseTrack: Track, limit: Int?, autoCorrect: Boolean?) {
         viewModelScope.launch {
-            val res = SimilarTracksEndpoint().fetchSimilar(baseTrack, limit, autoCorrect)
+            val res = TrackEndpoint().fetchSimilar(baseTrack, limit, autoCorrect)
+            if (res == null) {
+                error.value = true
+                return@launch
+            }
             if (res.similarTracks.tracks.isNotEmpty()) {
                 val resourceRes = MusicorumTrackEndpoint().fetchTracks(res.similarTracks.tracks)
                 resourceRes.forEachIndexed { index, trackResponse ->
                     val imageUrl = trackResponse.resources?.getOrNull(0)?.bestImageUrl
-                    res.similarTracks.tracks[index].images?.onEach { it ->
-                        it.url = imageUrl ?: return@onEach
-                    }
+                    res.similarTracks.tracks[index].bestImageUrl = imageUrl ?: ""
                 }
                 similar.value = res
             }

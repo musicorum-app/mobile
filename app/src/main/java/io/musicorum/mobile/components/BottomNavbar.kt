@@ -1,6 +1,5 @@
 package io.musicorum.mobile.components
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -13,13 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MostlyRed
+import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun BottomNavBar(nav: NavHostController) {
     val items = listOf("Home", "Discover", "Scrobbling", "Charts", "Account")
@@ -39,10 +40,7 @@ fun BottomNavBar(nav: NavHostController) {
     val navBackStackEntry by nav.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    Box(
-        modifier = Modifier
-            .background(KindaBlack)
-    ) {
+    Box(modifier = Modifier.background(KindaBlack)) {
         NavigationBar(
             containerColor = Color.Transparent
         ) {
@@ -50,13 +48,21 @@ fun BottomNavBar(nav: NavHostController) {
                 NavigationBarItem(
                     selected = currentDestination?.hierarchy?.any { it.route?.lowercase() == s.lowercase() } == true,
                     label = { Text(text = s, modifier = Modifier.padding(top = 60.dp)) },
-                    onClick = { nav.navigate(s.lowercase(Locale.ROOT)) },
+                    onClick = {
+                        nav.navigate(s.lowercase(Locale.ROOT))
+                        {
+                            launchSingleTop = true
+                            popUpTo(nav.graph.findStartDestination().id) { saveState = true }
+                            restoreState = true
+                        }
+
+                    },
                     icon = { Icon(icons[index], contentDescription = "nav icon") },
                     alwaysShowLabel = false,
                     colors = navItemColors
                 )
-
             }
         }
     }
+
 }
