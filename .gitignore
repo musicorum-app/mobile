@@ -9,3 +9,5 @@
 local.properties
 tokens.properties
 /app/debug
+/app/release
+google-services.json

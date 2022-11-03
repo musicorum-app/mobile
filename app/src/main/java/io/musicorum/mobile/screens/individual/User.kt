@@ -105,7 +105,7 @@ fun User(
             )
             recentScrobbles?.let { track ->
                 track.forEach {
-                    TrackRow(track = it, nav = nav, favoriteIcon = false)
+                    TrackRow(track = it, nav = nav, favoriteIcon = false, showTimespan = true)
                 }
             }
             Divider(modifier = Modifier.run { padding(vertical = 20.dp) })
