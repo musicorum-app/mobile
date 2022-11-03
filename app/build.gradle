@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 def tokensFile = rootProject.file("tokens.properties")
@@ -16,8 +18,8 @@ android {
         applicationId "io.musicorum.mobile"
         minSdk 28
         targetSdk 33
-        versionCode 9
-        versionName "1.8"
+        versionCode 10
+        versionName "1.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -60,6 +62,9 @@ android {
 
 dependencies {
 
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation platform('com.google.firebase:firebase-bom:31.0.2')
     implementation 'androidx.browser:browser:1.4.0'
     implementation "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-android:$ktor_version"

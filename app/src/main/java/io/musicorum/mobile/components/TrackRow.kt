@@ -38,6 +38,7 @@ fun TrackRow(
     track: Track,
     nav: NavHostController,
     favoriteIcon: Boolean = true,
+    showTimespan: Boolean = false,
     trackRowViewModel: TrackRowViewModel = viewModel()
 ) {
     val partialTrack = NavigationTrack(track.name, track.artist.artistName)
@@ -94,17 +95,18 @@ fun TrackRow(
                             }
                         }
                     }
-                    val txt = if (track.attributes?.nowPlaying.toBoolean()) {
-                        stringResource(id = R.string.scrobbling_now)
-                    } else {
-                        DateUtils.getRelativeTimeSpanString(
-                            track.date!!.uts.toLong() * 1000,
-                            System.currentTimeMillis(),
-                            DateUtils.SECOND_IN_MILLIS
-                        ).toString()
+                    if (showTimespan) {
+                        val txt = if (track.attributes?.nowPlaying.toBoolean()) {
+                            stringResource(id = R.string.scrobbling_now)
+                        } else {
+                            DateUtils.getRelativeTimeSpanString(
+                                track.date!!.uts.toLong() * 1000,
+                                System.currentTimeMillis(),
+                                DateUtils.SECOND_IN_MILLIS
+                            ).toString()
+                        }
+                        Text(text = txt, modifier = Modifier.alpha(0.55f), style = Subtitle1)
                     }
-                    Text(text = txt, modifier = Modifier.alpha(0.55f), style = Subtitle1)
-
                 }
             }
         )
