@@ -30,7 +30,7 @@ class TrackEndpoint {
         KtorConfiguration.lastFmClient.post {
             parameter("method", if (favorite) "track.love" else "track.unlove")
             parameter("track", track.name)
-            parameter("artist", track.artist.name)
+            parameter("artist", track.artist.artistName)
             parameter("sk", sessionKey)
         }
     }
@@ -39,7 +39,7 @@ class TrackEndpoint {
         val autoCorrectValue = if (autoCorrect == true) "1" else "0"
         val res = KtorConfiguration.lastFmClient.get {
             parameter("method", "track.getSimilar")
-            parameter("artist", baseTrack.artist.name)
+            parameter("artist", baseTrack.artist.artistName)
             parameter("track", baseTrack.name)
             parameter("limit", limit)
             parameter("autocorrect", autoCorrectValue)

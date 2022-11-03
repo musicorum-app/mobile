@@ -133,7 +133,7 @@ fun Track(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = track.artist.name,
+                    text = track.artist.artistName,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = Body1,
@@ -184,7 +184,7 @@ fun Track(
                                     .clip(RoundedCornerShape(6.dp))
                             )
                             Text(
-                                text = track.album?.name ?: "Unknown",
+                                text = track.album?.albumName ?: "Unknown",
                                 style = BodyLarge,
                                 modifier = Modifier.padding(start = 10.dp),
                                 maxLines = 1,
@@ -213,7 +213,7 @@ fun Track(
                                 contentScale = ContentScale.Crop
                             )
                             Text(
-                                text = track.artist.name,
+                                text = track.artist.artistName,
                                 style = BodyLarge,
                                 modifier = Modifier.padding(start = 10.dp),
                                 maxLines = 1,

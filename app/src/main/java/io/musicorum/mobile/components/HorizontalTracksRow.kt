@@ -61,7 +61,7 @@ fun HorizontalTracksRow(tracks: List<Track>?, labelType: LabelType, nav: NavHost
 @Composable
 fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
     val interactionSource = remember { MutableInteractionSource() }
-    val navTrack = NavigationTrack(track.name, track.artist.name)
+    val navTrack = NavigationTrack(track.name, track.artist.artistName)
     val dest = Json.encodeToString(navTrack)
     Column(
         horizontalAlignment = Alignment.Start,
@@ -108,7 +108,7 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
             Text(text, modifier = Modifier.alpha(0.55f), style = label)
         } else if (labelType == LabelType.ARTIST_NAME) {
             Text(
-                track.artist.name,
+                track.artist.artistName,
                 modifier = Modifier.alpha(0.55f),
                 style = label,
                 maxLines = 1,

@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -39,7 +40,7 @@ fun TrackRow(
     favoriteIcon: Boolean = true,
     trackRowViewModel: TrackRowViewModel = viewModel()
 ) {
-    val partialTrack = NavigationTrack(track.name, track.artist.name)
+    val partialTrack = NavigationTrack(track.name, track.artist.artistName)
     val dest = Json.encodeToString(partialTrack)
     val listColors = ListItemDefaults.colors(
         containerColor = AlmostBlack
@@ -52,11 +53,18 @@ fun TrackRow(
             .clickable { nav.navigate("track/$dest") { restoreState = true } },
     ) {
         ListItem(
-            headlineText = { Text(text = track.name, style = BodyLarge) },
+            headlineText = {
+                Text(
+                    text = track.name,
+                    style = BodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
             colors = listColors,
             supportingText = {
                 Text(
-                    text = track.artist.name,
+                    text = track.artist.artistName,
                     modifier = Modifier.alpha(0.55f),
                     style = Subtitle1
                 )

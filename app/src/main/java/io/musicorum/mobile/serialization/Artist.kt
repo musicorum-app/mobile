@@ -6,10 +6,10 @@ import kotlinx.serialization.SerialName
 data class Artist(
     @SerialName("#text")
     private val nameText: String? = null,
-    private val _name: String? = null,
+    private val name: String? = null,
     var images: List<Image>? = null
 ) {
-    val name = nameText ?: _name ?: "Unknown"
+    val artistName = nameText ?: name ?: "Unknown"
     var bestImageUrl = images?.find { it.size == "extralarge" }?.url
         ?: images?.find { it.size == "large" }?.url
         ?: images?.find { it.size == "medium" }?.url

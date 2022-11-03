@@ -26,6 +26,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.screens.*
+import io.musicorum.mobile.screens.individual.Album
 import io.musicorum.mobile.screens.individual.Track
 import io.musicorum.mobile.screens.individual.User
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
@@ -97,6 +98,15 @@ class MainActivity : ComponentActivity() {
                                     username = it.arguments?.getString("username")!!,
                                     nav = navController
                                 )
+                            }
+
+                            composable(
+                                "album/{albumData}",
+                                arguments = listOf(navArgument("albumData") {
+                                    type = NavType.StringType
+                                }),
+                            ) {
+                                Album(it.arguments?.getString("albumData"))
                             }
 
                             composable("discover") { Discover() }

@@ -146,7 +146,7 @@ fun User(
                     .fillMaxWidth()
             )
             topAlbums?.let {
-                TopAlbumsRow(albums = it.topAlbums.albums)
+                TopAlbumsRow(albums = it.topAlbums.albums, nav)
             }
         }
     }
