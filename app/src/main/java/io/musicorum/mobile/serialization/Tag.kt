@@ -1,14 +1,15 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class Tag(
     @SerialName("tag")
     val tags: List<TagData>
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class TagData(
     val name: String
 )

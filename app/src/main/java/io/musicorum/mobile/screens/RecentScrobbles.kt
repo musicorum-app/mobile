@@ -15,9 +15,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackRow
 import io.musicorum.mobile.ui.theme.LightGray
@@ -48,7 +50,7 @@ fun RecentScrobbles(
     Scaffold(
         topBar = {
             MusicorumTopBar(
-                text = "Recent Scrobbles",
+                text = stringResource(R.string.recent_scrobbles),
                 scrollBehavior = scrollBehavior,
                 nav = nav
             )

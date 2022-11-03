@@ -8,3 +8,4 @@
 .idea
 local.properties
 tokens.properties
+/app/debug

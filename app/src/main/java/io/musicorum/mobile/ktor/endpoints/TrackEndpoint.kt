@@ -2,8 +2,10 @@ package io.musicorum.mobile.ktor.endpoints
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.BaseIndividualTrack
+import io.musicorum.mobile.serialization.SimilarTrack
 import io.musicorum.mobile.serialization.Track
 
 class TrackEndpoint {
@@ -33,12 +35,20 @@ class TrackEndpoint {
         }
     }
 
-    @kotlinx.serialization.Serializable
-    private data class RequestBody(
-        val trackName: String,
-        val artist: String,
-        val api_key: String,
-        val api_sig: String,
-        val sk: String
-    )
+    suspend fun fetchSimilar(baseTrack: Track, limit: Int?, autoCorrect: Boolean?): SimilarTrack? {
+        val autoCorrectValue = if (autoCorrect == true) "1" else "0"
+        val res = KtorConfiguration.lastFmClient.get {
+            parameter("method", "track.getSimilar")
+            parameter("artist", baseTrack.artist.name)
+            parameter("track", baseTrack.name)
+            parameter("limit", limit)
+            parameter("autocorrect", autoCorrectValue)
+        }
+        return if (res.status == HttpStatusCode.OK) {
+            res.body<SimilarTrack>()
+        } else {
+            null
+        }
+    }
+
 }

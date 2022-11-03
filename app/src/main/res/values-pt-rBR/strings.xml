@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Musicorum</string>
+
+    <string name="bottom_navigation_item_scrobbling">Reproduções</string>
+    <string name="bottom_navigation_item_profile">Perfil</string>
+
+    <string name="view_more">Ver mais</string>
+
+    <string name="artists">Artistas</string>
+    <string name="artist">Artista</string>
+    <string name="albums">Álbuns</string>
+    <string name="album">Álbum</string>
+    <string name="tracks">Faixas</string>
+    <string name="track">Faixa</string>
+    <string name="users">Usuários</string>
+    <string name="user">Usuário</string>
+
+    <string name="top_tracks">Top faixas</string>
+    <string name="top_albums">Top álbuns</string>
+    <string name="top_artists">Top artistas</string>
+
+    <string name="listeners">Ouvintes</string>
+    <string name="scrobbles">Reproduções</string>
+    <string name="your_scrobbles">Suas reproduções</string>
+
+    <string name="settings">Configurações</string>
+    <string name="search">Pesquisar</string>
+    <string name="back">Voltar</string>
+
+    <!-- Home -->
+    <string name="home_page_scrobbles_text">%1$s reproduções • últimos 7 dias</string>
+    <string name="home_page_image_content_user">Imagem do perfil do usuário</string>
+
+    <string name="discover_page_no_results">Nada encontrado</string>
+    <string name="similar_artists">Artistas similares</string>
+
+    <plurals name="tracks_quantity">
+        <item quantity="one">%1$s faixa</item>
+        <item quantity="other">%1$s faixas</item>
+    </plurals>
+
+    <plurals name="albums_quantity">
+        <item quantity="one">%1$s álbum</item>
+        <item quantity="other">%1$s álbuns</item>
+    </plurals>
+
+    <plurals name="artists_quantity">
+        <item quantity="one">%1$s artista</item>
+        <item quantity="other">%1$s artistas</item>
+    </plurals>
+
+    <!-- Discover -->
+    <plurals name="discover_page_results_text">
+        <item quantity="one">%1$s resultado</item>
+        <item quantity="other">%1$s resultados</item>
+    </plurals>
+    <string name="recent_scrobbles">Reproduções recentes</string>
+    <string name="most_listened_week">Mais ouvido • últimos 7  dias</string>
+    <string name="friends_activity">Atividade dos amigos</string>
+    <plurals name="total_scrobbles_week">
+        <item quantity="one">%i reprodução • últimos 7 dias</item>
+        <item quantity="other">%i reproduções • últimos 7 dias</item>
+    </plurals>
+    <string name="from">De</string>
+    <string name="appears_on">Aparece em</string>
+    <string name="most_listened_tracks">Faixas mais ouvidas</string>
+    <string name="homescreen_welcome">Bem-vindo ao aplicativo do Musicorum</string>
+    <string name="homescreen_lfm_access">Precisamos de acesso à sua conta do Last.fm para continuar</string>
+    <string name="homescreen_login_button">ENTRAR COM LAST.FM</string>
+    <string name="scrobbling_now">Reproduzindo agora</string>
+    <string name="similar_tracks">Faixas similares</string>
+
+</resources>

@@ -17,7 +17,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackRow
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
@@ -43,7 +45,7 @@ fun MostListened(
     Scaffold(
         topBar = {
             MusicorumTopBar(
-                text = "Most Listened Tracks",
+                text = stringResource(R.string.most_listened_tracks),
                 scrollBehavior = scrollBehavior,
                 nav = nav
             )
