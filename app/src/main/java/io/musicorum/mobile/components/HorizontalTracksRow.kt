@@ -2,12 +2,14 @@ package io.musicorum.mobile.components
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,8 +32,11 @@ import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.Poppins
 import io.musicorum.mobile.ui.theme.Subtitle1
+import io.musicorum.mobile.utils.NowPlaying
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -85,28 +90,48 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
-            .width(120.dp)
-            .clip(RoundedCornerShape(6.dp))
+            .fillMaxWidth()
             .clickable(
                 enabled = true,
                 indication = null,
                 interactionSource = interactionSource
             ) { nav.navigate("track/$dest") }
     ) {
-        AsyncImage(
-            model = defaultImageRequestBuilder(url = track.bestImageUrl),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(6.dp))
-                .aspectRatio(1f)
-                .indication(interactionSource, LocalIndication.current)
-        )
+        Box(modifier = Modifier.width(120.dp)) {
+            AsyncImage(
+                model = defaultImageRequestBuilder(url = track.bestImageUrl),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(125.dp)
+                    .align(Alignment.CenterStart)
+                    .clip(RoundedCornerShape(6.dp))
+                    .aspectRatio(1f)
+                    .indication(interactionSource, LocalIndication.current)
+            )
+            if (track.attributes?.nowPlaying == "true") {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(40.dp)
+                        .offset(5.dp, 10.dp)
+                        .clip(CircleShape)
+                        .background(color = AlmostBlack, shape = CircleShape)
+                        .padding(3.dp)
+                        .clip(CircleShape)
+                        .background(MostlyRed)
+                ) {
+                    NowPlaying(modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.Center))
+                }
+            }
+        }
         Text(
             text = track.name,
             textAlign = TextAlign.Start,
             style = label,
             modifier = Modifier
+                .width(120.dp)
                 .padding(top = 7.dp)
                 .indication(interactionSource, null),
             maxLines = 1,

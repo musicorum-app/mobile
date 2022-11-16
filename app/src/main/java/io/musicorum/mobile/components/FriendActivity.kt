@@ -1,9 +1,7 @@
 package io.musicorum.mobile.components
 
 import android.text.format.DateUtils
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,8 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +26,7 @@ import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.BodySmall
 import io.musicorum.mobile.ui.theme.Poppins
+import io.musicorum.mobile.utils.NowPlaying
 
 @Composable
 fun FriendActivity(
@@ -39,7 +36,7 @@ fun FriendActivity(
     nav: NavHostController
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Box(modifier = Modifier.size(height = 120.dp, width = 120.dp)) {
+        Box(modifier = Modifier.size(120.dp)) {
             AsyncImage(
                 model = defaultImageRequestBuilder(url = track.bestImageUrl),
                 contentScale = ContentScale.Crop,
@@ -64,15 +61,22 @@ fun FriendActivity(
             )
         }
         Spacer(Modifier.height(10.dp))
-        Text(
-            text = track.name,
-            fontFamily = Poppins,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            fontSize = 14.sp,
-            modifier = Modifier.width(120.dp)
-        )
+        Row {
+            if (track.attributes?.nowPlaying == "true") {
+                NowPlaying(modifier = Modifier
+                    .size(15.dp)
+                    .padding(end = 3.dp))
+            }
+            Text(
+                text = track.name,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontSize = 14.sp,
+                modifier = Modifier.width(105.dp)
+            )
+        }
         val date = if (track.attributes?.nowPlaying.toBoolean()) {
             stringResource(io.musicorum.mobile.R.string.scrobbling_now)
         } else {

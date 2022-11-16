@@ -20,11 +20,11 @@ fun MusicorumTopBar(
     fadeable: Boolean,
     likeAction: @Composable RowScope.() -> Unit
 ) {
+    val fraction = scrollBehavior.state.overlappedFraction
     val colors = TopAppBarDefaults.smallTopAppBarColors(
-        scrolledContainerColor = Color.DarkGray,
+        scrolledContainerColor = Color.DarkGray.copy(alpha = fraction),
         containerColor = Color.Transparent
     )
-    val fraction = scrollBehavior.state.overlappedFraction
     val modifier = if (fadeable) {
         Modifier
             .padding(top = 45.dp)
@@ -32,8 +32,6 @@ fun MusicorumTopBar(
     } else {
         Modifier.padding(top = 45.dp)
     }
-
-
 
     TopAppBar(
         title = {

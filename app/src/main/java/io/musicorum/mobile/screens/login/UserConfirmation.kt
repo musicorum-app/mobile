@@ -14,6 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
+import io.musicorum.mobile.BuildConfig
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.MutableUserState
 import io.musicorum.mobile.R
@@ -41,20 +44,20 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
         val user = LocalUser.current
         val ctx = LocalContext.current
         val coroutine = rememberCoroutineScope()
-        user?.let {
+        user?.let { user ->
             if (dialogOpened.value) {
                 AnalyticsDialog(open = dialogOpened, checkBoxState = checkboxChecked)
             }
 
             AsyncImage(
                 model = defaultImageRequestBuilder(
-                    url = it.user.bestImageUrl,
+                    url = user.user.bestImageUrl,
                     PlaceholderType.USER
                 ), contentDescription = null,
                 modifier = Modifier.clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(25.dp))
-            Text(text = stringResource(id = R.string.welcome, it.user.name), style = Heading2)
+            Text(text = stringResource(id = R.string.welcome, user.user.name), style = Heading2)
             Spacer(modifier = Modifier.width(25.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
@@ -76,6 +79,9 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
             Spacer(modifier = Modifier.width(25.dp))
             Button(onClick = {
                 coroutine.launch {
+                    if (!BuildConfig.DEBUG) {
+                        Firebase.crashlytics.setCrashlyticsCollectionEnabled(checkboxChecked.value)
+                    }
                     commitDataStore(sessionKey, ctx)
                     val sessionUser = UserEndpoint().getSessionUser(sessionKey)
                     sessionUser?.let {

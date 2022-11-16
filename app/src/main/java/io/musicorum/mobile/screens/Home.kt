@@ -44,7 +44,6 @@ import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.ui.theme.*
-import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.darkenColor
 import io.musicorum.mobile.viewmodels.HomeViewModel
 import kotlinx.coroutines.launch
