@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
 
+
         setContent {
             navController = rememberAnimatedNavController()
             val homeViewModel: HomeViewModel = viewModel()
