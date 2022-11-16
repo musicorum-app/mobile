@@ -59,8 +59,8 @@
     <string name="most_listened_week">Mais ouvido • últimos 7  dias</string>
     <string name="friends_activity">Atividade dos amigos</string>
     <plurals name="total_scrobbles_week">
-        <item quantity="one">%i reprodução • últimos 7 dias</item>
-        <item quantity="other">%i reproduções • últimos 7 dias</item>
+        <item quantity="one">%1$d reprodução • últimos 7 dias</item>
+        <item quantity="other">%1$d reproduções • últimos 7 dias</item>
     </plurals>
     <string name="from">De</string>
     <string name="appears_on">Aparece em</string>
@@ -70,5 +70,15 @@
     <string name="homescreen_login_button">ENTRAR COM LAST.FM</string>
     <string name="scrobbling_now">Reproduzindo agora</string>
     <string name="similar_tracks">Faixas similares</string>
+    <string name="section_coming_soon">Essa área estará disponível em breve. Fique ligado nas atualizações!</string>
+    <string name="analytics_warning">As análises são essencias durante o período de teste interno para visualizarmos falhas inesperadas do aplicativo. Desabilitar as análiases pode dificultar nosso trabalho de publicar boas atualizações e minimizar o número de usuários que não possuem nenhuma falha inesperada.</string>
+    <string name="confirmation_continue">Continuar</string>
+    <string name="disable_anyway">Desabilitar mesmo assim</string>
+    <string name="cancel">Cancelar</string>
+    <string name="welcome">Bem-vindo, %1$s!</string>
+    <string name="analytics_description">Enviar relatório de falhas e informações do dispositivo</string>
+    <string name="hold_on">Espere</string>
+    <string name="last_month">Últimos 30 dias</string>
+    <string name="no_data_available">Sem dados disponíveis</string>
 
 </resources>

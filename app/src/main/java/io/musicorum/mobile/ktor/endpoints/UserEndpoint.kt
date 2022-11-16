@@ -13,7 +13,7 @@ class UserEndpoint {
             parameter("user", username)
         }
 
-        return if (fetched.status == HttpStatusCode.OK) {
+        return if (fetched.status.isSuccess()) {
             fetched.body<User>()
         } else {
             null
@@ -26,7 +26,7 @@ class UserEndpoint {
             parameter("sk", sessionKey)
         }
 
-        return if (fetched.status == HttpStatusCode.OK) {
+        return if (fetched.status.isSuccess()) {
             fetched.body<User>()
         } else {
             null
@@ -44,7 +44,7 @@ class UserEndpoint {
             parameter("limit", limit)
             parameter("period", period?.value)
         }
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             return res.body<TopArtistsResponse>()
         } else {
             null
@@ -56,16 +56,20 @@ class UserEndpoint {
         from: String?,
         limit: Int?,
         extended: Boolean?
-    ): RecentTracks {
+    ): RecentTracks? {
         val extendedValue = if (extended == true) "1" else "0"
-        val res: RecentTracks = KtorConfiguration.lastFmClient.get {
+        val res = KtorConfiguration.lastFmClient.get {
             parameter("method", "user.getRecentTracks")
             parameter("user", user)
             parameter("from", from)
             parameter("limit", limit)
             parameter("extended", extendedValue)
-        }.body()
-        return res
+        }
+        return if (res.status.isSuccess()) {
+            res.body<RecentTracks>()
+        } else {
+            null
+        }
     }
 
     suspend fun getFriends(user: String, limit: Int?): FriendsResponse? {
@@ -74,7 +78,7 @@ class UserEndpoint {
             parameter("username", user)
             parameter("limit", limit)
         }
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             res.body<FriendsResponse>()
         } else null
     }
@@ -86,7 +90,7 @@ class UserEndpoint {
             parameter("period", period?.value)
             parameter("limit", limit)
         }
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             res.body<TopTracks>()
         } else {
             null
@@ -97,11 +101,11 @@ class UserEndpoint {
         val res = KtorConfiguration.lastFmClient.get {
             parameter("method", "user.getTopAlbums")
             parameter("user", user)
-            parameter("period", period)
+            parameter("period", period?.value)
             parameter("limit", limit)
         }
 
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             return res.body<TopAlbumsResponse>()
         } else {
             null

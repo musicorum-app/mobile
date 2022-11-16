@@ -23,7 +23,7 @@ import java.util.*
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun BottomNavBar(nav: NavHostController) {
-    val items = listOf("Home", "Discover", "Scrobbling", "Charts", "Account")
+    val items = listOf("Home", "Discover", "Scrobbling", "Charts", "Profile")
     val icons = listOf(
         Icons.Rounded.Home,
         Icons.Rounded.Search,
@@ -52,8 +52,6 @@ fun BottomNavBar(nav: NavHostController) {
                         nav.navigate(s.lowercase(Locale.ROOT))
                         {
                             launchSingleTop = true
-                            popUpTo(nav.graph.findStartDestination().id) { saveState = true }
-                            restoreState = true
                         }
 
                     },

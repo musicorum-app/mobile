@@ -1,12 +1,17 @@
 package io.musicorum.mobile.ktor.endpoints
 
+import android.content.Context
+import androidx.datastore.preferences.core.stringPreferencesKey
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.musicorum.mobile.dataStore
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.BaseIndividualTrack
 import io.musicorum.mobile.serialization.SimilarTrack
 import io.musicorum.mobile.serialization.Track
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class TrackEndpoint {
     suspend fun getTrack(
@@ -14,23 +19,30 @@ class TrackEndpoint {
         artist: String,
         username: String?,
         autoCorrect: Boolean?
-    ): BaseIndividualTrack {
-        val res: BaseIndividualTrack = KtorConfiguration.lastFmClient.get {
+    ): BaseIndividualTrack? {
+        val res = KtorConfiguration.lastFmClient.get {
             val autoCorrectValue = if (autoCorrect == true) 1 else 0
             parameter("track", trackName)
             parameter("method", "track.getInfo")
             parameter("username", username)
             parameter("artist", artist)
             parameter("autocorrect", autoCorrectValue)
-        }.body()
-        return res
+        }
+        return if (res.status.isSuccess()) {
+            res.body<BaseIndividualTrack>()
+        } else {
+            null
+        }
     }
 
-    suspend fun updateFavoritePreference(track: Track, favorite: Boolean, sessionKey: String) {
+    suspend fun updateFavoritePreference(track: Track, ctx: Context) {
+        val sessionKey = ctx.dataStore.data.map { prefs ->
+            prefs[stringPreferencesKey("session_key")]!!
+        }.first()
         KtorConfiguration.lastFmClient.post {
-            parameter("method", if (favorite) "track.love" else "track.unlove")
+            parameter("method", if (!track.loved.toBoolean()) "track.love" else "track.unlove")
             parameter("track", track.name)
-            parameter("artist", track.artist.artistName)
+            parameter("artist", track.artist.name)
             parameter("sk", sessionKey)
         }
     }
@@ -39,12 +51,12 @@ class TrackEndpoint {
         val autoCorrectValue = if (autoCorrect == true) "1" else "0"
         val res = KtorConfiguration.lastFmClient.get {
             parameter("method", "track.getSimilar")
-            parameter("artist", baseTrack.artist.artistName)
+            parameter("artist", baseTrack.artist.name)
             parameter("track", baseTrack.name)
             parameter("limit", limit)
             parameter("autocorrect", autoCorrectValue)
         }
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             res.body<SimilarTrack>()
         } else {
             null

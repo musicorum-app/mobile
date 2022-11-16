@@ -27,9 +27,11 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
+import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.Poppins
+import io.musicorum.mobile.ui.theme.Subtitle1
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -44,15 +46,32 @@ enum class LabelType {
 }
 
 @Composable
-fun HorizontalTracksRow(tracks: List<Track>?, labelType: LabelType, nav: NavHostController) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier
-            .padding(start = 20.dp)
-    ) {
-        if (!tracks.isNullOrEmpty()) {
-            items(tracks) { track ->
-                TrackCard(track = track, labelType, nav)
+fun HorizontalTracksRow(
+    tracks: List<Track>?,
+    labelType: LabelType,
+    nav: NavHostController,
+    errored: Boolean?
+) {
+    if (errored == true) {
+        Text(
+            text = "Your tracks will be shown here",
+            style = Subtitle1,
+            modifier = Modifier.padding(start = 20.dp)
+        )
+    } else {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .padding(start = 20.dp)
+        ) {
+            if (tracks.isNullOrEmpty()) {
+                items(4) { _ ->
+                    GenericCardPlaceholder(visible = tracks.isNullOrEmpty())
+                }
+            } else {
+                items(tracks) { track ->
+                    TrackCard(track = track, labelType, nav)
+                }
             }
         }
     }
@@ -61,7 +80,7 @@ fun HorizontalTracksRow(tracks: List<Track>?, labelType: LabelType, nav: NavHost
 @Composable
 fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
     val interactionSource = remember { MutableInteractionSource() }
-    val navTrack = NavigationTrack(track.name, track.artist.artistName)
+    val navTrack = NavigationTrack(track.name, track.artist.name)
     val dest = Json.encodeToString(navTrack)
     Column(
         horizontalAlignment = Alignment.Start,
@@ -108,7 +127,7 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
             Text(text, modifier = Modifier.alpha(0.55f), style = label)
         } else if (labelType == LabelType.ARTIST_NAME) {
             Text(
-                track.artist.artistName,
+                track.artist.name,
                 modifier = Modifier.alpha(0.55f),
                 style = label,
                 maxLines = 1,

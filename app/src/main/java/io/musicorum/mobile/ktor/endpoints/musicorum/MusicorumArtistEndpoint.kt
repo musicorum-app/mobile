@@ -17,7 +17,7 @@ internal val json = Json {
 class MusicorumArtistEndpoint {
     suspend fun fetchArtist(artists: List<Artist>): List<TrackResponse> {
         val artistsList = mutableListOf<String>()
-        artists.forEach { artist -> artistsList.add(artist.artistName) }
+        artists.forEach { artist -> artistsList.add(artist.name) }
         val body = Body(artistsList)
         val res = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/artists")
@@ -28,7 +28,7 @@ class MusicorumArtistEndpoint {
     }
 
     @JvmName("fetchArtist1")
-    suspend fun fetchArtist(artists: List<TopArtist>): List<TrackResponse> {
+    suspend fun fetchArtist(artists: List<TopArtist>): List<TrackResponse>? {
         val artistsList = mutableListOf<String>()
         artists.forEach { artist -> artistsList.add(artist.name) }
         val body = Body(artistsList)
@@ -37,7 +37,11 @@ class MusicorumArtistEndpoint {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
-        return json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        return if (res.status.isSuccess()) {
+            json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        } else {
+            null
+        }
     }
 
     @kotlinx.serialization.Serializable

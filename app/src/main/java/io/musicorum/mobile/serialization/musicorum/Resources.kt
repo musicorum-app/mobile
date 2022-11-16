@@ -1,15 +1,5 @@
 package io.musicorum.mobile.serialization.musicorum
 
-private enum class ImageSize (_scale: Int) {
-    EXTRA_SMALL(1),
-    SMALL(2),
-    MEDIUM(3),
-    LARGE(4);
-
-    val scale = _scale
-}
-
-
 @kotlinx.serialization.Serializable
 data class Resources(
     val images: List<Images>

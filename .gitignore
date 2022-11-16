@@ -8,6 +8,7 @@
 .idea
 local.properties
 tokens.properties
+tokens.release.properties
 /app/debug
 /app/release
 google-services.json

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -32,7 +33,7 @@ private val artistStyle = TextStyle(
 fun TopArtistsRow(artists: List<TopArtist>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
-        modifier = Modifier.padding(start = 20.dp)
+        modifier = Modifier.padding(start = 20.dp).fillMaxWidth()
     ) {
         items(artists) { artist ->
             ArtistCard(artist)

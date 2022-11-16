@@ -13,17 +13,20 @@ class MusicorumTrackEndpoint {
 
     private val json = Json {
         ignoreUnknownKeys = true
+        encodeDefaults = true
     }
 
-    suspend fun fetchTracks(tracks: List<Track>): List<TrackResponse> {
+    suspend fun fetchTracks(tracks: List<Track>): List<TrackResponse>? {
         val trackList: MutableList<BodyTrack> = mutableListOf()
-        tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist.artistName)) }
+        tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist.name)) }
         val req: HttpResponse = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/tracks")
             contentType(ContentType.Application.Json)
             setBody(Body(trackList.toList()))
         }
-        return json.decodeFromString(ListSerializer(TrackResponse.serializer()), req.bodyAsText())
+        return if (req.status.isSuccess()) {
+            json.decodeFromString(ListSerializer(TrackResponse.serializer()), req.bodyAsText())
+        } else null
     }
 
     @kotlinx.serialization.Serializable

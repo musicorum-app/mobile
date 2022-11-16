@@ -12,29 +12,30 @@ import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.serialization.*
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
-    val user: MutableLiveData<User> by lazy { MutableLiveData<User>() }
-    val userPalette: MutableLiveData<Palette> by lazy { MutableLiveData<Palette>() }
-    val recentTracks: MutableLiveData<RecentTracks> by lazy { MutableLiveData<RecentTracks>() }
-    val weekTracks: MutableLiveData<TopTracks> by lazy { MutableLiveData<TopTracks>() }
-    val friends: MutableLiveData<List<UserData>> by lazy { MutableLiveData<List<UserData>>() }
-    val friendsActivity: MutableLiveData<List<RecentTracks>> by lazy { MutableLiveData<List<RecentTracks>>() }
-    val error: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>(null) }
+    val user by lazy { MutableLiveData<User>() }
+    val userPalette by lazy { MutableLiveData<Palette>() }
+    val recentTracks by lazy { MutableLiveData<RecentTracks>() }
+    val weekTracks by lazy { MutableLiveData<TopTracks>() }
+    val friends by lazy { MutableLiveData<List<UserData>>() }
+    val friendsActivity by lazy { MutableLiveData<List<RecentTracks>>() }
+    val errored by lazy { MutableLiveData(false) }
+    val isRefreshing by lazy { MutableStateFlow(false) }
 
-    fun fetchUser(sessionKey: String) {
-        viewModelScope.launch {
-            Log.d("User view model", "user is ${user.value}")
-            val fetchedUser = UserEndpoint().getSessionUser(sessionKey)
-            user.value = fetchedUser
-            Log.d("User view model", "user is now ${user.value}")
-        }
+    fun refresh() {
+        isRefreshing.value = true
+        recentTracks.value = null
+        friends.value = null
+        friendsActivity.value = null
     }
 
     fun fetchRecentTracks(username: String, from: String?, limit: Int?, extended: Boolean?) {
         viewModelScope.launch {
             recentTracks.value = UserEndpoint().getRecentTracks(username, from, limit, extended)
+            isRefreshing.value = false
         }
     }
 
@@ -50,11 +51,11 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             val topTracksRes = UserEndpoint().getTopTracks(username, period, 10)
             if (topTracksRes == null) {
-                error.value = true
+                errored.value = true
                 return@launch
             }
             val musicorumTrRes = MusicorumTrackEndpoint().fetchTracks(topTracksRes.topTracks.tracks)
-            musicorumTrRes.forEachIndexed { i, track ->
+            musicorumTrRes?.forEachIndexed { i, track ->
                 val url = track.resources?.getOrNull(0)?.bestImageUrl
                 topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
                 topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
@@ -67,7 +68,7 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             val friendsRes = UserEndpoint().getFriends(username, limit)
             if (friendsRes == null) {
-                error.value = true
+                errored.value = true
                 return@launch
             }
             friends.value = friendsRes.friends.users
@@ -75,7 +76,7 @@ class HomeViewModel : ViewModel() {
             friendsRes.friends.users.forEach { user ->
                 val friendRecentAct =
                     UserEndpoint().getRecentTracks(user.name, null, 1, false)
-                mutableList.add(friendRecentAct)
+                friendRecentAct?.let { mutableList.add(it) }
             }
             friendsActivity.value = mutableList.toList()
         }

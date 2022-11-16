@@ -19,26 +19,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackRow
 import io.musicorum.mobile.ui.theme.LightGray
-import io.musicorum.mobile.viewmodels.HomeViewModel
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecentScrobbles(
-    homeViewModel: HomeViewModel,
     recentSrcobblesViewModel: RecentSrcobblesViewModel = viewModel(),
     nav: NavHostController
 ) {
     val recentTracks = recentSrcobblesViewModel.recentTracks.observeAsState()
+    val user = LocalUser.current!!
     LaunchedEffect(key1 = recentSrcobblesViewModel) {
         if (recentSrcobblesViewModel.recentTracks.value == null) {
             recentSrcobblesViewModel.fetchRecentTracks(
-                homeViewModel.user.value!!.user.name,
+                user.user.name,
                 "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
                 null,
                 true
@@ -52,7 +52,9 @@ fun RecentScrobbles(
             MusicorumTopBar(
                 text = stringResource(R.string.recent_scrobbles),
                 scrollBehavior = scrollBehavior,
-                nav = nav
+                nav = nav,
+                fadeable = false,
+                likeAction = {}
             )
         },
         modifier = Modifier

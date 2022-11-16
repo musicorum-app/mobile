@@ -8,7 +8,7 @@ import io.musicorum.mobile.serialization.RecentTracksData
 import kotlinx.coroutines.launch
 
 class RecentSrcobblesViewModel : ViewModel() {
-    val recentTracks: MutableLiveData<RecentTracksData> by lazy { MutableLiveData<RecentTracksData>() }
+    val recentTracks by lazy { MutableLiveData<RecentTracksData>() }
 
     suspend fun fetchRecentTracks(
         username: String,
@@ -18,7 +18,7 @@ class RecentSrcobblesViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             val res = UserEndpoint().getRecentTracks(username, from, limit, extended)
-            recentTracks.value = res.recentTracks
+            recentTracks.value = res?.recentTracks
         }
     }
 }

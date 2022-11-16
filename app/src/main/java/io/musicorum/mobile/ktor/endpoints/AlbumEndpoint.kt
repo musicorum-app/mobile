@@ -8,13 +8,14 @@ import io.musicorum.mobile.serialization.Album
 import kotlinx.serialization.Serializable
 
 class AlbumEndpoint {
-    suspend fun getInfo(album: String, artist: String): InnerAlbum? {
+    suspend fun getInfo(album: String, artist: String, user: String?): InnerAlbum? {
         val res = KtorConfiguration.lastFmClient.get {
             parameter("artist", artist)
             parameter("album", album)
             parameter("method", "album.getInfo")
+            parameter("user", user)
         }
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             res.body<InnerAlbum>()
         } else {
             null

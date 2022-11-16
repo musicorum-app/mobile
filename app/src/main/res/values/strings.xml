@@ -77,4 +77,14 @@
     <string name="homescreen_login_button">LOG IN WITH LAST.FM</string>
     <string name="scrobbling_now">Scrobbling now</string>
     <string name="similar_tracks">Similar Tracks</string>
+    <string name="section_coming_soon">This section is coming soon. Stay tuned for updates!</string>
+    <string name="analytics_warning">Analytics is essential during internal testing for us to keep track of application crashes. Disabling analytics may difficult our job to provide high-quality builds and minimize the percentage of crash-free users.</string>
+    <string name="confirmation_continue">Continue</string>
+    <string name="disable_anyway">Disable anyway</string>
+    <string name="cancel">Cancel</string>
+    <string name="welcome">Welcome, %1$s!</string>
+    <string name="analytics_description">Share crash reports and device information</string>
+    <string name="hold_on">Hold on</string>
+    <string name="last_month">Last 30 days</string>
+    <string name="no_data_available">No data available</string>
 </resources>
