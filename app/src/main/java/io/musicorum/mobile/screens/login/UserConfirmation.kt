@@ -26,7 +26,7 @@ import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.Heading2
 import io.musicorum.mobile.ui.theme.Subtitle1
-import io.musicorum.mobile.utils.commitDataStore
+import io.musicorum.mobile.utils.commitUser
 import kotlinx.coroutines.launch
 
 @Composable
@@ -44,20 +44,20 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
         val user = LocalUser.current
         val ctx = LocalContext.current
         val coroutine = rememberCoroutineScope()
-        user?.let { user ->
+        user?.let { user1 ->
             if (dialogOpened.value) {
                 AnalyticsDialog(open = dialogOpened, checkBoxState = checkboxChecked)
             }
 
             AsyncImage(
                 model = defaultImageRequestBuilder(
-                    url = user.user.bestImageUrl,
+                    url = user1.user.bestImageUrl,
                     PlaceholderType.USER
                 ), contentDescription = null,
                 modifier = Modifier.clip(CircleShape)
             )
             Spacer(modifier = Modifier.width(25.dp))
-            Text(text = stringResource(id = R.string.welcome, user.user.name), style = Heading2)
+            Text(text = stringResource(id = R.string.welcome, user1.user.name), style = Heading2)
             Spacer(modifier = Modifier.width(25.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
@@ -82,7 +82,7 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
                     if (!BuildConfig.DEBUG) {
                         Firebase.crashlytics.setCrashlyticsCollectionEnabled(checkboxChecked.value)
                     }
-                    commitDataStore(sessionKey, ctx)
+                    commitUser(sessionKey, ctx)
                     val sessionUser = UserEndpoint().getSessionUser(sessionKey)
                     sessionUser?.let {
                         MutableUserState.value = it
