@@ -1,6 +1,8 @@
 package io.musicorum.mobile.components
 
 import android.text.format.DateUtils
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -24,18 +27,19 @@ import coil.compose.AsyncImage
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.BodySmall
 import io.musicorum.mobile.ui.theme.Poppins
 
 @Composable
 fun FriendActivity(
     track: Track,
-    friendImageUrl: String,
-    friendUsername: String,
+    friendImageUrl: String?,
+    friendUsername: String?,
     nav: NavHostController
 ) {
-    Column {
-        Box(modifier = Modifier.size(120.dp)) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.size(height = 120.dp, width = 120.dp)) {
             AsyncImage(
                 model = defaultImageRequestBuilder(url = track.bestImageUrl),
                 contentScale = ContentScale.Crop,
@@ -43,16 +47,18 @@ fun FriendActivity(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .align(Alignment.Center)
+                    .align(Alignment.CenterStart)
             )
             AsyncImage(
                 model = defaultImageRequestBuilder(url = friendImageUrl, PlaceholderType.USER),
                 null,
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(40.dp)
                     .offset(5.dp, 10.dp)
                     .clip(CircleShape)
-                    .border(3.dp, Color.Black, CircleShape)
+                    .background(color = AlmostBlack, shape = CircleShape)
+                    .padding(3.dp)
+                    .clip(CircleShape)
                     .align(Alignment.BottomEnd)
                     .clickable { nav.navigate("user/$friendUsername") }
             )

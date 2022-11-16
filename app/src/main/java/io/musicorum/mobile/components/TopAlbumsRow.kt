@@ -1,12 +1,16 @@
 package io.musicorum.mobile.components
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -41,14 +45,23 @@ fun TopAlbumsRow(albums: List<TopAlbum>, nav: NavHostController) {
 
 @Composable
 fun AlbumCard(album: TopAlbum, nav: NavHostController) {
-    val partialAlbum = Json.encodeToString(PartialAlbum(album.name, album.artist?.artistName ?: "unknown"))
-    Column(modifier = Modifier.clickable { nav.navigate("album/$partialAlbum") }) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val partialAlbum =
+        Json.encodeToString(PartialAlbum(album.name, album.artist?.name ?: "unknown"))
+    Column(modifier = Modifier
+        .clickable(
+            enabled = true,
+            indication = null,
+            interactionSource = interactionSource
+        ) { nav.navigate("album/$partialAlbum") }
+    ) {
         AsyncImage(
             model = defaultImageRequestBuilder(album.bestImageUrl, PlaceholderType.ALBUM),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)
                 .clip(RoundedCornerShape(8.dp))
+                .indication(interactionSource, LocalIndication.current)
         )
         Text(
             text = album.name,
@@ -60,7 +73,7 @@ fun AlbumCard(album: TopAlbum, nav: NavHostController) {
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            album.artist?.artistName ?: "Unknown",
+            album.artist?.name ?: "Unknown",
             style = BodySmall,
             modifier = Modifier.alpha(0.55f)
         )

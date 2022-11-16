@@ -14,7 +14,7 @@ class ArtistEndpoint {
             parameter("name", artist)
             parameter("artist", artist)
         }
-        return if (res.status == HttpStatusCode.OK) {
+        return if (res.status.isSuccess()) {
             return res.body<InnerArtist>()
         } else {
             null

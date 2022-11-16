@@ -1,6 +1,7 @@
 package io.musicorum.mobile.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -64,7 +65,8 @@ val BodyMedium = TextStyle(
 val Subtitle1 = TextStyle(
     fontFamily = Poppins,
     fontWeight = FontWeight(400),
-    fontSize = 12.sp
+    fontSize = 12.sp,
+    color = Color(255, 255, 255, 140),
 )
 
 
@@ -90,11 +92,6 @@ val Typography = Typography(
         fontFamily = Poppins,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
-    ),
-    bodyMedium = TextStyle(
-        fontFamily = Poppins,
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp
     ),
     headlineSmall = TextStyle(
         fontFamily = Poppins,

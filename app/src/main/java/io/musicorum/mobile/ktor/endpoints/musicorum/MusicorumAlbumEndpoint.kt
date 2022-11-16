@@ -9,17 +9,19 @@ import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
 
 class MusicorumAlbumEndpoint {
-    suspend fun fetchAlbums(albums: List<Album>): List<TrackResponse> {
+    suspend fun fetchAlbums(albums: List<Album>): List<TrackResponse>? {
         val albumList: MutableList<RequestAlbum> = mutableListOf()
         albums.forEach { album ->
-            albumList.add(RequestAlbum(album.albumName.replace("- Single", ""), album.artist!!))
+            albumList.add(RequestAlbum(album.name.replace("- Single", ""), album.artist!!))
         }
         val res = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/albums")
             contentType(ContentType.Application.Json)
             setBody(Body(albumList))
         }
-        return json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        return if (res.status.isSuccess()) {
+            json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        } else null
     }
 
     @kotlinx.serialization.Serializable

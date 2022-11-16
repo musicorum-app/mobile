@@ -1,15 +1,15 @@
 package io.musicorum.mobile.serialization
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.json.JsonNames
 
 @kotlinx.serialization.Serializable
-data class Artist(
-    @SerialName("#text")
-    private val nameText: String? = null,
-    private val name: String? = null,
+data class Artist @OptIn(ExperimentalSerializationApi::class) constructor(
+    @JsonNames("#text")
+    val name: String = "Unknown",
     var images: List<Image>? = null
 ) {
-    val artistName = nameText ?: name ?: "Unknown"
     var bestImageUrl = images?.find { it.size == "extralarge" }?.url
         ?: images?.find { it.size == "large" }?.url
         ?: images?.find { it.size == "medium" }?.url

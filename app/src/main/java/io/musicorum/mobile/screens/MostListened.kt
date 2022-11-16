@@ -19,35 +19,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
+import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackRow
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
-import io.musicorum.mobile.viewmodels.HomeViewModel
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MostListened(
-    homeViewModel: HomeViewModel,
     mostListenedViewModel: MostListenedViewModel,
     nav: NavHostController
 ) {
     val mostListened = mostListenedViewModel.mosListenedTracks.observeAsState()
-    LaunchedEffect(key1 = mostListenedViewModel) {
-        val user = homeViewModel.user.value!!
+    val user = LocalUser.current!!
+    LaunchedEffect(Unit) {
         if (mostListenedViewModel.mosListenedTracks.value == null) {
             mostListenedViewModel.fetchMostListened(user.user.name, FetchPeriod.WEEK, null)
         }
     }
-    val state = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         topBar = {
             MusicorumTopBar(
                 text = stringResource(R.string.most_listened_tracks),
                 scrollBehavior = scrollBehavior,
-                nav = nav
+                nav = nav,
+                fadeable = false,
+                likeAction = {}
             )
         }
     ) {
@@ -64,7 +64,7 @@ fun MostListened(
             }
         } else {
             LazyColumn(
-                state = state,
+                state = rememberLazyListState(),
                 modifier = Modifier
                     .padding(it)
             ) {

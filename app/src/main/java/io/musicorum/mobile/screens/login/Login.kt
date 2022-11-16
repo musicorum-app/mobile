@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens
+package io.musicorum.mobile.screens.login
 
 import android.net.Uri
 import android.util.Log
@@ -21,37 +21,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import io.musicorum.mobile.BuildConfig
+import io.musicorum.mobile.MutableUserState
 import io.musicorum.mobile.R
-import io.musicorum.mobile.dataStore
-import io.musicorum.mobile.ktor.endpoints.AuthEndpoint
 import io.musicorum.mobile.ui.theme.AlmostBlack
-import kotlinx.coroutines.launch
+import io.musicorum.mobile.utils.handleAuth
 
 @Composable
-fun Login(nav: NavHostController, deepLinkToken: String?) {
+fun Login(nav: NavController, deepLinkToken: String?) {
     val customTabsIntent = CustomTabsIntent.Builder()
         .build()
-    val context = LocalContext.current
+    val ctx = LocalContext.current
     val authorizationURL =
         "http://www.last.fm/api/auth/?api_key=${BuildConfig.LASTFM_API_KEY}&&cb=musicorum://auth-callback"
-    val ctx = LocalContext.current
     val loading = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = deepLinkToken) {
         if (deepLinkToken != null) {
             Log.d("Login", "Received session token $deepLinkToken")
             loading.value = true
-            launch {
-                val sR = AuthEndpoint().getSession(deepLinkToken)
-                val sessionKey = stringPreferencesKey("session_key")
-                ctx.dataStore.edit { userData ->
-                    userData[sessionKey] = sR.session.key
+            handleAuth(deepLinkToken, ctx) { user, sk ->
+                if (user != null) {
+                    MutableUserState.value = user
+                    nav.navigate("user_confirmation/${sk}")
                 }
-                nav.navigate("home")
             }
         }
     }
@@ -59,7 +53,9 @@ fun Login(nav: NavHostController, deepLinkToken: String?) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.background(AlmostBlack)
+        modifier = Modifier
+            .background(AlmostBlack)
+            .statusBarsPadding()
     ) {
         Text(
             text = stringResource(R.string.homescreen_welcome),
@@ -74,7 +70,7 @@ fun Login(nav: NavHostController, deepLinkToken: String?) {
         Spacer(modifier = Modifier.height(25.dp))
         Button(
             onClick = {
-                customTabsIntent.launchUrl(context, Uri.parse(authorizationURL))
+                customTabsIntent.launchUrl(ctx, Uri.parse(authorizationURL))
             },
             enabled = !loading.value
         ) {

@@ -8,7 +8,6 @@ data class User(
     val user: UserData
 )
 
-
 @Serializable
 data class UserData(
     val name: String,

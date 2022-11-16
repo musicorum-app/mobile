@@ -21,9 +21,6 @@ private val ColorPalette = darkColorScheme(
 
 @Composable
 fun MusicorumMobileTheme(content: @Composable () -> Unit) {
-    val systemUiController = rememberSystemUiController()
-    systemUiController.setSystemBarsColor(Color.Transparent)
-    systemUiController.setNavigationBarColor(Color.Transparent)
     MaterialTheme(
         typography = Typography,
         content = content,

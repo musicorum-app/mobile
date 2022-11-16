@@ -15,7 +15,7 @@ import kotlinx.serialization.json.Json
 class KtorConfiguration {
 
     companion object {
-        private val jsonConfig = Json { ignoreUnknownKeys = true }
+        private val jsonConfig = Json { ignoreUnknownKeys = true; isLenient = true }
         private fun createLastFmClient(): HttpClient {
             val lastFmClient = HttpClient() {
                 install(ContentNegotiation) {

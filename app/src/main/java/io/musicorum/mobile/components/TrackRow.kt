@@ -41,7 +41,7 @@ fun TrackRow(
     showTimespan: Boolean = false,
     trackRowViewModel: TrackRowViewModel = viewModel()
 ) {
-    val partialTrack = NavigationTrack(track.name, track.artist.artistName)
+    val partialTrack = NavigationTrack(track.name, track.artist.name)
     val dest = Json.encodeToString(partialTrack)
     val listColors = ListItemDefaults.colors(
         containerColor = AlmostBlack
@@ -51,7 +51,7 @@ fun TrackRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { nav.navigate("track/$dest") { restoreState = true } },
+            .clickable { nav.navigate("track/$dest") {  }},
     ) {
         ListItem(
             headlineText = {
@@ -65,8 +65,7 @@ fun TrackRow(
             colors = listColors,
             supportingText = {
                 Text(
-                    text = track.artist.artistName,
-                    modifier = Modifier.alpha(0.55f),
+                    text = track.artist.name,
                     style = Subtitle1
                 )
             },
@@ -86,7 +85,7 @@ fun TrackRow(
                         val loved = remember { mutableStateOf(track.loved == "1") }
                         IconButton(onClick = {
                             loved.value = !loved.value
-                            trackRowViewModel.updateFavoritePreference(track, loved.value, ctx)
+                            trackRowViewModel.updateFavoritePreference(track, ctx)
                         }) {
                             if (loved.value) {
                                 Icon(Icons.Rounded.Favorite, contentDescription = null)
@@ -105,7 +104,7 @@ fun TrackRow(
                                 DateUtils.SECOND_IN_MILLIS
                             ).toString()
                         }
-                        Text(text = txt, modifier = Modifier.alpha(0.55f), style = Subtitle1)
+                        Text(text = txt, style = Subtitle1)
                     }
                 }
             }

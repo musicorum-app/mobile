@@ -10,6 +10,10 @@ def tokensFile = rootProject.file("tokens.properties")
 def tokens = new Properties()
 tokens.load(new FileInputStream(tokensFile))
 
+def releaseTokensFile = rootProject.file("tokens.release.properties")
+def releaseTokens = new Properties()
+releaseTokens.load(new FileInputStream(releaseTokensFile))
+
 android {
     namespace 'io.musicorum.mobile'
     compileSdk 33
@@ -18,8 +22,8 @@ android {
         applicationId "io.musicorum.mobile"
         minSdk 28
         targetSdk 33
-        versionCode 10
-        versionName "1.9"
+        versionCode 13
+        versionName "1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -33,6 +37,9 @@ android {
 
     buildTypes {
         release {
+            buildConfigField("String", "LASTFM_API_KEY", releaseTokens["LASTFM_API_KEY"])
+            buildConfigField("String", "LASTFM_SECRET", releaseTokens["LASTFM_SECRET"])
+            buildConfigField("String", "MUSICORUM_API_KEY", releaseTokens["MUSICORUM_API_KEY"])
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -62,6 +69,7 @@ android {
 
 dependencies {
 
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.27.0"
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
     implementation platform('com.google.firebase:firebase-bom:31.0.2')
@@ -71,6 +79,7 @@ dependencies {
     implementation "io.ktor:ktor-client-cio:$ktor_version"
     implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
     implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
+    implementation "io.ktor:ktor-serialization-kotlinx-xml:$ktor_version"
     implementation 'com.google.accompanist:accompanist-systemuicontroller:0.26.5-rc'
     implementation 'androidx.navigation:navigation-compose:2.5.2'
     implementation 'com.google.accompanist:accompanist-navigation-animation:0.26.5-rc'

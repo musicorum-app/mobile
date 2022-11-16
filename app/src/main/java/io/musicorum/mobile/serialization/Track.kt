@@ -1,13 +1,15 @@
 package io.musicorum.mobile.serialization
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.long
 
 @Serializable
-data class Track(
+data class Track @OptIn(ExperimentalSerializationApi::class) constructor(
     var artist: Artist,
     @SerialName("image")
     var images: List<Image>? = null,
@@ -19,6 +21,7 @@ data class Track(
     @SerialName("toptags")
     val topTags: Tag? = null,
     var album: Album? = null,
+    @JsonNames("userloved")
     val loved: String? = null,
     @SerialName("userplaycount")
     private val _userPlayCount: String? = null,

@@ -1,5 +1,7 @@
 package io.musicorum.mobile.viewmodels
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,10 +12,10 @@ import io.musicorum.mobile.serialization.*
 import kotlinx.coroutines.launch
 
 class TrackViewModel : ViewModel() {
-    val track: MutableLiveData<Track> by lazy { MutableLiveData<Track>() }
-    val similar: MutableLiveData<SimilarTrack> by lazy { MutableLiveData<SimilarTrack>() }
-    val artistCover: MutableLiveData<String> by lazy { MutableLiveData<String>() }
-    val error: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>(null) }
+    val track by lazy { MutableLiveData<Track>() }
+    val similar by lazy { MutableLiveData<SimilarTrack>() }
+    val artistCover by lazy { MutableLiveData<String>() }
+    val error by lazy { MutableLiveData<Boolean>(null) }
 
     suspend fun fetchTrack(
         trackName: String,
@@ -23,13 +25,23 @@ class TrackViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             val res = TrackEndpoint().getTrack(trackName, artist, username, autoCorrect)
-            if (res.track.album == null) {
-                val musRes = MusicorumTrackEndpoint().fetchTracks(listOf(res.track))
+            if (res?.track?.album == null) {
+                val musRes = MusicorumTrackEndpoint().fetchTracks(listOf(res!!.track))
                 val image =
-                    musRes[0].resources?.getOrNull(0)?.bestImageUrl?.let { Image("unknown", it) }
+                    musRes?.getOrNull(0)?.resources?.getOrNull(0)?.bestImageUrl?.let {
+                        Image(
+                            "unknown",
+                            it
+                        )
+                    }
                 if (image != null) {
                     res.track.album =
-                        Album(null, res.track.name, null, listOf(image), tags = null, tracks = null)
+                        Album(
+                            name = res.track.name,
+                            images = listOf(image),
+                            tags = null,
+                            tracks = null
+                        )
                 }
             }
             if (res.track.artist.images.isNullOrEmpty()) {
@@ -40,7 +52,7 @@ class TrackViewModel : ViewModel() {
                 }
                 if (artistImage != null) {
                     res.track.artist =
-                        Artist(name = res.track.artist.artistName, images = listOf(artistImage))
+                        Artist(name = res.track.artist.name, images = listOf(artistImage))
                 }
             }
             track.value = res.track
@@ -56,7 +68,7 @@ class TrackViewModel : ViewModel() {
             }
             if (res.similarTracks.tracks.isNotEmpty()) {
                 val resourceRes = MusicorumTrackEndpoint().fetchTracks(res.similarTracks.tracks)
-                resourceRes.forEachIndexed { index, trackResponse ->
+                resourceRes?.forEachIndexed { index, trackResponse ->
                     val imageUrl = trackResponse.resources?.getOrNull(0)?.bestImageUrl
                     res.similarTracks.tracks[index].bestImageUrl = imageUrl ?: ""
                 }
@@ -70,4 +82,11 @@ class TrackViewModel : ViewModel() {
         val res = MusicorumArtistEndpoint().fetchArtist(list)
         artistCover.value = res[0].resources?.getOrNull(0)?.bestImageUrl
     }
+
+    fun updateFavoritePreference(track: Track, ctx: Context) {
+        viewModelScope.launch {
+            TrackEndpoint().updateFavoritePreference(track, ctx)
+        }
+    }
+
 }

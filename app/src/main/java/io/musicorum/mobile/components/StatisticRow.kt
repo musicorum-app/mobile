@@ -25,7 +25,7 @@ fun StatisticRow(short: Boolean, vararg statistics: Pair<String, Long?>) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         statistics.forEach { pair ->
-            Statistic(number = pair.second, label = pair.first, short = short)
+            Statistic(number = pair.second ?: 0, label = pair.first, short = short)
         }
     }
 }
@@ -37,7 +37,7 @@ private val statistic = androidx.compose.ui.text.TextStyle(
 )
 
 @Composable
-private fun Statistic(number: Long?, label: String, short: Boolean) {
+private fun Statistic(number: Long, label: String, short: Boolean) {
     val formattedNumber = if (short) {
         CompactDecimalFormat.getInstance(
             ULocale.forLocale(Locale.getDefault()),

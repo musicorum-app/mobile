@@ -21,7 +21,7 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
 import io.musicorum.mobile.serialization.TagData
-import io.musicorum.mobile.ui.theme.SkeletonPrimaryColor
+import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.utils.darkenColor
 
 @Composable
@@ -42,7 +42,7 @@ fun TagList(tags: List<TagData>, referencePalette: Palette?, visible: Boolean) {
                     .clip(RoundedCornerShape(100))
                     .placeholder(
                         visible,
-                        highlight = PlaceholderHighlight.shimmer(SkeletonPrimaryColor)
+                        highlight = PlaceholderHighlight.shimmer(SkeletonSecondaryColor)
                     )
                     .background(background)
                     .padding(horizontal = 12.dp, vertical = 1.dp)
