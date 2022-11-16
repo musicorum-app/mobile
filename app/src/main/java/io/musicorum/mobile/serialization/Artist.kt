@@ -1,7 +1,6 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.JsonNames
 
 @kotlinx.serialization.Serializable

@@ -20,13 +20,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.BodySmall
 import io.musicorum.mobile.ui.theme.Poppins
-import io.musicorum.mobile.utils.NowPlaying
+
+import io.musicorum.mobile.utils.Rive
 
 @Composable
 fun FriendActivity(
@@ -63,7 +65,9 @@ fun FriendActivity(
         Spacer(Modifier.height(10.dp))
         Row {
             if (track.attributes?.nowPlaying == "true") {
-                NowPlaying(modifier = Modifier
+                Rive.AnimationFor(
+                    id = R.layout.nowplaying_view,
+                    modifier = Modifier
                     .size(15.dp)
                     .padding(end = 3.dp))
             }
@@ -78,7 +82,7 @@ fun FriendActivity(
             )
         }
         val date = if (track.attributes?.nowPlaying.toBoolean()) {
-            stringResource(io.musicorum.mobile.R.string.scrobbling_now)
+            stringResource(R.string.scrobbling_now)
         } else {
             val now = System.currentTimeMillis()
             DateUtils.getRelativeTimeSpanString(

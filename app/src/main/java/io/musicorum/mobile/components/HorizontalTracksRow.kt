@@ -36,7 +36,7 @@ import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.Poppins
 import io.musicorum.mobile.ui.theme.Subtitle1
-import io.musicorum.mobile.utils.NowPlaying
+import io.musicorum.mobile.utils.Rive
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -120,9 +120,12 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
                         .clip(CircleShape)
                         .background(MostlyRed)
                 ) {
-                    NowPlaying(modifier = Modifier
-                        .size(20.dp)
-                        .align(Alignment.Center))
+                    Rive.AnimationFor(
+                        id = R.layout.nowplaying_view,
+                        modifier = Modifier
+                            .size(20.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
         }
