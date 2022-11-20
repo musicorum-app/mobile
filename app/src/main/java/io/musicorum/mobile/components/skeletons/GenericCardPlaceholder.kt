@@ -17,8 +17,8 @@ import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.fade
 import com.google.accompanist.placeholder.material.placeholder
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
-import io.musicorum.mobile.components.label
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
+import io.musicorum.mobile.ui.theme.Typography
 
 @Composable
 fun GenericCardPlaceholder(visible: Boolean) {
@@ -36,7 +36,7 @@ fun GenericCardPlaceholder(visible: Boolean) {
         Text(
             text = "this is a very long text",
             textAlign = TextAlign.Start,
-            style = label,
+            style = Typography.bodyLarge,
             modifier = Modifier
                 .padding(top = 7.dp)
                 .placeholder(
@@ -50,7 +50,7 @@ fun GenericCardPlaceholder(visible: Boolean) {
         Text(
             text = "shorter",
             textAlign = TextAlign.Start,
-            style = label,
+            style = Typography.bodyLarge,
             modifier = Modifier
                 .padding(top = 7.dp)
                 .placeholder(

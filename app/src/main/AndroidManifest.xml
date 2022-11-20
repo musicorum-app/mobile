@@ -17,11 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Musicorum"
         tools:targetApi="31">
+        <profileable android:shell="true" />
         <activity
             android:name="io.musicorum.mobile.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:hardwareAccelerated="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.Musicorum.SplashScreenTheme">
 
             <meta-data
@@ -44,8 +45,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="musicorum"
-                    android:host="auth-callback" />
+                    android:host="auth-callback"
+                    android:scheme="musicorum" />
             </intent-filter>
         </activity>
         <provider

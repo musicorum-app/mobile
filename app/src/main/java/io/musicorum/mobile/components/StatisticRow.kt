@@ -9,11 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import io.musicorum.mobile.ui.theme.Body2
-import io.musicorum.mobile.ui.theme.Poppins
+import io.musicorum.mobile.ui.theme.Typography
 import java.util.*
 
 @Composable
@@ -30,12 +27,6 @@ fun StatisticRow(short: Boolean, vararg statistics: Pair<String, Long?>) {
     }
 }
 
-private val statistic = androidx.compose.ui.text.TextStyle(
-    fontFamily = Poppins,
-    fontWeight = FontWeight(700),
-    fontSize = 28.sp
-)
-
 @Composable
 private fun Statistic(number: Long, label: String, short: Boolean) {
     val formattedNumber = if (short) {
@@ -47,8 +38,8 @@ private fun Statistic(number: Long, label: String, short: Boolean) {
         NumberFormat.getNumberInstance(ULocale.forLocale(Locale.getDefault()))
             .format(number)
     }
-    Column(verticalArrangement = Arrangement.spacedBy((-10).dp)) {
-        Text(text = formattedNumber, style = statistic)
-        Text(text = label, style = Body2, modifier = Modifier.alpha(0.55f))
+    Column {
+        Text(text = formattedNumber, style = Typography.displaySmall)
+        Text(text = label, style = Typography.labelMedium, modifier = Modifier.alpha(0.55f))
     }
 }

@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.QueueMusic
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,18 +19,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MostlyRed
-import kotlinx.coroutines.DelicateCoroutinesApi
 import java.util.*
 
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun BottomNavBar(nav: NavHostController) {
-    val items = listOf("Home", "Discover", "Scrobbling", "Charts", "Profile")
+    val items = listOf("Home", "Scrobbling", "Profile")
     val icons = listOf(
         Icons.Rounded.Home,
-        Icons.Rounded.Search,
         Icons.Rounded.QueueMusic,
-        Icons.Rounded.BarChart,
         Icons.Rounded.Person
     )
     val navItemColors = NavigationBarItemDefaults.colors(
@@ -52,6 +50,10 @@ fun BottomNavBar(nav: NavHostController) {
                         nav.navigate(s.lowercase(Locale.ROOT))
                         {
                             launchSingleTop = true
+                            restoreState = true
+                            popUpTo(nav.graph.findStartDestination().id) {
+                                saveState = true
+                            }
                         }
 
                     },

@@ -25,9 +25,8 @@ import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.Author
 import io.musicorum.mobile.ui.theme.BodySmall
-import io.musicorum.mobile.ui.theme.Poppins
-
 import io.musicorum.mobile.utils.Rive
 
 @Composable
@@ -66,14 +65,15 @@ fun FriendActivity(
         Row {
             if (track.attributes?.nowPlaying == "true") {
                 Rive.AnimationFor(
-                    id = R.layout.nowplaying_view,
+                    id = R.raw.nowplaying,
                     modifier = Modifier
-                    .size(15.dp)
-                    .padding(end = 3.dp))
+                        .size(15.dp)
+                        .padding(end = 3.dp)
+                )
             }
             Text(
                 text = track.name,
-                fontFamily = Poppins,
+                fontFamily = Author,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

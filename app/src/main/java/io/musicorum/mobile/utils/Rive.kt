@@ -1,19 +1,23 @@
 package io.musicorum.mobile.utils
 
-import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import app.rive.runtime.kotlin.RiveAnimationView
 
 class Rive {
     companion object {
         @Composable
-        fun AnimationFor(id: Int, modifier: Modifier) {
-            return AndroidView(
+        fun AnimationFor(id: Int, modifier: Modifier, _alpha: Float = 1f) {
+            AndroidView(
                 modifier = modifier,
                 factory = { ctx ->
-                    View.inflate(ctx, id, null)
+                    RiveAnimationView(ctx).apply {
+                        setRiveResource(id)
+                        alpha = _alpha
+                    }
                 })
+
         }
     }
 }

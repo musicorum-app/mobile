@@ -1,11 +1,11 @@
 package io.musicorum.mobile.viewmodels
 
 import android.content.Context
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
+import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.serialization.*
@@ -25,36 +25,35 @@ class TrackViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             val res = TrackEndpoint().getTrack(trackName, artist, username, autoCorrect)
-            if (res?.track?.album == null) {
-                val musRes = MusicorumTrackEndpoint().fetchTracks(listOf(res!!.track))
-                val image =
-                    musRes?.getOrNull(0)?.resources?.getOrNull(0)?.bestImageUrl?.let {
-                        Image(
-                            "unknown",
-                            it
-                        )
-                    }
-                if (image != null) {
-                    res.track.album =
-                        Album(
-                            name = res.track.name,
-                            images = listOf(image),
-                            tags = null,
-                            tracks = null
-                        )
-                }
+
+            val musRes = MusicorumTrackEndpoint().fetchTracks(listOf(res!!.track))
+            musRes?.getOrNull(0)?.bestResource?.bestImageUrl?.let {
+                res.track.album =
+                    Album(
+                        name = musRes.getOrNull(0)?.album ?: res.track.name,
+                        images = listOf(Image("unknown", it)),
+                        tags = null,
+                        tracks = null,
+                        artist = res.track.artist.name
+                    )
             }
+
+
             if (res.track.artist.images.isNullOrEmpty()) {
                 val musArtistRes =
                     MusicorumArtistEndpoint().fetchArtist(listOf(res.track.artist))
-                val artistImage = musArtistRes[0].resources?.getOrNull(0)?.bestImageUrl?.let {
-                    Image("unknown", it)
-                }
-                if (artistImage != null) {
-                    res.track.artist =
-                        Artist(name = res.track.artist.name, images = listOf(artistImage))
+                musArtistRes[0].bestResource?.bestImageUrl?.let {
+                    res.track.artist.bestImageUrl = it
                 }
             }
+
+            val musicorumReqAlbum =
+                musRes?.getOrNull(0)?.album?.let { Album(name = it, artist = artist) }
+
+            val musARes = MusicorumAlbumEndpoint().fetchAlbums(listOf(musicorumReqAlbum))
+            res.track.album?.bestImageUrl =
+                musARes?.get(0)?.resources?.getOrNull(0)?.bestImageUrl.toString()
+
             track.value = res.track
         }
     }

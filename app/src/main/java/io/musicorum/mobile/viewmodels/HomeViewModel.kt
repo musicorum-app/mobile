@@ -1,7 +1,6 @@
 package io.musicorum.mobile.viewmodels
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -54,7 +53,8 @@ class HomeViewModel : ViewModel() {
                 errored.value = true
                 return@launch
             }
-            val musicorumTrRes = MusicorumTrackEndpoint().fetchTracks(topTracksRes.topTracks.tracks)
+            val musicorumTrRes =
+                MusicorumTrackEndpoint().fetchTracks(topTracksRes.topTracks.tracks)
             musicorumTrRes?.forEachIndexed { i, track ->
                 val url = track.resources?.getOrNull(0)?.bestImageUrl
                 topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))

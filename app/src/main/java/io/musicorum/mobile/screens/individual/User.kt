@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,10 +27,7 @@ import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
 import io.musicorum.mobile.components.skeletons.GenericListItemSkeleton
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
-import io.musicorum.mobile.ui.theme.AlmostBlack
-import io.musicorum.mobile.ui.theme.Heading2
-import io.musicorum.mobile.ui.theme.Heading4
-import io.musicorum.mobile.ui.theme.Subtitle1
+import io.musicorum.mobile.ui.theme.*
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.viewmodels.UserViewModel
 
@@ -100,14 +96,19 @@ fun User(
                     placeholderType = PlaceholderType.USER
                 )
 
-                Text(text = user.user.name, style = Heading2)
+                Text(text = user.user.name, style = Typography.displaySmall)
                 Row {
                     user.user.realName?.let {
-                        Text(text = "$it • ", modifier = Modifier.alpha(0.55f))
+                        Text(
+                            text = "$it • ",
+                            color = ContentSecondary,
+                            style = Typography.bodyLarge
+                        )
                     }
                     Text(
                         text = "Scrobbling since ${user.user.registered.asParsedDate}",
-                        modifier = Modifier.alpha(0.55f)
+                        style = Typography.bodyLarge,
+                        color = ContentSecondary
                     )
                 }
 
@@ -168,7 +169,7 @@ fun User(
                         style = Subtitle1,
                         modifier = Modifier.padding(vertical = 20.dp)
                     )
-                 } else {
+                } else {
                     Spacer(modifier = Modifier.height(10.dp))
                     TopArtistsRow(artists = topArtists!!.topArtists.artists)
                 }

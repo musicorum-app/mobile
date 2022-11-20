@@ -6,10 +6,8 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -24,6 +22,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -33,6 +32,7 @@ import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.screens.*
 import io.musicorum.mobile.screens.individual.Album
+import io.musicorum.mobile.screens.individual.Artist
 import io.musicorum.mobile.screens.individual.Track
 import io.musicorum.mobile.screens.individual.User
 import io.musicorum.mobile.screens.login.loginGraph
@@ -71,11 +71,6 @@ class MainActivity : ComponentActivity() {
             val snackHostState = remember { SnackbarHostState() }
             val systemUiController = rememberSystemUiController()
 
-            SideEffect {
-                systemUiController.setNavigationBarColor(Color.Transparent)
-                systemUiController.setStatusBarColor(AlmostBlack)
-            }
-
             if (intent?.data == null) {
                 if (MutableUserState.value == null) {
                     LaunchedEffect(Unit) {
@@ -91,7 +86,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val showNav = navController.currentDestination?.route == "home"
+            SideEffect {
+                systemUiController.setNavigationBarColor(Color.Transparent)
+                systemUiController.setStatusBarColor(AlmostBlack)
+            }
+
+            val showNav =
+                when (navController.currentBackStackEntryAsState().value?.destination?.route) {
+                    "home" -> true
+                    "scrobbling" -> true
+                    "profile" -> true
+                    else -> false
+                }
 
             CompositionLocalProvider(
                 LocalUser provides MutableUserState.value,
@@ -100,7 +106,11 @@ class MainActivity : ComponentActivity() {
                 MusicorumMobileTheme {
                     Scaffold(
                         bottomBar = {
-                            if (showNav) {
+                            AnimatedVisibility(
+                                visible = showNav,
+                                enter = slideInVertically(initialOffsetY = { it }),
+                                exit = slideOutVertically(targetOffsetY = { it }),
+                            ) {
                                 BottomNavBar(nav = navController)
                             }
                         },
@@ -149,6 +159,18 @@ class MainActivity : ComponentActivity() {
                                         username = it.arguments?.getString("username")!!,
                                         nav = navController
                                     )
+                                }
+
+                                composable(
+                                    "artist/{artistName}",
+                                    arguments = listOf(navArgument("artistName") {
+                                        type = NavType.StringType
+                                    })
+                                ) {
+                                    Artist(
+                                        artistName = it.arguments?.getString("artistName")!!,
+
+                                        )
                                 }
 
                                 composable(

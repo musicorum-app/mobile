@@ -2,7 +2,6 @@ package io.musicorum.mobile.components
 
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -22,8 +21,8 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.screens.individual.PartialAlbum
-import io.musicorum.mobile.ui.theme.BodyLarge
-import io.musicorum.mobile.ui.theme.BodySmall
+import io.musicorum.mobile.ui.theme.ContentSecondary
+import io.musicorum.mobile.ui.theme.Typography
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -43,14 +42,20 @@ fun ContextRow(
             val partialAlbum = PartialAlbum(appearsOn.first ?: "Unknown", from!!.first ?: "Unknown")
             val partialAlbumArgument = Json.encodeToString(partialAlbum)
             val interactionSource = MutableInteractionSource()
-            Column {
-                Text(text = stringResource(id = R.string.appears_on), style = BodySmall)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(id = R.string.appears_on),
+                    style = Typography.labelMedium,
+                    color = ContentSecondary
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
+                        .padding(end = 5.dp)
+                        .clip(RoundedCornerShape(8.dp))
                         .clickable(
                             interactionSource = interactionSource,
-                            indication = null
+                            indication = LocalIndication.current,
                         ) { nav?.navigate("album/$partialAlbumArgument") },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -63,11 +68,10 @@ fun ContextRow(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(6.dp))
-                            .indication(interactionSource, LocalIndication.current)
                     )
                     Text(
                         text = appearsOn.first ?: "Unknown",
-                        style = BodyLarge,
+                        style = Typography.titleLarge,
                         modifier = Modifier.padding(horizontal = 10.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -76,10 +80,20 @@ fun ContextRow(
             }
         }
         if (from != null) {
-            Column {
-                Text(text = stringResource(R.string.from), style = BodySmall)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(R.string.from),
+                    style = Typography.labelMedium,
+                    color = ContentSecondary
+                )
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 5.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            nav?.navigate("artist/${from.first}")
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
@@ -95,7 +109,7 @@ fun ContextRow(
                     )
                     Text(
                         text = from.first ?: "Unknown",
-                        style = BodyLarge,
+                        style = Typography.titleLarge,
                         modifier = Modifier.padding(start = 10.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

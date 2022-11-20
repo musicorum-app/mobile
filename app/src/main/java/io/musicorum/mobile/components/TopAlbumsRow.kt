@@ -24,8 +24,8 @@ import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.screens.individual.PartialAlbum
 import io.musicorum.mobile.serialization.TopAlbum
+import io.musicorum.mobile.ui.theme.Author
 import io.musicorum.mobile.ui.theme.BodySmall
-import io.musicorum.mobile.ui.theme.Poppins
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -65,7 +65,7 @@ fun AlbumCard(album: TopAlbum, nav: NavHostController) {
         )
         Text(
             text = album.name,
-            fontFamily = Poppins,
+            fontFamily = Author,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.width(120.dp),
