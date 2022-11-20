@@ -2,7 +2,8 @@ package io.musicorum.mobile.serialization.musicorum
 
 @kotlinx.serialization.Serializable
 data class Resources(
-    val images: List<Images>
+    val images: List<Images>,
+    val hash: String
 ) {
     val bestImageUrl = images.find { it.size == "EXTRA_LARGE" }?.url
         ?: images.find { it.size == "LARGE" }?.url

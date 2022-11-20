@@ -1,14 +1,15 @@
 package io.musicorum.mobile.serialization
 
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class RecentTracks(
     @SerialName("recenttracks")
     val recentTracks: RecentTracksData
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class RecentTracksData(
     @SerialName("track")
     val tracks: List<Track>,
@@ -16,7 +17,7 @@ data class RecentTracksData(
     val recentTracksAttributes: RecentTracksAttributes
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class RecentTracksAttributes(
     val total: String
 )

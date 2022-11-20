@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -19,11 +18,11 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.TopArtist
+import io.musicorum.mobile.ui.theme.Author
 import io.musicorum.mobile.ui.theme.BodySmall
-import io.musicorum.mobile.ui.theme.Poppins
 
 private val artistStyle = TextStyle(
-    fontFamily = Poppins,
+    fontFamily = Author,
     fontSize = 14.sp,
     fontWeight = FontWeight.Medium
 )
@@ -33,7 +32,9 @@ private val artistStyle = TextStyle(
 fun TopArtistsRow(artists: List<TopArtist>) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
-        modifier = Modifier.padding(start = 20.dp).fillMaxWidth()
+        modifier = Modifier
+            .padding(start = 20.dp)
+            .fillMaxWidth()
     ) {
         items(artists) { artist ->
             ArtistCard(artist)

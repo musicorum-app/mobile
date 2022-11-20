@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -31,10 +30,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
 import io.musicorum.mobile.serialization.NavigationTrack
-import io.musicorum.mobile.ui.theme.AlmostBlack
-import io.musicorum.mobile.ui.theme.Body1
-import io.musicorum.mobile.ui.theme.Heading2
-import io.musicorum.mobile.ui.theme.Heading4
+import io.musicorum.mobile.ui.theme.*
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
@@ -98,19 +94,11 @@ fun Track(
                 }
 
                 launch {
-                    val album = track.album
-                    if (!album?.images.isNullOrEmpty()) {
-                        if (album?.bestImageUrl?.isEmpty() == true) {
-                            album.apply {
-                                bestImageUrl = this.fetchExternalImage()
-                            }
-                        }
-                        val bmp = getBitmap(album?.bestImageUrl, ctx)
+                    if (!track.album?.images.isNullOrEmpty()) {
+                        val bmp = getBitmap(track.album?.bestImageUrl, ctx)
                         coverPalette = createPalette(bmp)
-                        paletteReady = true
-                    } else {
-                        paletteReady = true
                     }
+                    paletteReady = true
                 }
                 launch {
                     trackViewModel.fetchArtistCover(track.artist)
@@ -143,14 +131,14 @@ fun Track(
                         fadeable = true
                     ) {
                         IconButton(
-                            modifier = Modifier.padding(top = 37.dp),
+                            modifier = Modifier.padding(top = 45.dp),
                             onClick = {
-                            trackViewModel.updateFavoritePreference(
-                                track,
-                                ctx
-                            )
-                            loved.value = !loved.value
-                        }) {
+                                trackViewModel.updateFavoritePreference(
+                                    track,
+                                    ctx
+                                )
+                                loved.value = !loved.value
+                            }) {
                             if (loved.value) {
                                 Icon(Icons.Rounded.Favorite, null)
                             } else {
@@ -180,7 +168,7 @@ fun Track(
                     Text(
                         text = track.name,
                         softWrap = true,
-                        style = Heading2,
+                        style = Typography.displaySmall,
                         modifier = Modifier.padding(horizontal = 55.dp),
                         textAlign = TextAlign.Center
                     )
@@ -188,8 +176,8 @@ fun Track(
                         text = track.artist.name,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = Body1,
-                        modifier = Modifier.alpha(0.55f)
+                        style = Typography.bodyLarge,
+                        color = ContentSecondary
                     )
                     Divider(Modifier.padding(vertical = 18.dp))
                     StatisticRow(
@@ -225,7 +213,7 @@ fun Track(
                         ) {
                             Text(
                                 stringResource(R.string.similar_tracks),
-                                style = Heading4,
+                                style = Typography.headlineSmall,
                                 modifier = Modifier.padding(start = 15.dp)
                             )
                             it.similarTracks.tracks.forEach {

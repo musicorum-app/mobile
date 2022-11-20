@@ -24,7 +24,11 @@ class MusicorumArtistEndpoint {
             contentType(ContentType.Application.Json)
             setBody(body)
         }
-        return json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        return if (res.status.isSuccess()) {
+            json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        } else {
+            emptyList()
+        }
     }
 
     @JvmName("fetchArtist1")

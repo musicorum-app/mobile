@@ -19,12 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import io.musicorum.mobile.R
@@ -34,17 +31,11 @@ import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.MostlyRed
-import io.musicorum.mobile.ui.theme.Poppins
 import io.musicorum.mobile.ui.theme.Subtitle1
+import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.Rive
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
-val label = TextStyle(
-    fontFamily = Poppins,
-    fontWeight = FontWeight(500),
-    fontSize = 12.sp
-)
 
 enum class LabelType {
     DATE, ARTIST_NAME
@@ -121,7 +112,7 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
                         .background(MostlyRed)
                 ) {
                     Rive.AnimationFor(
-                        id = R.layout.nowplaying_view,
+                        id = R.raw.nowplaying,
                         modifier = Modifier
                             .size(20.dp)
                             .align(Alignment.Center)
@@ -132,7 +123,7 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
         Text(
             text = track.name,
             textAlign = TextAlign.Start,
-            style = label,
+            style = Typography.bodyLarge,
             modifier = Modifier
                 .width(120.dp)
                 .padding(top = 7.dp)
@@ -152,12 +143,12 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
                     DateUtils.SECOND_IN_MILLIS
                 ).toString()
             }
-            Text(text, modifier = Modifier.alpha(0.55f), style = label)
+            Text(text, modifier = Modifier.alpha(0.55f), style = Typography.bodyLarge)
         } else if (labelType == LabelType.ARTIST_NAME) {
             Text(
                 track.artist.name,
                 modifier = Modifier.alpha(0.55f),
-                style = label,
+                style = Typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

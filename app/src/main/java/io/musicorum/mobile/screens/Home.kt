@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -24,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 
 @Composable
-fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
+fun Home(homeViewModel: HomeViewModel = viewModel(), nav: NavHostController) {
     val user = LocalUser.current
     val recentTracks = homeViewModel.recentTracks.observeAsState().value
     val palette = homeViewModel.userPalette.observeAsState().value
@@ -97,7 +97,7 @@ fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
         ) {
             Text(
                 text = "Home",
-                style = MaterialTheme.typography.titleLarge,
+                style = Typography.titleLarge,
                 modifier = Modifier.padding(start = 20.dp, top = 10.dp)
             )
 
@@ -130,7 +130,7 @@ fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
             ) {
                 Text(
                     text = stringResource(R.string.recent_scrobbles),
-                    style = BodyMedium,
+                    style = Typography.headlineSmall,
                     modifier = Modifier.padding(start = 20.dp)
                 )
                 IconButton(onClick = { nav.navigate("recentScrobbles") }) {
@@ -142,7 +142,7 @@ fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
                 tracks = recentTracks?.recentTracks?.tracks,
                 labelType = LabelType.DATE,
                 nav = nav,
-                errored = recentTracks?.recentTracks?.tracks.isNullOrEmpty()
+                errored = recentTracks?.recentTracks?.tracks?.isEmpty()
             )
 
             Spacer(Modifier.height(20.dp))
@@ -156,7 +156,7 @@ fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
             ) {
                 Text(
                     text = stringResource(R.string.most_listened_week),
-                    style = BodyMedium,
+                    style = Typography.headlineSmall,
                     modifier = Modifier.padding(start = 20.dp)
                 )
                 IconButton(onClick = { nav.navigate("mostListened") }) {
@@ -168,13 +168,13 @@ fun Home(homeViewModel: HomeViewModel, nav: NavHostController) {
                 tracks = weekTracks?.topTracks?.tracks,
                 labelType = LabelType.ARTIST_NAME,
                 nav = nav,
-                errored = weekTracks?.topTracks?.tracks.isNullOrEmpty()
+                errored = weekTracks?.topTracks?.tracks?.isEmpty()
             )
 
             Spacer(Modifier.height(20.dp))
             Text(
                 text = stringResource(R.string.friends_activity),
-                style = BodyMedium,
+                style = Typography.headlineSmall,
                 modifier = Modifier.padding(start = 20.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -254,7 +254,7 @@ private fun UserCard(
 
             Spacer(modifier = Modifier.width(10.dp))
             Column {
-                Text(text = user.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = user.name, style = Typography.headlineMedium)
                 val total = recentTracks?.recentTracks?.recentTracksAttributes?.total?.toInt() ?: 0
                 Text(
                     text = pluralStringResource(
@@ -262,7 +262,7 @@ private fun UserCard(
                         count = total,
                         total
                     ),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = Typography.bodyMedium,
                     modifier = Modifier
                         .alpha(0.55f)
                         .placeholder(

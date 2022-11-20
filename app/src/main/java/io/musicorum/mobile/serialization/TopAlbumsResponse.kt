@@ -1,7 +1,9 @@
 package io.musicorum.mobile.serialization
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonNames
 
 @Serializable
 data class TopAlbumsResponse(
@@ -16,8 +18,9 @@ data class InnerTopAlbumsResponse(
 )
 
 @Serializable
-data class TopAlbum(
-    private val _name: String? = null,
+data class TopAlbum @OptIn(ExperimentalSerializationApi::class) constructor(
+    @JsonNames("title", "#text")
+    val name: String = "Unknown",
     private val title: String? = null,
     @SerialName("#text")
     private val text: String? = null,
@@ -27,12 +30,10 @@ data class TopAlbum(
     @SerialName("playcount")
     val playCount: String? = null
 ) {
-    val name = _name ?: title ?: text ?: "Unknown"
     var bestImageUrl = images?.find { it.size == "extralarge" }?.url
         ?: images?.find { it.size == "large" }?.url
         ?: images?.find { it.size == "medium" }?.url
         ?: images?.find { it.size == "small" }?.url
         ?: images?.find { it.size == "unknown" }?.url
         ?: ""
-
 }

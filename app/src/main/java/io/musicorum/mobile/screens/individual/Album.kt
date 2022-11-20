@@ -14,7 +14,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -88,7 +87,12 @@ fun Album(
                 paletteReady.value = true
             }
 
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+                    .fillMaxSize()
+                    .background(AlmostBlack)
+            ) {
                 GradientHeader(
                     artistImage,
                     album.bestImageUrl,
@@ -96,9 +100,10 @@ fun Album(
                     PlaceholderType.ALBUM
                 )
 
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     album.name,
-                    style = Heading2,
+                    style = Typography.displaySmall,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 55.dp),
@@ -107,11 +112,10 @@ fun Album(
 
                 Text(
                     album.artist ?: "Unknown",
-                    style = BodySmall,
-                    modifier = Modifier
-                        .alpha(0.55f)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    style = Typography.bodyLarge,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = ContentSecondary
                 )
 
                 Divider(Modifier.padding(vertical = 20.dp))

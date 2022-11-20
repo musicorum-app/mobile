@@ -22,6 +22,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.shimmer
 import io.musicorum.mobile.serialization.TagData
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
+import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.darkenColor
 
 @Composable
@@ -47,7 +48,11 @@ fun TagList(tags: List<TagData>, referencePalette: Palette?, visible: Boolean) {
                     .background(background)
                     .padding(horizontal = 12.dp, vertical = 1.dp)
             ) {
-                Text(text = tag.name)
+                Text(
+                    text = tag.name,
+                    style = Typography.labelLarge,
+                    modifier = Modifier.padding(bottom = 1.dp)
+                )
             }
         }
     }

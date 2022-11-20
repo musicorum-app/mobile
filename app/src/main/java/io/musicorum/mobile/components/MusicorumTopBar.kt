@@ -27,10 +27,10 @@ fun MusicorumTopBar(
     )
     val modifier = if (fadeable) {
         Modifier
-            .padding(top = 45.dp)
+            .padding(top = 55.dp)
             .alpha(fraction)
     } else {
-        Modifier.padding(top = 45.dp)
+        Modifier.padding(top = 55.dp)
     }
 
     TopAppBar(
@@ -40,7 +40,7 @@ fun MusicorumTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { nav.popBackStack() }, modifier = Modifier.padding(top = 37.dp)) {
+            IconButton(onClick = { nav.popBackStack() }, modifier = Modifier.padding(top = 45.dp)) {
                 Icon(Icons.Rounded.ArrowBack, contentDescription = "")
             }
         },

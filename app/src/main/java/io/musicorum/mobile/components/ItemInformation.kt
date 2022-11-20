@@ -13,14 +13,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.palette.graphics.Palette
-import io.musicorum.mobile.ui.theme.Body1
 import io.musicorum.mobile.ui.theme.LightGray
-import io.musicorum.mobile.ui.theme.Poppins
+import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.darkenColor
 
 @Composable
@@ -41,7 +38,7 @@ fun ItemInformation(palette: Palette?, info: String) {
                 text = info,
                 maxLines = 4,
                 overflow = TextOverflow.Ellipsis,
-                style = Body1
+                style = Typography.bodyLarge
             )
             Row(
                 Modifier.fillMaxWidth(),
@@ -55,9 +52,7 @@ fun ItemInformation(palette: Palette?, info: String) {
                 ) {
                     Text(
                         text = "READ MORE",
-                        fontFamily = Poppins,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
+                        style = Typography.labelLarge
                     )
                 }
             }

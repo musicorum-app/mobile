@@ -55,7 +55,7 @@ class KtorConfiguration {
             return lastFmClient
         }
 
-        val musicorumClient = HttpClient() {
+        val musicorumClient = HttpClient {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true })
             }
@@ -74,6 +74,7 @@ class KtorConfiguration {
                     protocol = URLProtocol.HTTPS
                     host = "api-v2.musicorumapp.com"
                     path("/v2/resources")
+                    parameters.append("sources", "spotify,deezer")
                     parameters.append("api_key", BuildConfig.MUSICORUM_API_KEY)
                 }
             }
