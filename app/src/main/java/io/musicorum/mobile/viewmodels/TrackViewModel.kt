@@ -24,7 +24,7 @@ class TrackViewModel : ViewModel() {
         autoCorrect: Boolean?
     ) {
         viewModelScope.launch {
-            val res = TrackEndpoint().getTrack(trackName, artist, username, autoCorrect)
+            val res = TrackEndpoint.getTrack(trackName, artist, username, autoCorrect)
 
             val musRes = MusicorumTrackEndpoint().fetchTracks(listOf(res!!.track))
             musRes?.getOrNull(0)?.bestResource?.bestImageUrl?.let {
@@ -60,7 +60,7 @@ class TrackViewModel : ViewModel() {
 
     suspend fun fetchSimilar(baseTrack: Track, limit: Int?, autoCorrect: Boolean?) {
         viewModelScope.launch {
-            val res = TrackEndpoint().fetchSimilar(baseTrack, limit, autoCorrect)
+            val res = TrackEndpoint.fetchSimilar(baseTrack, limit, autoCorrect)
             if (res == null) {
                 error.value = true
                 return@launch
@@ -84,7 +84,7 @@ class TrackViewModel : ViewModel() {
 
     fun updateFavoritePreference(track: Track, ctx: Context) {
         viewModelScope.launch {
-            TrackEndpoint().updateFavoritePreference(track, ctx)
+            TrackEndpoint.updateFavoritePreference(track, ctx)
         }
     }
 

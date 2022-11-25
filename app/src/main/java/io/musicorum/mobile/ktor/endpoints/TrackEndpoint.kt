@@ -13,7 +13,7 @@ import io.musicorum.mobile.serialization.Track
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class TrackEndpoint {
+object TrackEndpoint {
     suspend fun getTrack(
         trackName: String,
         artist: String,
@@ -40,7 +40,19 @@ class TrackEndpoint {
             prefs[stringPreferencesKey("session_key")]!!
         }.first()
         KtorConfiguration.lastFmClient.post {
-            parameter("method", if (!track.loved.toBoolean()) "track.love" else "track.unlove")
+            parameter("method", if (track.loved) "track.unlove" else "track.love")
+            parameter("track", track.name)
+            parameter("artist", track.artist.name)
+            parameter("sk", sessionKey)
+        }
+    }
+
+    suspend fun updateFavoritePreference(track: Track, loved: Boolean, ctx: Context) {
+        val sessionKey = ctx.dataStore.data.map { prefs ->
+            prefs[stringPreferencesKey("session_key")]!!
+        }.first()
+        KtorConfiguration.lastFmClient.post {
+            parameter("method", if (loved) "track.unlove" else "track.love")
             parameter("track", track.name)
             parameter("artist", track.artist.name)
             parameter("sk", sessionKey)

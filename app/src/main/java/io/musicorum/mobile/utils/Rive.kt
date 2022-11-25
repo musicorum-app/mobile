@@ -8,7 +8,7 @@ import app.rive.runtime.kotlin.RiveAnimationView
 class Rive {
     companion object {
         @Composable
-        fun AnimationFor(id: Int, modifier: Modifier, _alpha: Float = 1f) {
+        fun AnimationFor(id: Int, modifier: Modifier = Modifier, _alpha: Float = 1f) {
             AndroidView(
                 modifier = modifier,
                 factory = { ctx ->

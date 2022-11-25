@@ -17,7 +17,7 @@ class RecentSrcobblesViewModel : ViewModel() {
         extended: Boolean?
     ) {
         viewModelScope.launch {
-            val res = UserEndpoint().getRecentTracks(username, from, limit, extended)
+            val res = UserEndpoint.getRecentTracks(username, from, limit, extended)
             recentTracks.value = res?.recentTracks
         }
     }

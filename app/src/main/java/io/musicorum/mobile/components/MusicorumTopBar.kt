@@ -9,17 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import io.musicorum.mobile.LocalNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MusicorumTopBar(
     text: String,
     scrollBehavior: TopAppBarScrollBehavior,
-    nav: NavHostController,
     fadeable: Boolean,
     likeAction: @Composable RowScope.() -> Unit
 ) {
+    val nav = LocalNavigation.current
     val fraction = scrollBehavior.state.overlappedFraction
     val colors = TopAppBarDefaults.smallTopAppBarColors(
         scrolledContainerColor = Color.DarkGray.copy(alpha = fraction),
@@ -40,7 +40,10 @@ fun MusicorumTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { nav.popBackStack() }, modifier = Modifier.padding(top = 45.dp)) {
+            IconButton(
+                onClick = { nav?.popBackStack() },
+                modifier = Modifier.padding(top = 45.dp)
+            ) {
                 Icon(Icons.Rounded.ArrowBack, contentDescription = "")
             }
         },

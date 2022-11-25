@@ -106,28 +106,19 @@ fun Track(
             }
         }
         if (track == null) {
-            Row(
-                Modifier
-                    .fillMaxSize()
-                    .background(AlmostBlack),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            CenteredLoadingSpinner()
         } else {
             val screenScrollState = rememberScrollState()
             val appBarState = rememberTopAppBarState(initialContentOffset = 700f)
             val appBarBehavior =
                 TopAppBarDefaults.pinnedScrollBehavior(state = appBarState)
-            val loved = remember { mutableStateOf(track.loved == "1") }
+            val loved = remember { mutableStateOf(track.loved) }
 
             Scaffold(
                 topBar = {
                     MusicorumTopBar(
                         text = track.name,
                         scrollBehavior = appBarBehavior,
-                        nav = nav,
                         fadeable = true
                     ) {
                         IconButton(
@@ -151,13 +142,12 @@ fun Track(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .background(AlmostBlack)
+                        .fillMaxWidth()
                         .nestedScroll(appBarBehavior.nestedScrollConnection)
                         .verticalScroll(screenScrollState),
                     verticalArrangement = Arrangement.Center
                 ) {
-
                     GradientHeader(
                         artistCover,
                         track.album?.bestImageUrl,
@@ -211,20 +201,15 @@ fun Track(
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.Start,
                         ) {
-                            Text(
-                                stringResource(R.string.similar_tracks),
-                                style = Typography.headlineSmall,
-                                modifier = Modifier.padding(start = 15.dp)
-                            )
+                            Section(title = stringResource(R.string.similar_tracks))
                             it.similarTracks.tracks.forEach {
-                                TrackRow(track = it, nav = nav, false)
+                                TrackItem(track = it, false)
                             }
                         }
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                 }
             }
-
         }
     }
 }

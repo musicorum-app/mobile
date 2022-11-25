@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
-import io.musicorum.mobile.components.TrackRow
+import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 
@@ -45,10 +45,8 @@ fun MostListened(
             MusicorumTopBar(
                 text = stringResource(R.string.most_listened_tracks),
                 scrollBehavior = scrollBehavior,
-                nav = nav,
-                fadeable = false,
-                likeAction = {}
-            )
+                fadeable = false
+            ) {}
         }
     ) {
         if (mostListened.value == null) {
@@ -69,7 +67,7 @@ fun MostListened(
                     .padding(it)
             ) {
                 items(mostListened.value!!.topTracks.tracks) { track ->
-                    TrackRow(track = track, nav = nav)
+                    TrackItem(track = track)
                 }
             }
         }

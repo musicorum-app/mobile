@@ -10,14 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import io.musicorum.mobile.R
@@ -25,8 +22,8 @@ import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.AlmostBlack
-import io.musicorum.mobile.ui.theme.Author
-import io.musicorum.mobile.ui.theme.BodySmall
+import io.musicorum.mobile.ui.theme.ContentSecondary
+import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.Rive
 
 @Composable
@@ -65,6 +62,7 @@ fun FriendActivity(
         Row {
             if (track.attributes?.nowPlaying == "true") {
                 Rive.AnimationFor(
+                    _alpha = 0.55f,
                     id = R.raw.nowplaying,
                     modifier = Modifier
                         .size(15.dp)
@@ -73,11 +71,9 @@ fun FriendActivity(
             }
             Text(
                 text = track.name,
-                fontFamily = Author,
-                fontWeight = FontWeight.Medium,
+                style = Typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontSize = 14.sp,
                 modifier = Modifier.width(105.dp)
             )
         }
@@ -92,8 +88,9 @@ fun FriendActivity(
             ).toString()
         }
         Text(
-            text = date, style = BodySmall, modifier = Modifier
-                .alpha(0.55f)
+            text = date,
+            style = Typography.bodyMedium,
+            color = ContentSecondary
         )
     }
 }

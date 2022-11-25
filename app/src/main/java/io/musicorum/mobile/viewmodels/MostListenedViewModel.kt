@@ -15,7 +15,7 @@ class MostListenedViewModel : ViewModel() {
 
     suspend fun fetchMostListened(username: String, period: FetchPeriod?, limit: Int?) {
         viewModelScope.launch {
-            val res = UserEndpoint().getTopTracks(username, period, limit)
+            val res = UserEndpoint.getTopTracks(username, period, limit)
             if (res == null) {
                 error.value = true
                 return@launch

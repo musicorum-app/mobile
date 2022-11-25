@@ -9,9 +9,9 @@ import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.serialization.User
 
 suspend fun handleAuth(token: String, userBlock: (user: User?, sessionKey: String) -> Unit) {
-    val sessionKey = AuthEndpoint().getSession(token)?.session?.key
+    val sessionKey = AuthEndpoint.getSession(token)?.session?.key
     sessionKey?.let {
-        val user = UserEndpoint().getSessionUser(it)
+        val user = UserEndpoint.getSessionUser(it)
         return userBlock(user, it)
     }
 }

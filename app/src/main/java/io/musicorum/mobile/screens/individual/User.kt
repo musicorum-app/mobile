@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.musicorum.mobile.LocalUser
@@ -34,8 +32,7 @@ import io.musicorum.mobile.viewmodels.UserViewModel
 @Composable
 fun User(
     username: String,
-    userViewModel: UserViewModel = viewModel(),
-    nav: NavHostController
+    userViewModel: UserViewModel = viewModel()
 ) {
     val user = if (username == LocalUser.current?.user?.name) {
         LocalUser.current!!
@@ -72,15 +69,7 @@ fun User(
 
 
     if (user == null) {
-        Row(
-            Modifier
-                .fillMaxSize()
-                .background(AlmostBlack),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            CircularProgressIndicator()
-        }
+        CenteredLoadingSpinner()
     } else {
         SwipeRefresh(state = isRefreshing, onRefresh = { userViewModel.refresh() }) {
             Column(
@@ -88,6 +77,7 @@ fun User(
                 modifier = Modifier
                     .verticalScroll(scrollState)
                     .background(AlmostBlack)
+                    .padding(bottom = 20.dp)
             ) {
                 GradientHeader(
                     backgroundUrl = topArtists?.topArtists?.artists?.getOrNull(0)?.bestImageUrl,
@@ -136,9 +126,8 @@ fun User(
                 } else {
                     recentScrobbles.let { track ->
                         track.forEach {
-                            TrackRow(
+                            TrackItem(
                                 track = it,
-                                nav = nav,
                                 favoriteIcon = false,
                                 showTimespan = true
                             )
@@ -148,16 +137,12 @@ fun User(
 
                 /* TOP ARTISTS */
                 Divider(modifier = Modifier.run { padding(vertical = 20.dp) })
-                Text(
-                    text = stringResource(R.string.top_artists),
-                    style = Heading4,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                )
+                Section(title = stringResource(id = R.string.top_artists), TextAlign.Start)
+
                 Text(
                     text = stringResource(id = R.string.last_month),
-                    style = Subtitle1,
+                    style = Typography.bodyMedium,
+                    color = ContentSecondary,
                     modifier = Modifier
                         .padding(start = 20.dp)
                         .fillMaxWidth()
@@ -166,7 +151,7 @@ fun User(
                     Text(
                         text = stringResource(id = R.string.no_data_available),
                         textAlign = TextAlign.Start,
-                        style = Subtitle1,
+                        style = Typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 20.dp)
                     )
                 } else {
@@ -176,23 +161,18 @@ fun User(
 
                 /* TOP ALBUMS */
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = stringResource(R.string.top_albums),
-                    style = Heading4,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                )
+                Section(title = stringResource(id = R.string.top_albums), TextAlign.Start)
                 Text(
                     text = stringResource(id = R.string.last_month),
-                    style = Subtitle1,
+                    style = Typography.bodyMedium,
+                    color = ContentSecondary,
                     modifier = Modifier
                         .padding(start = 20.dp)
                         .fillMaxWidth()
                 )
                 if (!topAlbums?.topAlbums?.albums.isNullOrEmpty()) {
                     Spacer(modifier = Modifier.height(10.dp))
-                    TopAlbumsRow(albums = topAlbums!!.topAlbums.albums, nav)
+                    TopAlbumsRow(albums = topAlbums!!.topAlbums.albums)
                 } else {
                     Text(
                         text = stringResource(id = R.string.no_data_available),

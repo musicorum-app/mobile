@@ -1,5 +1,6 @@
 package io.musicorum.mobile.screens.individual
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +12,6 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +35,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-@OptIn(ExperimentalComposeUiApi::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun Album(
     albumData: String?,
@@ -74,11 +75,7 @@ fun Album(
         }
 
         if (album == null) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) { CircularProgressIndicator() }
+            CenteredLoadingSpinner()
         } else {
             val scrollState = rememberScrollState()
             LaunchedEffect(Unit) {
@@ -86,102 +83,113 @@ fun Album(
                 palette.value = createPalette(albumImgBmp)
                 paletteReady.value = true
             }
+            val appBarState = rememberTopAppBarState(initialContentOffset = 700f)
+            val appBarBehavior =
+                TopAppBarDefaults.pinnedScrollBehavior(state = appBarState)
 
-            Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .fillMaxSize()
-                    .background(AlmostBlack)
-            ) {
-                GradientHeader(
-                    artistImage,
-                    album.bestImageUrl,
-                    RoundedCornerShape(12.dp),
-                    PlaceholderType.ALBUM
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    album.name,
-                    style = Typography.displaySmall,
+            Scaffold(topBar = {
+                MusicorumTopBar(
+                    text = album.name,
+                    scrollBehavior = appBarBehavior,
+                    fadeable = true,
+                ) {}
+            }) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 55.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    album.artist ?: "Unknown",
-                    style = Typography.bodyLarge,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    color = ContentSecondary
-                )
-
-                Divider(Modifier.padding(vertical = 20.dp))
-
-                StatisticRow(
-                    true,
-                    stringResource(R.string.listeners) to album.listeners?.toLong(),
-                    stringResource(R.string.scrobbles) to album.playCount?.toLong(),
-                    stringResource(R.string.your_scrobbles) to album.userPlayCount?.toLong()
-                )
-
-                album.tags?.let {
-                    Spacer(Modifier.height(20.dp))
-                    TagList(
-                        tags = it.tags,
-                        referencePalette = palette.value,
-                        visible = !paletteReady.value
+                        .verticalScroll(scrollState)
+                        .fillMaxSize()
+                        .background(AlmostBlack)
+                ) {
+                    GradientHeader(
+                        artistImage,
+                        album.bestImageUrl,
+                        RoundedCornerShape(12.dp),
+                        PlaceholderType.ALBUM
                     )
-                }
 
-                album.wiki?.let {
-                    Spacer(Modifier.height(20.dp))
-                    Row(modifier = Modifier.padding(horizontal = 20.dp)) {
-                        ItemInformation(palette = palette.value, info = it.summary)
-                    }
-                }
-
-                Divider(Modifier.padding(vertical = 20.dp))
-
-                ContextRow(appearsOn = null, from = Pair(album.artist, artistImage), null)
-
-                album.tracks?.tracks?.let {
-                    Divider(Modifier.padding(vertical = 20.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        album.name,
+                        style = Typography.displaySmall,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp)
-                            .clickable { nav.navigate("albumTracklist") }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.tracks),
-                            style = Heading4,
-                            modifier = Modifier.padding(start = 20.dp)
-                        )
-                        Icon(
-                            Icons.Rounded.ChevronRight,
-                            null,
-                            modifier = Modifier.padding(end = 20.dp)
-                        )
-                    }
-                    Text(
-                        text = pluralStringResource(
-                            id = R.plurals.tracks_quantity,
-                            count = it.size,
-                            it.size
-                        ),
-                        modifier = Modifier.padding(start = 20.dp),
-                        style = Subtitle1
+                            .padding(horizontal = 55.dp),
+                        textAlign = TextAlign.Center
                     )
 
-                    it.take(4).forEachIndexed { i, track ->
-                        AlbumTrack(i + 1, track.name)
+                    Text(
+                        album.artist ?: "Unknown",
+                        style = Typography.bodyLarge,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        color = ContentSecondary
+                    )
+
+                    Divider(Modifier.padding(vertical = 20.dp))
+
+                    StatisticRow(
+                        true,
+                        stringResource(R.string.listeners) to album.listeners?.toLong(),
+                        stringResource(R.string.scrobbles) to album.playCount?.toLong(),
+                        stringResource(R.string.your_scrobbles) to album.userPlayCount?.toLong()
+                    )
+
+                    album.tags?.let {
+                        Spacer(Modifier.height(20.dp))
+                        TagList(
+                            tags = it.tags,
+                            referencePalette = palette.value,
+                            visible = !paletteReady.value
+                        )
                     }
+
+                    album.wiki?.let {
+                        Spacer(Modifier.height(20.dp))
+                        Row(modifier = Modifier.padding(horizontal = 20.dp)) {
+                            ItemInformation(palette = palette.value, info = it.summary)
+                        }
+                    }
+
+                    Divider(Modifier.padding(vertical = 20.dp))
+
+                    ContextRow(appearsOn = null, from = Pair(album.artist, artistImage), null)
+
+                    album.tracks?.tracks?.let {
+                        Divider(Modifier.padding(vertical = 20.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                                .clickable { nav.navigate("albumTracklist") }
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.tracks),
+                                style = Heading4,
+                                modifier = Modifier.padding(start = 20.dp)
+                            )
+                            Icon(
+                                Icons.Rounded.ChevronRight,
+                                null,
+                                modifier = Modifier.padding(end = 20.dp)
+                            )
+                        }
+                        Text(
+                            text = pluralStringResource(
+                                id = R.plurals.tracks_quantity,
+                                count = it.size,
+                                it.size
+                            ),
+                            modifier = Modifier.padding(start = 20.dp),
+                            style = Subtitle1
+                        )
+
+                        it.take(4).forEachIndexed { i, track ->
+                            AlbumTrack(i + 1, track.name)
+                        }
+                    }
+                    Spacer(Modifier.width(20.dp))
                 }
-                Spacer(Modifier.width(20.dp))
             }
         }
     }

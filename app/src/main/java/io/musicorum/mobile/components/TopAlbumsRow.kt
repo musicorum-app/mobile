@@ -14,24 +14,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.screens.individual.PartialAlbum
 import io.musicorum.mobile.serialization.TopAlbum
-import io.musicorum.mobile.ui.theme.Author
-import io.musicorum.mobile.ui.theme.BodySmall
+import io.musicorum.mobile.ui.theme.Typography
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 
 @Composable
-fun TopAlbumsRow(albums: List<TopAlbum>, nav: NavHostController) {
+fun TopAlbumsRow(albums: List<TopAlbum>) {
+    val nav = LocalNavigation.current!!
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         modifier = Modifier.padding(start = 20.dp)
@@ -65,21 +64,19 @@ fun AlbumCard(album: TopAlbum, nav: NavHostController) {
         )
         Text(
             text = album.name,
-            fontFamily = Author,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
+            style = Typography.bodyLarge,
             modifier = Modifier.width(120.dp),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         Text(
             album.artist?.name ?: "Unknown",
-            style = BodySmall,
+            style = Typography.bodyMedium,
             modifier = Modifier.alpha(0.55f)
         )
         Text(
             (album.playCount ?: "0") + " plays",
-            style = BodySmall,
+            style = Typography.bodyMedium,
             modifier = Modifier.alpha(0.55f)
         )
     }

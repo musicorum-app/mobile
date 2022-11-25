@@ -19,7 +19,7 @@ data class InnerTopAlbumsResponse(
 
 @Serializable
 data class TopAlbum @OptIn(ExperimentalSerializationApi::class) constructor(
-    @JsonNames("title", "#text")
+    @JsonNames(*arrayOf("title", "#text"))
     val name: String = "Unknown",
     private val title: String? = null,
     @SerialName("#text")

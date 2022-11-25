@@ -83,7 +83,7 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
                         Firebase.crashlytics.setCrashlyticsCollectionEnabled(checkboxChecked.value)
                     }
                     commitUser(sessionKey, ctx)
-                    val sessionUser = UserEndpoint().getSessionUser(sessionKey)
+                    val sessionUser = UserEndpoint.getSessionUser(sessionKey)
                     sessionUser?.let {
                         MutableUserState.value = it
                         nav.navigate("home")

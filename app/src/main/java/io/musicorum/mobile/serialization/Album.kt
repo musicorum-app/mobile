@@ -10,7 +10,7 @@ import kotlinx.serialization.json.intOrNull
 
 @Serializable
 data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
-    @JsonNames("title", "#text")
+    @JsonNames(*arrayOf("title", "#text"))
     var name: String = "Unknown",
     @SerialName("image")
     val images: List<Image>? = null,

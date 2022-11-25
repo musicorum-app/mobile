@@ -55,8 +55,7 @@ fun NavigationRouter(controller: NavHostController) {
             })
         ) {
             User(
-                username = it.arguments?.getString("username")!!,
-                nav = controller
+                username = it.arguments?.getString("username")!!
             )
         }
 
@@ -72,7 +71,7 @@ fun NavigationRouter(controller: NavHostController) {
         composable("discover") { Discover() }
         composable("scrobbling") { Scrobbling() }
         composable("charts") { Charts() }
-        composable("profile") { Account(controller) }
+        composable("profile") { Account() }
 
         composable(
             "track/{trackData}",

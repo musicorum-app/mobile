@@ -1,16 +1,19 @@
 package io.musicorum.mobile.screens.individual
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -27,10 +30,13 @@ import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.viewmodels.ArtistViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
     val artist = artistViewModel.artist.observeAsState().value
-    val topAlbumImage = artistViewModel.topAlbumImage.observeAsState().value
+    val topAlbums = artistViewModel.topAlbums.observeAsState().value
+    val topTracks = artistViewModel.topTracks.observeAsState().value
     val user = LocalUser.current!!.user
     val palette = remember { mutableStateOf<Palette?>(null) }
     val paletteReady = remember { mutableStateOf(false) }
@@ -39,6 +45,8 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
     LaunchedEffect(artist) {
         if (artist == null) {
             artistViewModel.fetchArtist(artistName, user.name)
+            artistViewModel.fetchTopAlbums(artistName)
+            artistViewModel.fetchTopTracks(artistName)
         } else {
             val bmp = getBitmap(artist.bestImageUrl, ctx)
             val p = createPalette(bmp)
@@ -50,46 +58,84 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
     if (artist == null) {
         CenteredLoadingSpinner()
     } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AlmostBlack)
-        ) {
-            GradientHeader(
-                backgroundUrl = topAlbumImage,
-                coverUrl = artist.bestImageUrl,
-                shape = CircleShape,
-                placeholderType = PlaceholderType.ARTIST
-            )
-            Text(
-                text = artist.name,
-                style = Typography.displaySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Divider(modifier = Modifier.padding(vertical = 18.dp))
-            StatisticRow(
-                short = true,
-                stringResource(id = R.string.listeners) to artist.stats?.listeners,
-                stringResource(id = R.string.scrobbles) to artist.stats?.playCount,
-                stringResource(id = R.string.your_scrobbles) to artist.stats?.userPlayCount
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-
-            artist.tags?.let {
-                TagList(
-                    tags = it.tags,
-                    referencePalette = palette.value,
-                    visible = !paletteReady.value
-                )
+        val appBarState = rememberTopAppBarState(initialContentOffset = 700f)
+        val appBarBehavior =
+            TopAppBarDefaults.pinnedScrollBehavior(state = appBarState)
+        Scaffold(
+            topBar = {
+                MusicorumTopBar(
+                    text = artist.name,
+                    scrollBehavior = appBarBehavior,
+                    fadeable = true
+                ) {}
             }
-            Spacer(modifier = Modifier.height(20.dp))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(AlmostBlack)
+                    .nestedScroll(appBarBehavior.nestedScrollConnection)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                GradientHeader(
+                    backgroundUrl = topAlbums?.getOrNull(0)?.bestImageUrl,
+                    coverUrl = artist.bestImageUrl,
+                    shape = CircleShape,
+                    placeholderType = PlaceholderType.ARTIST
+                )
+                Text(
+                    text = artist.name,
+                    style = Typography.displaySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            artist.bio?.let {
-                Box(modifier = Modifier.padding(horizontal = 20.dp)) {
-                    ItemInformation(palette = palette.value, info = it.summary)
+                Divider(modifier = Modifier.padding(vertical = 18.dp))
+                StatisticRow(
+                    short = true,
+                    stringResource(id = R.string.listeners) to artist.stats?.listeners,
+                    stringResource(id = R.string.scrobbles) to artist.stats?.playCount,
+                    stringResource(id = R.string.your_scrobbles) to artist.stats?.userPlayCount
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+
+                artist.tags?.let {
+                    TagList(
+                        tags = it.tags,
+                        referencePalette = palette.value,
+                        visible = !paletteReady.value
+                    )
                 }
+                Spacer(modifier = Modifier.height(20.dp))
+
+                artist.bio?.let {
+                    Box(modifier = Modifier.padding(horizontal = 20.dp)) {
+                        ItemInformation(palette = palette.value, info = it.summary)
+                    }
+                }
+
+                Divider(modifier = Modifier.padding(vertical = 18.dp))
+                Section(title = "Top Tracks")
+                topTracks?.let {
+                    TrackItem(track = it[0], favoriteIcon = false)
+                    TrackItem(track = it[1], favoriteIcon = false)
+                    TrackItem(track = it[2], favoriteIcon = false)
+                    TrackItem(track = it[3], favoriteIcon = false)
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Section(title = "Top Albums")
+                topAlbums?.let {
+                    TopAlbumsRow(albums = it)
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Section(title = "Similar to $artistName")
+
+                artist.similar?.let {
+                    ArtistRow(artists = it.artist)
+                }
+                Spacer(modifier = Modifier.height(40.dp))
             }
         }
     }

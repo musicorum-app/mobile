@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
-import io.musicorum.mobile.components.TrackRow
+import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ui.theme.LightGray
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 import java.time.Instant
@@ -52,10 +52,8 @@ fun RecentScrobbles(
             MusicorumTopBar(
                 text = stringResource(R.string.recent_scrobbles),
                 scrollBehavior = scrollBehavior,
-                nav = nav,
-                fadeable = false,
-                likeAction = {}
-            )
+                fadeable = false
+            ) {}
         },
         modifier = Modifier
             .background(LightGray)
@@ -77,7 +75,7 @@ fun RecentScrobbles(
                 val tracks = recentTracks.value!!.tracks
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp), state = state) {
                     items(tracks) { track ->
-                        TrackRow(track = track, nav)
+                        TrackItem(track = track)
                     }
                 }
             }

@@ -53,6 +53,13 @@ val Subtitle1 = TextStyle(
     platformStyle = PlatformTextStyle(includeFontPadding = false)
 )
 
+val LabelMedium2 = TextStyle(
+    fontFamily = Author,
+    fontWeight = FontWeight.Bold,
+    fontSize = 14.sp,
+    color = Color(255, 255, 255, 140)
+)
+
 private const val features = "'pnum' on, 'lnum' on, 'salt' on"
 
 

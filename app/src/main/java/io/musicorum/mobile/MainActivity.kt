@@ -28,6 +28,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.screens.*
@@ -41,15 +42,16 @@ import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
-import io.musicorum.mobile.viewmodels.HomeViewModel
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userdata")
 val LocalUser = compositionLocalOf<User?> { null }
+val LocalNavigation = compositionLocalOf<NavHostController?> { null }
 val MutableUserState = mutableStateOf<User?>(null)
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
 
@@ -65,7 +67,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             navController = rememberAnimatedNavController()
-            val homeViewModel: HomeViewModel = viewModel()
+
             val mostListenedViewModel: MostListenedViewModel = viewModel()
             val ctx = LocalContext.current
             val snackHostState = remember { SnackbarHostState() }
@@ -80,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         if (sessionKey == null) {
                             navController.navigate("login")
                         } else {
-                            MutableUserState.value = UserEndpoint().getSessionUser(sessionKey)
+                            MutableUserState.value = UserEndpoint.getSessionUser(sessionKey)
                         }
                     }
                 }
@@ -101,7 +103,8 @@ class MainActivity : ComponentActivity() {
 
             CompositionLocalProvider(
                 LocalUser provides MutableUserState.value,
-                LocalSnackbar provides LocalSnackbarContext(snackHostState)
+                LocalSnackbar provides LocalSnackbarContext(snackHostState),
+                LocalNavigation provides navController
             ) {
                 MusicorumMobileTheme {
                     Scaffold(
@@ -133,7 +136,6 @@ class MainActivity : ComponentActivity() {
 
                                 composable("home") {
                                     Home(
-                                        homeViewModel = homeViewModel,
                                         nav = navController
                                     )
                                 }
@@ -156,8 +158,7 @@ class MainActivity : ComponentActivity() {
                                     })
                                 ) {
                                     User(
-                                        username = it.arguments?.getString("username")!!,
-                                        nav = navController
+                                        username = it.arguments?.getString("username")!!
                                     )
                                 }
 
@@ -185,7 +186,7 @@ class MainActivity : ComponentActivity() {
                                 composable("discover") { Discover() }
                                 composable("scrobbling") { Scrobbling() }
                                 composable("charts") { Charts() }
-                                composable("profile") { Account(navController) }
+                                composable("profile") { Account() }
 
                                 composable(
                                     "track/{trackData}",
