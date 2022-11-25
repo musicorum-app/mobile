@@ -7,7 +7,7 @@ import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.Album
 import kotlinx.serialization.Serializable
 
-class AlbumEndpoint {
+object AlbumEndpoint {
     suspend fun getInfo(album: String, artist: String, user: String?): InnerAlbum? {
         val res = KtorConfiguration.lastFmClient.get {
             parameter("artist", artist)

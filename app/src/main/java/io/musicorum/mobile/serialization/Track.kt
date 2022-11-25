@@ -21,8 +21,8 @@ data class Track @OptIn(ExperimentalSerializationApi::class) constructor(
     @SerialName("toptags")
     val topTags: Tag? = null,
     var album: Album? = null,
-    @JsonNames("userloved")
-    val loved: String? = null,
+    @JsonNames(*arrayOf("userloved", "loved"))
+    val _loved: String? = null,
     @SerialName("userplaycount")
     private val _userPlayCount: String? = null,
     val date: TrackDate? = null,
@@ -40,6 +40,7 @@ data class Track @OptIn(ExperimentalSerializationApi::class) constructor(
         ?: images?.find { it.size == "small" }?.url
         ?: images?.find { it.size == "unknown" }?.url
         ?: ""
+    val loved = _loved == "1"
 }
 
 @Serializable

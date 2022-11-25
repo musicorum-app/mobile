@@ -19,11 +19,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
@@ -50,7 +51,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 
 @Composable
-fun Home(homeViewModel: HomeViewModel = viewModel(), nav: NavHostController) {
+fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController) {
     val user = LocalUser.current
     val recentTracks = homeViewModel.recentTracks.observeAsState().value
     val palette = homeViewModel.userPalette.observeAsState().value
@@ -93,7 +94,7 @@ fun Home(homeViewModel: HomeViewModel = viewModel(), nav: NavHostController) {
             Modifier
                 .verticalScroll(rememberScrollState())
                 .background(AlmostBlack)
-                .padding(top = 30.dp)
+                .padding(top = 30.dp, bottom = 20.dp)
         ) {
             Text(
                 text = "Home",
@@ -221,8 +222,8 @@ private fun UserCard(
     recentTracks: RecentTracks?,
     nav: NavHostController
 ) {
-    val vibrant = Color(palette.getDominantColor(0))
-    val darken = darkenColor(palette.getDominantColor(0), 0.18f)
+    val vibrant = Color(palette.getDarkVibrantColor(0))
+    val darken = darkenColor(vibrant.toArgb(), 0.55f)
     val gradient = listOf(vibrant, darken)
     Box(
         modifier = Modifier

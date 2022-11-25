@@ -17,7 +17,7 @@ class AlbumViewModel : ViewModel() {
 
     fun getAlbum(albumName: String, artistName: String, user: User?) {
         viewModelScope.launch {
-            val res = AlbumEndpoint().getInfo(albumName, artistName, user?.user?.name)
+            val res = AlbumEndpoint.getInfo(albumName, artistName, user?.user?.name)
             album.value = res
             if (res == null) errored.value = true
         }

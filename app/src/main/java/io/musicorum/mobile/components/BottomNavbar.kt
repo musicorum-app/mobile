@@ -38,7 +38,9 @@ fun BottomNavBar(nav: NavHostController) {
     val navBackStackEntry by nav.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    Box(modifier = Modifier.background(KindaBlack)) {
+    Box(modifier = Modifier
+        .background(KindaBlack)
+        .padding(bottom = 20.dp)) {
         NavigationBar(
             containerColor = Color.Transparent
         ) {

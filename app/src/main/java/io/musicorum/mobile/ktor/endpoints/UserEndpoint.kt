@@ -6,7 +6,7 @@ import io.ktor.http.*
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.*
 
-class UserEndpoint {
+object UserEndpoint {
     suspend fun getUser(username: String): User? {
         val fetched = KtorConfiguration.lastFmClient.get {
             parameter("method", "user.getInfo")

@@ -28,7 +28,7 @@ class UserViewModel : ViewModel() {
 
     fun getUser(username: String) {
         viewModelScope.launch {
-            val userInfo = UserEndpoint().getUser(username)
+            val userInfo = UserEndpoint.getUser(username)
             user.value = userInfo
             if (userInfo == null) errored.value = true
         }
@@ -36,7 +36,7 @@ class UserViewModel : ViewModel() {
 
     fun getTopArtists(username: String, limit: Int?, period: FetchPeriod?) {
         viewModelScope.launch {
-            val res = UserEndpoint().getTopArtists(username, limit, period)
+            val res = UserEndpoint.getTopArtists(username, limit, period)
             if (res != null) {
                 val musRes =
                     MusicorumArtistEndpoint().fetchArtist(res.topArtists.artists)
@@ -51,7 +51,7 @@ class UserViewModel : ViewModel() {
 
     fun getRecentTracks(username: String, limit: Int?, extended: Boolean?) {
         viewModelScope.launch {
-            val res = UserEndpoint().getRecentTracks(username, null, limit, extended)
+            val res = UserEndpoint.getRecentTracks(username, null, limit, extended)
             recentTracks.value = res
             isRefreshing.value = false
         }
@@ -59,7 +59,7 @@ class UserViewModel : ViewModel() {
 
     fun getTopAlbums(username: String, period: FetchPeriod?, limit: Int?) {
         viewModelScope.launch {
-            val res = UserEndpoint().getTopAlbums(username, period, limit)
+            val res = UserEndpoint.getTopAlbums(username, period, limit)
             topAlbums.value = res
         }
     }

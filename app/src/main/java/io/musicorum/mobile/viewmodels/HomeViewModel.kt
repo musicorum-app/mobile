@@ -5,16 +5,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.serialization.*
+import io.musicorum.mobile.utils.ScrobbleRepository
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val scrobbleRepository: ScrobbleRepository) :
+    ViewModel() {
     val user by lazy { MutableLiveData<User>() }
     val userPalette by lazy { MutableLiveData<Palette>() }
     val recentTracks by lazy { MutableLiveData<RecentTracks>() }
@@ -33,8 +38,12 @@ class HomeViewModel : ViewModel() {
 
     fun fetchRecentTracks(username: String, from: String?, limit: Int?, extended: Boolean?) {
         viewModelScope.launch {
-            recentTracks.value = UserEndpoint().getRecentTracks(username, from, limit, extended)
-            isRefreshing.value = false
+            val res = UserEndpoint.getRecentTracks(username, from, limit, extended)
+            if (res != null) {
+                scrobbleRepository.recentScrobbles.value = res
+                recentTracks.value = scrobbleRepository.recentScrobbles.value
+                isRefreshing.value = false
+            }
         }
     }
 
@@ -48,7 +57,7 @@ class HomeViewModel : ViewModel() {
 
     fun fetchTopTracks(username: String, period: FetchPeriod) {
         viewModelScope.launch {
-            val topTracksRes = UserEndpoint().getTopTracks(username, period, 10)
+            val topTracksRes = UserEndpoint.getTopTracks(username, period, 10)
             if (topTracksRes == null) {
                 errored.value = true
                 return@launch
@@ -66,7 +75,7 @@ class HomeViewModel : ViewModel() {
 
     fun fetchFriends(username: String, limit: Int?) {
         viewModelScope.launch {
-            val friendsRes = UserEndpoint().getFriends(username, limit)
+            val friendsRes = UserEndpoint.getFriends(username, limit)
             if (friendsRes == null) {
                 errored.value = true
                 return@launch
@@ -75,7 +84,7 @@ class HomeViewModel : ViewModel() {
             val mutableList: MutableList<RecentTracks> = mutableListOf()
             friendsRes.friends.users.forEach { user ->
                 val friendRecentAct =
-                    UserEndpoint().getRecentTracks(user.name, null, 1, false)
+                    UserEndpoint.getRecentTracks(user.name, null, 1, false)
                 friendRecentAct?.let { mutableList.add(it) }
             }
             friendsActivity.value = mutableList.toList()

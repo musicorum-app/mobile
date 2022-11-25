@@ -6,7 +6,7 @@ import io.ktor.http.*
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.SessionResponse
 
-class AuthEndpoint {
+object AuthEndpoint {
     suspend fun getSession(token: String): SessionResponse? {
         val res = KtorConfiguration.lastFmClient.get {
             parameter("method", "auth.getSession")
