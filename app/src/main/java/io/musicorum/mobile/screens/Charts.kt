@@ -10,14 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import io.musicorum.mobile.R
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 
 @Composable
 fun Charts() {
     Row(
         Modifier
             .fillMaxSize()
-            .background(AlmostBlack), verticalAlignment = Alignment.CenterVertically
+            .background(KindaBlack), verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             stringResource(id = R.string.section_coming_soon),

@@ -24,7 +24,7 @@ import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
@@ -73,7 +73,7 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(AlmostBlack)
+                    .background(KindaBlack)
                     .nestedScroll(appBarBehavior.nestedScrollConnection)
                     .verticalScroll(rememberScrollState())
             ) {

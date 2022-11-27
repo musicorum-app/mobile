@@ -29,7 +29,7 @@ import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.Subtitle1
 import io.musicorum.mobile.ui.theme.Typography
@@ -106,7 +106,7 @@ fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
                         .size(40.dp)
                         .offset(5.dp, 10.dp)
                         .clip(CircleShape)
-                        .background(color = AlmostBlack, shape = CircleShape)
+                        .background(color = KindaBlack, shape = CircleShape)
                         .padding(3.dp)
                         .clip(CircleShape)
                         .background(MostlyRed)

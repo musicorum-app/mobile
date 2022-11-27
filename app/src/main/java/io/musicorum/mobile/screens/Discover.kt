@@ -10,14 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import io.musicorum.mobile.R
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 
 @Composable
 fun Discover() {
     Row(
         Modifier
             .fillMaxSize()
-            .background(AlmostBlack),
+            .background(KindaBlack),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

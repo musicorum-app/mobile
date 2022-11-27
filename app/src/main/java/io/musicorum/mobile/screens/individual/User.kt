@@ -76,7 +76,7 @@ fun User(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .verticalScroll(scrollState)
-                    .background(AlmostBlack)
+                    .background(KindaBlack)
                     .padding(bottom = 20.dp)
             ) {
                 GradientHeader(
