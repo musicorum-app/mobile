@@ -1,8 +1,7 @@
 package io.musicorum.mobile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
@@ -17,7 +16,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import io.musicorum.mobile.ui.theme.KindaBlack
+import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
 import java.util.*
 
@@ -39,8 +38,8 @@ fun BottomNavBar(nav: NavHostController) {
     val currentDestination = navBackStackEntry?.destination
 
     Box(modifier = Modifier
-        .background(KindaBlack)
-        .padding(bottom = 20.dp)) {
+        .background(LighterGray)
+        ) {
         NavigationBar(
             containerColor = Color.Transparent
         ) {
@@ -66,5 +65,4 @@ fun BottomNavBar(nav: NavHostController) {
             }
         }
     }
-
 }

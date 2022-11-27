@@ -47,7 +47,7 @@ fun Album(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AlmostBlack)
+                .background(KindaBlack)
         ) {
             Text(text = "Something went wrong")
         }
@@ -98,7 +98,7 @@ fun Album(
                     modifier = Modifier
                         .verticalScroll(scrollState)
                         .fillMaxSize()
-                        .background(AlmostBlack)
+                        .background(KindaBlack)
                 ) {
                     GradientHeader(
                         artistImage,

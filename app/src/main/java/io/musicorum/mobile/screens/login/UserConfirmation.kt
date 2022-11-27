@@ -23,9 +23,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.ui.theme.AlmostBlack
-import io.musicorum.mobile.ui.theme.Heading2
-import io.musicorum.mobile.ui.theme.Subtitle1
+import io.musicorum.mobile.ui.theme.*
 import io.musicorum.mobile.utils.commitUser
 import kotlinx.coroutines.launch
 
@@ -33,7 +31,7 @@ import kotlinx.coroutines.launch
 fun UserConfirmation(nav: NavController, sessionKey: String) {
     Column(
         modifier = Modifier
-            .background(AlmostBlack)
+            .background(KindaBlack)
             .padding(horizontal = 20.dp)
             .statusBarsPadding(),
         verticalArrangement = Arrangement.Center,
@@ -72,7 +70,7 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
                 )
                 Text(
                     text = stringResource(id = R.string.analytics_description),
-                    style = Subtitle1,
+                    style = Typography.bodyMedium,
                     modifier = Modifier.alpha(0.55f)
                 )
             }

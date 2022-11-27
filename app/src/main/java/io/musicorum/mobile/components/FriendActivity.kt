@@ -21,7 +21,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.Track
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.Rive
@@ -51,7 +51,7 @@ fun FriendActivity(
                     .size(40.dp)
                     .offset(5.dp, 10.dp)
                     .clip(CircleShape)
-                    .background(color = AlmostBlack, shape = CircleShape)
+                    .background(color = KindaBlack, shape = CircleShape)
                     .padding(3.dp)
                     .clip(CircleShape)
                     .align(Alignment.BottomEnd)

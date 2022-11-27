@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import io.musicorum.mobile.BuildConfig
 import io.musicorum.mobile.MutableUserState
 import io.musicorum.mobile.R
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.utils.handleAuth
 
 @Composable
@@ -34,7 +34,7 @@ fun Login(nav: NavController, deepLinkToken: String?) {
         .build()
     val ctx = LocalContext.current
     val authorizationURL =
-        "http://www.last.fm/api/auth/?api_key=${BuildConfig.LASTFM_API_KEY}&&cb=musicorum://auth-callback"
+        "http://www.last.fm/api/auth/?api_key=${BuildConfig.LASTFM_API_KEY}&cb=musicorum://auth-callback"
     val loading = remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = deepLinkToken) {
@@ -54,7 +54,7 @@ fun Login(nav: NavController, deepLinkToken: String?) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .background(AlmostBlack)
+            .background(KindaBlack)
             .statusBarsPadding()
     ) {
         Text(

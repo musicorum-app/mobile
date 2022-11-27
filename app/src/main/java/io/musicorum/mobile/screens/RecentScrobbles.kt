@@ -18,12 +18,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackItem
-import io.musicorum.mobile.ui.theme.LightGray
+import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 import java.time.Instant
 
@@ -31,7 +30,6 @@ import java.time.Instant
 @Composable
 fun RecentScrobbles(
     recentSrcobblesViewModel: RecentSrcobblesViewModel = viewModel(),
-    nav: NavHostController
 ) {
     val recentTracks = recentSrcobblesViewModel.recentTracks.observeAsState()
     val user = LocalUser.current!!
@@ -56,7 +54,7 @@ fun RecentScrobbles(
             ) {}
         },
         modifier = Modifier
-            .background(LightGray)
+            .background(EvenLighterGray)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         Column(
