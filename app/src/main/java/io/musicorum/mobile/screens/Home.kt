@@ -19,7 +19,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -45,7 +44,7 @@ import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.ui.theme.*
-import io.musicorum.mobile.utils.darkenColor
+import io.musicorum.mobile.utils.getDarkenGradient
 import io.musicorum.mobile.viewmodels.HomeViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -93,13 +92,13 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController)
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
-                .background(AlmostBlack)
+                .background(KindaBlack)
                 .padding(top = 30.dp, bottom = 20.dp)
         ) {
             Text(
                 text = "Home",
-                style = Typography.titleLarge,
-                modifier = Modifier.padding(start = 20.dp, top = 10.dp)
+                style = Typography.displaySmall,
+                modifier = Modifier.padding(start = 20.dp)
             )
 
             if (user != null && palette != null) {
@@ -113,7 +112,7 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController)
                         .clip(RoundedCornerShape(15.dp))
                         .placeholder(
                             true,
-                            color = KindaBlack,
+                            color = LighterGray,
                             highlight = PlaceholderHighlight.shimmer()
                         )
                 )
@@ -222,9 +221,9 @@ private fun UserCard(
     recentTracks: RecentTracks?,
     nav: NavHostController
 ) {
-    val vibrant = Color(palette.getDarkVibrantColor(0))
-    val darken = darkenColor(vibrant.toArgb(), 0.55f)
-    val gradient = listOf(vibrant, darken)
+    val vibrant = Color(palette.getVibrantColor(0))
+    val gradient = getDarkenGradient(vibrant)
+
     Box(
         modifier = Modifier
             .fillMaxWidth()

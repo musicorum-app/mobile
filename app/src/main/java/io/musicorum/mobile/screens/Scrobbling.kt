@@ -41,9 +41,9 @@ import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.serialization.Track
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LabelMedium2
-import io.musicorum.mobile.ui.theme.LightGray
+import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.*
 import io.musicorum.mobile.viewmodels.ScrobblingViewModel
@@ -57,7 +57,7 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     val state = rememberLazyListState()
     val firstItemOffset = remember { derivedStateOf { state.firstVisibleItemScrollOffset } }
     val firstItemIndex = remember { derivedStateOf { state.firstVisibleItemIndex } }
-    val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 100f, 122f, 46f)
+    val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 200f, 122f, 46f)
     val value = interpolated.coerceIn(46f..122f)
     val size = animateFloatAsState(if (firstItemIndex.value == 0) value else 46f)
 
@@ -72,10 +72,15 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     } else {
         Column(
             modifier = Modifier
-                .background(AlmostBlack)
-                .padding(top = 60.dp, start = 14.dp, end = 14.dp)
+                .background(KindaBlack)
+                .padding(top = 30.dp, start = 20.dp, end = 20.dp)
                 .fillMaxSize()
         ) {
+            Text(
+                text = "Scrobbling",
+                style = Typography.displaySmall,
+                modifier = Modifier.padding(bottom = 20.dp)
+            )
             Column {
                 NowPlayingCard(
                     track = scrobblingViewModel.recentScrobbles.value!!.recentTracks.tracks[0],
@@ -103,15 +108,18 @@ fun NowPlayingCard(track: Track, size: Dp) {
         }
     }
     val vibrantColor =
-        Color(palette?.getDarkVibrantColor(LightGray.toArgb()) ?: LightGray.toArgb())
-    val darken = darkenColor(vibrantColor.toArgb(), 0.5f)
+        Color(palette?.getVibrantColor(EvenLighterGray.toArgb()) ?: EvenLighterGray.toArgb())
+    val gradient = getDarkenGradient(vibrantColor)
 
     val vibrant = animateColorAsState(
-        targetValue = vibrantColor,
+        targetValue = gradient[0],
         animationSpec = spring(stiffness = StiffnessLow)
     )
     val dark =
-        animateColorAsState(targetValue = darken, animationSpec = spring(stiffness = StiffnessLow))
+        animateColorAsState(
+            targetValue = gradient[1],
+            animationSpec = spring(stiffness = StiffnessLow)
+        )
 
     val brush = if (track.attributes?.nowPlaying == "true") {
         Brush.horizontalGradient(
@@ -119,7 +127,7 @@ fun NowPlayingCard(track: Track, size: Dp) {
         )
     } else {
         Brush.horizontalGradient(
-            colors = listOf(LightGray, darkenColor(LightGray.toArgb(), 0.5f))
+            colors = listOf(EvenLighterGray, darkenColor(EvenLighterGray.toArgb(), 0.5f))
         )
     }
 
@@ -128,7 +136,6 @@ fun NowPlayingCard(track: Track, size: Dp) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(brush)
-            .statusBarsPadding()
     ) {
         if (isPlaying) {
             IconButton(

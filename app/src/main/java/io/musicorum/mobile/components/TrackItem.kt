@@ -24,7 +24,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.viewmodels.TrackRowViewModel
 import kotlinx.serialization.encodeToString
@@ -41,7 +41,7 @@ fun TrackItem(
     val partialTrack = NavigationTrack(track.name, track.artist.name)
     val dest = Json.encodeToString(partialTrack)
     val listColors = ListItemDefaults.colors(
-        containerColor = AlmostBlack
+        containerColor = KindaBlack
     )
     val ctx = LocalContext.current
     val nav = LocalNavigation.current!!
@@ -104,6 +104,7 @@ fun TrackItem(
                     Text(text = txt, style = Typography.labelMedium)
                 }
             }
-        }
+        },
+
     )
 }

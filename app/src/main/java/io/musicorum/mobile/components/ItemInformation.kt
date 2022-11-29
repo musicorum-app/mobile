@@ -16,21 +16,22 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.palette.graphics.Palette
-import io.musicorum.mobile.ui.theme.LightGray
+import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.Typography
-import io.musicorum.mobile.utils.darkenColor
+import io.musicorum.mobile.utils.getDarkenGradient
 
 @Composable
 fun ItemInformation(palette: Palette?, info: String) {
-    val primary = palette?.getVibrantColor(LightGray.toArgb()) ?: LightGray.toArgb()
-    val darken = darkenColor(primary, 0.50f)
+    val vibrant = palette?.getVibrantColor(EvenLighterGray.toArgb()) ?: EvenLighterGray.toArgb()
+    val gradient = getDarkenGradient(Color(vibrant))
+
     val buttonColors = ButtonDefaults.buttonColors(
         containerColor = Color.White.copy(alpha = 0.25f)
     )
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(Brush.horizontalGradient(listOf(Color(primary), darken)))
+            .background(Brush.horizontalGradient(gradient))
             .padding(20.dp)
     ) {
         Column {

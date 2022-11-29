@@ -38,7 +38,7 @@ fun NavigationRouter(controller: NavHostController) {
         }
 
         composable("recentScrobbles") {
-            RecentScrobbles(nav = controller)
+            RecentScrobbles()
         }
 
 /*        composable("mostListened") {
