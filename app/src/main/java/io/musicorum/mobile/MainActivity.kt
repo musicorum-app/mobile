@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -38,7 +39,6 @@ import io.musicorum.mobile.screens.individual.Track
 import io.musicorum.mobile.screens.individual.User
 import io.musicorum.mobile.screens.login.loginGraph
 import io.musicorum.mobile.serialization.User
-import io.musicorum.mobile.ui.theme.AlmostBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
@@ -63,6 +63,7 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
 
         setContent {
@@ -90,7 +91,7 @@ class MainActivity : ComponentActivity() {
 
             SideEffect {
                 systemUiController.setNavigationBarColor(Color.Transparent)
-                systemUiController.setStatusBarColor(AlmostBlack)
+                systemUiController.setStatusBarColor(Color.Transparent)
             }
 
             val showNav =
@@ -141,7 +142,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable("recentScrobbles") {
-                                    RecentScrobbles(nav = navController)
+                                    RecentScrobbles()
                                 }
 
                                 composable("mostListened") {

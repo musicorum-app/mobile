@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -24,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
@@ -48,17 +46,11 @@ fun Track(
     trackViewModel: TrackViewModel = viewModel(),
     nav: NavHostController
 ) {
-    val systemUiController = rememberSystemUiController()
-    SideEffect {
-        systemUiController.setSystemBarsColor(Color.Transparent)
-        systemUiController.setNavigationBarColor(Color.Transparent)
-    }
-
     if (trackData == null) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AlmostBlack), verticalAlignment = Alignment.CenterVertically
+                .background(KindaBlack), verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Something went wrong", textAlign = TextAlign.Center)
         }
@@ -122,7 +114,6 @@ fun Track(
                         fadeable = true
                     ) {
                         IconButton(
-                            modifier = Modifier.padding(top = 45.dp),
                             onClick = {
                                 trackViewModel.updateFavoritePreference(
                                     track,
@@ -142,7 +133,7 @@ fun Track(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .background(AlmostBlack)
+                        .background(KindaBlack)
                         .fillMaxWidth()
                         .nestedScroll(appBarBehavior.nestedScrollConnection)
                         .verticalScroll(screenScrollState),

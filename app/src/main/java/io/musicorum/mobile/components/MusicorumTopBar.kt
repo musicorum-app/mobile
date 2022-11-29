@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import io.musicorum.mobile.LocalNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,24 +24,21 @@ fun MusicorumTopBar(
         scrolledContainerColor = Color.DarkGray.copy(alpha = fraction),
         containerColor = Color.Transparent
     )
-    val modifier = if (fadeable) {
-        Modifier
-            .padding(top = 55.dp)
-            .alpha(fraction)
+    val alpha = if (fadeable) {
+        fraction
     } else {
-        Modifier.padding(top = 55.dp)
+        1f
     }
 
     TopAppBar(
         title = {
             Text(
-                text = text, modifier = modifier
+                text = text, modifier = Modifier.alpha(alpha)
             )
         },
         navigationIcon = {
             IconButton(
                 onClick = { nav?.popBackStack() },
-                modifier = Modifier.padding(top = 45.dp)
             ) {
                 Icon(Icons.Rounded.ArrowBack, contentDescription = "")
             }
@@ -50,7 +46,6 @@ fun MusicorumTopBar(
         scrollBehavior = scrollBehavior,
         colors = colors,
         actions = likeAction,
-        modifier = Modifier.fillMaxHeight(0.12f)
     )
 
 }

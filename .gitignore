@@ -11,4 +11,6 @@ tokens.properties
 tokens.release.properties
 /app/debug
 /app/release
-google-services.json
+app/google-services.json
+
+app/src/main/res/font

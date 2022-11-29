@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.musicorum.mobile.ui.theme.BodyLarge
-import io.musicorum.mobile.ui.theme.KindaBlack
+import io.musicorum.mobile.ui.theme.LighterGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +25,7 @@ fun AlbumTrack(position: Int, name: String) {
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(KindaBlack),
+                    .background(LighterGray),
                 contentAlignment = Alignment.Center
             ) {
                 Text(position.toString(), style = BodyLarge)

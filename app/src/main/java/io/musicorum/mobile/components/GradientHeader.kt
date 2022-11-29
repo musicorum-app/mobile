@@ -15,7 +15,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
-import io.musicorum.mobile.ui.theme.AlmostBlack
+import io.musicorum.mobile.ui.theme.KindaBlack
 
 val HEADER_HEIGHT = 400.dp
 
@@ -42,9 +42,9 @@ fun GradientHeader(backgroundUrl: String?, coverUrl: String?, shape: Shape, plac
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            AlmostBlack.copy(alpha = 0.20f),
-                            AlmostBlack.copy(alpha = 0.50f),
-                            AlmostBlack
+                            KindaBlack.copy(alpha = 0.20f),
+                            KindaBlack.copy(alpha = 0.50f),
+                            KindaBlack
                         )
                     )
                 )
