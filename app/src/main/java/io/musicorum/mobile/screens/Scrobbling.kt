@@ -22,12 +22,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.palette.graphics.Palette
@@ -57,9 +57,10 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     val state = rememberLazyListState()
     val firstItemOffset = remember { derivedStateOf { state.firstVisibleItemScrollOffset } }
     val firstItemIndex = remember { derivedStateOf { state.firstVisibleItemIndex } }
-    val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 200f, 122f, 46f)
-    val value = interpolated.coerceIn(46f..122f)
-    val size = animateFloatAsState(if (firstItemIndex.value == 0) value else 46f)
+    // 0: closed; 1: open;
+    val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 200f, 1f, 0f)
+    val clamped = interpolated.coerceIn(0f..1f)
+    val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f)
 
     LaunchedEffect(key1 = scrobblingViewModel.recentScrobbles.value) {
         if (scrobblingViewModel.recentScrobbles.value == null) {
@@ -84,7 +85,7 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
             Column {
                 NowPlayingCard(
                     track = scrobblingViewModel.recentScrobbles.value!!.recentTracks.tracks[0],
-                    size.value.dp,
+                    value.value,
                 )
             }
             TrackList(vm = scrobblingViewModel, state = state)
@@ -93,11 +94,17 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun NowPlayingCard(track: Track, size: Dp) {
+fun NowPlayingCard(track: Track, fraction: Float) {
     val isPlaying = track.attributes?.nowPlaying == "true"
-    val vBias = Utils.interpolateValues(size.value, 122f, 46f, 1f, 0f)
-    val iconAlignment = BiasAlignment(1f, vBias)
+    val iconAlignment = BiasAlignment(1f, fraction)
+    val textAlignment = BiasAlignment.Vertical(fraction * -1)
+    val size = (44f + fraction * 76f).dp
+    val nowPlayingHeight = (fraction * 20f).dp
+    val nowPlayingAlpha = fraction * 0.65f
+    val padding = (10f + fraction * 4f).dp
+
     val loved = remember { mutableStateOf(track.loved) }
+
     val ctx = LocalContext.current
     var palette by remember { mutableStateOf<Palette?>(null) }
     LaunchedEffect(track) {
@@ -157,30 +164,16 @@ fun NowPlayingCard(track: Track, size: Dp) {
             }
         }
         Column(
-            modifier = Modifier.padding(start = 14.dp, top = 14.dp),
+            modifier = Modifier.padding(padding),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.Start
         ) {
             if (isPlaying) {
-                Row(
-                    modifier = Modifier
-                        .padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Rive.AnimationFor(
-                        id = R.raw.nowplaying,
-                        _alpha = 0.55f,
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(text = "NOW PLAYING", style = LabelMedium2)
-                }
+                Spacer(modifier = Modifier.height(nowPlayingHeight))
             }
 
             Row(
-                verticalAlignment = Alignment.Top,
-                modifier = Modifier
-                    .padding(bottom = 15.dp)
+                verticalAlignment = textAlignment,
             ) {
                 if (isPlaying) {
                     AsyncImage(
@@ -191,7 +184,7 @@ fun NowPlayingCard(track: Track, size: Dp) {
                             .clip(RoundedCornerShape(6.dp))
                     )
                     Spacer(modifier = Modifier.width(10.dp))
-                    Column {
+                    Column() {
                         Text(text = track.name)
                         Text(text = track.artist.name, style = Typography.titleMedium)
                     }
@@ -201,6 +194,26 @@ fun NowPlayingCard(track: Track, size: Dp) {
                         style = Typography.titleMedium,
                         modifier = Modifier.height(size)
                     )
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .alpha(nowPlayingAlpha)
+                .padding(start = padding, top = padding)
+        ) {
+            if (isPlaying) {
+                Row(
+                    modifier = Modifier
+                        .padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Rive.AnimationFor(
+                        id = R.raw.nowplaying,
+                        modifier = Modifier.size(12.dp)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(text = "NOW PLAYING", style = LabelMedium2.copy(color = Color.White))
                 }
             }
         }

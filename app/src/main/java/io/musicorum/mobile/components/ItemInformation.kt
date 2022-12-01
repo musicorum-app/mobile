@@ -46,16 +46,16 @@ fun ItemInformation(palette: Palette?, info: String) {
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.Bottom
             ) {
-                Button(
-                    onClick = { /*TODO*/ },
-                    colors = buttonColors,
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 5.dp)
-                ) {
-                    Text(
-                        text = "READ MORE",
-                        style = Typography.labelLarge
-                    )
-                }
+//                Button(
+//                    onClick = { /*TODO*/ },
+//                    colors = buttonColors,
+//                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 5.dp)
+//                ) {
+//                    Text(
+//                        text = "READ MORE",
+//                        style = Typography.labelLarge
+//                    )
+//                }
             }
         }
     }
