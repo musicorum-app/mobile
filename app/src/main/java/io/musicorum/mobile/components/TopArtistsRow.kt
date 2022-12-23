@@ -1,5 +1,9 @@
 package io.musicorum.mobile.components
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -13,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.TopArtist
 import io.musicorum.mobile.ui.theme.Typography
@@ -33,7 +38,11 @@ fun TopArtistsRow(artists: List<TopArtist>) {
 
 @Composable
 private fun ArtistCard(artist: TopArtist) {
-    Column {
+    val interactionSource = MutableInteractionSource()
+    val nav = LocalNavigation.current
+    Column(modifier = Modifier.clickable(interactionSource = interactionSource, indication = null) {
+        nav?.navigate("artist/${artist.name}")
+    }) {
         AsyncImage(
             model = defaultImageRequestBuilder(url = artist.bestImageUrl),
             contentDescription = null,
@@ -41,6 +50,7 @@ private fun ArtistCard(artist: TopArtist) {
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
+                .indication(interactionSource, LocalIndication.current)
         )
         Text(
             text = artist.name,

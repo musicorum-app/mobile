@@ -1,5 +1,7 @@
 package io.musicorum.mobile.components
 
+import android.icu.text.CompactDecimalFormat
+import android.icu.util.ULocale
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
@@ -74,8 +76,16 @@ fun AlbumCard(album: TopAlbum, nav: NavHostController) {
             style = Typography.bodyMedium,
             modifier = Modifier.alpha(0.55f)
         )
+
+        val formattedNumber =
+            CompactDecimalFormat.getInstance(
+                ULocale.getDefault(),
+                CompactDecimalFormat.CompactStyle.SHORT
+            )
+                .format(album.playCount?.toInt() ?: 0)
+                .toString()
         Text(
-            (album.playCount ?: "0") + " plays",
+            text = "$formattedNumber plays",
             style = Typography.bodyMedium,
             modifier = Modifier.alpha(0.55f)
         )

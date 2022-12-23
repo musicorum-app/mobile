@@ -37,7 +37,7 @@ fun User(
     val user = if (username == LocalUser.current?.user?.name) {
         LocalUser.current!!
     } else {
-        userViewModel.user.value
+        userViewModel.user.observeAsState().value
     }
     val topArtists = userViewModel.topArtists.observeAsState().value
     val recentScrobbles = userViewModel.recentTracks.observeAsState().value?.recentTracks?.tracks

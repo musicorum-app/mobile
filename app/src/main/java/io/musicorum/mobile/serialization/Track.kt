@@ -40,6 +40,8 @@ data class Track @OptIn(ExperimentalSerializationApi::class) constructor(
         ?: images?.find { it.size == "small" }?.url
         ?: images?.find { it.size == "unknown" }?.url
         ?: ""
+
+    @kotlinx.serialization.Transient
     val loved = _loved == "1"
 }
 
