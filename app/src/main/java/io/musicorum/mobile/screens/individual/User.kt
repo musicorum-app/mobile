@@ -151,7 +151,7 @@ fun User(
                     Text(
                         text = stringResource(id = R.string.no_data_available),
                         textAlign = TextAlign.Start,
-                        style = Typography.bodyMedium,
+                        style = Subtitle1,
                         modifier = Modifier.padding(vertical = 20.dp)
                     )
                 } else {

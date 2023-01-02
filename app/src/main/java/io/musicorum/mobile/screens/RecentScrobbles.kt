@@ -18,6 +18,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
@@ -31,6 +34,12 @@ import java.time.Instant
 fun RecentScrobbles(
     recentSrcobblesViewModel: RecentSrcobblesViewModel = viewModel(),
 ) {
+    val analytics = LocalAnalytics.current!!
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "recent_scrobbles")
+        }
+    }
     val recentTracks = recentSrcobblesViewModel.recentTracks.observeAsState()
     val user = LocalUser.current!!
     LaunchedEffect(key1 = recentSrcobblesViewModel) {

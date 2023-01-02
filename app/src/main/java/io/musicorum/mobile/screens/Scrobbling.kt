@@ -34,6 +34,9 @@ import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -41,9 +44,9 @@ import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LabelMedium2
-import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.*
 import io.musicorum.mobile.viewmodels.ScrobblingViewModel
@@ -54,6 +57,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     val user = LocalUser.current!!
+    val analytics = LocalAnalytics.current!!
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "scrobbling")
+        }
+    }
     val state = rememberLazyListState()
     val firstItemOffset = remember { derivedStateOf { state.firstVisibleItemScrollOffset } }
     val firstItemIndex = remember { derivedStateOf { state.firstVisibleItemIndex } }
@@ -84,7 +93,9 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
             )
             Column {
                 NowPlayingCard(
-                    track = scrobblingViewModel.recentScrobbles.value!!.recentTracks.tracks[0],
+                    track = scrobblingViewModel.recentScrobbles.value!!.recentTracks.tracks.getOrNull(
+                        0
+                    ),
                     value.value,
                 )
             }
@@ -94,22 +105,21 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun NowPlayingCard(track: Track, fraction: Float) {
-    val isPlaying = track.attributes?.nowPlaying == "true"
+fun NowPlayingCard(track: Track?, fraction: Float) {
+    val isPlaying = track?.attributes?.nowPlaying == "true"
     val iconAlignment = BiasAlignment(1f, fraction)
     val textAlignment = BiasAlignment.Vertical(fraction * -1)
     val size = (44f + fraction * 76f).dp
     val nowPlayingHeight = (fraction * 20f).dp
     val nowPlayingAlpha = fraction * 0.65f
     val padding = (10f + fraction * 4f).dp
-
-    val loved = remember { mutableStateOf(track.loved) }
-
+    val loved = remember { mutableStateOf(track?.loved == true) }
     val ctx = LocalContext.current
     var palette by remember { mutableStateOf<Palette?>(null) }
+
     LaunchedEffect(track) {
         launch {
-            val bmp = getBitmap(track.bestImageUrl, ctx)
+            val bmp = getBitmap(track?.bestImageUrl, ctx)
             val p = createPalette(bmp)
             palette = p
         }
@@ -128,7 +138,7 @@ fun NowPlayingCard(track: Track, fraction: Float) {
             animationSpec = spring(stiffness = StiffnessLow)
         )
 
-    val brush = if (track.attributes?.nowPlaying == "true") {
+    val brush = if (track?.attributes?.nowPlaying == "true") {
         Brush.horizontalGradient(
             colors = listOf(vibrant.value, dark.value)
         )
@@ -148,7 +158,7 @@ fun NowPlayingCard(track: Track, fraction: Float) {
             IconButton(
                 onClick = {
                     CoroutineScope(Dispatchers.Default).launch {
-                        TrackEndpoint.updateFavoritePreference(track, loved.value, ctx)
+                        TrackEndpoint.updateFavoritePreference(track!!, loved.value, ctx)
                         loved.value = !loved.value
                     }
                 },
@@ -177,14 +187,14 @@ fun NowPlayingCard(track: Track, fraction: Float) {
             ) {
                 if (isPlaying) {
                     AsyncImage(
-                        model = defaultImageRequestBuilder(url = track.bestImageUrl),
+                        model = defaultImageRequestBuilder(url = track!!.bestImageUrl),
                         contentDescription = null,
                         modifier = Modifier
                             .size(size)
                             .clip(RoundedCornerShape(6.dp))
                     )
                     Spacer(modifier = Modifier.width(10.dp))
-                    Column() {
+                    Column {
                         Text(text = track.name)
                         Text(text = track.artist.name, style = Typography.titleMedium)
                     }
@@ -229,7 +239,7 @@ private fun TrackList(vm: ScrobblingViewModel, state: LazyListState) {
     SwipeRefresh(state = refreshing, onRefresh = { vm.updateScrobbles(user!!.user.name) }) {
         Column(modifier = Modifier.fillMaxHeight()) {
             val list =
-                if (vm.recentScrobbles.value!!.recentTracks.tracks.first().attributes?.nowPlaying == "true") {
+                if (vm.recentScrobbles.value!!.recentTracks.tracks.firstOrNull()?.attributes?.nowPlaying == "true") {
                     vm.recentScrobbles.value!!.recentTracks.tracks.drop(1)
                 } else {
                     vm.recentScrobbles.value!!.recentTracks.tracks

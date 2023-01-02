@@ -3,8 +3,6 @@ package io.musicorum.mobile.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,9 +23,6 @@ fun ItemInformation(palette: Palette?, info: String) {
     val vibrant = palette?.getVibrantColor(EvenLighterGray.toArgb()) ?: EvenLighterGray.toArgb()
     val gradient = getDarkenGradient(Color(vibrant))
 
-    val buttonColors = ButtonDefaults.buttonColors(
-        containerColor = Color.White.copy(alpha = 0.25f)
-    )
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))

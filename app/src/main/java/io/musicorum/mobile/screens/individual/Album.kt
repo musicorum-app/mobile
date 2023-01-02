@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
@@ -43,6 +46,12 @@ fun Album(
     albumViewModel: AlbumViewModel = viewModel(),
     nav: NavHostController
 ) {
+    val analytics = LocalAnalytics.current!!
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "album")
+        }
+    }
     if (albumData == null) {
         Row(
             modifier = Modifier

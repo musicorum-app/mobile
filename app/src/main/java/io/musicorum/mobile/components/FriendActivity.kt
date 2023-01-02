@@ -17,14 +17,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
+import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.Track
-import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.ContentSecondary
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.Rive
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun FriendActivity(
@@ -33,8 +39,11 @@ fun FriendActivity(
     friendUsername: String?,
     nav: NavHostController
 ) {
+    val analytics = LocalAnalytics.current!!
     Column(modifier = Modifier.fillMaxWidth()) {
         Box(modifier = Modifier.size(120.dp)) {
+            val navTrack = NavigationTrack(track.name, track.artist.name)
+            val encodedTrack = Json.encodeToString(navTrack)
             AsyncImage(
                 model = defaultImageRequestBuilder(url = track.bestImageUrl),
                 contentScale = ContentScale.Crop,
@@ -43,6 +52,12 @@ fun FriendActivity(
                     .size(120.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .align(Alignment.CenterStart)
+                    .clickable {
+                        nav.navigate("track/$encodedTrack")
+                        analytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+                            param(FirebaseAnalytics.Param.ITEM_NAME, "friend_activity_track")
+                        }
+                    }
             )
             AsyncImage(
                 model = defaultImageRequestBuilder(url = friendImageUrl, PlaceholderType.USER),
@@ -55,7 +70,13 @@ fun FriendActivity(
                     .padding(3.dp)
                     .clip(CircleShape)
                     .align(Alignment.BottomEnd)
-                    .clickable { nav.navigate("user/$friendUsername") }
+                    .clickable {
+                        analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT) {
+                            param(FirebaseAnalytics.Param.ITEM_NAME, "friend_activity_profile")
+
+                        }
+                        nav.navigate("user/$friendUsername")
+                    }
             )
         }
         Spacer(Modifier.height(10.dp))

@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import io.musicorum.mobile.BuildConfig
@@ -23,7 +24,9 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.ui.theme.*
+import io.musicorum.mobile.ui.theme.Heading2
+import io.musicorum.mobile.ui.theme.KindaBlack
+import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.commitUser
 import kotlinx.coroutines.launch
 
@@ -79,6 +82,7 @@ fun UserConfirmation(nav: NavController, sessionKey: String) {
                 coroutine.launch {
                     if (!BuildConfig.DEBUG) {
                         Firebase.crashlytics.setCrashlyticsCollectionEnabled(checkboxChecked.value)
+                        Firebase.analytics.setAnalyticsCollectionEnabled(checkboxChecked.value)
                     }
                     commitUser(sessionKey, ctx)
                     val sessionUser = UserEndpoint.getSessionUser(sessionKey)

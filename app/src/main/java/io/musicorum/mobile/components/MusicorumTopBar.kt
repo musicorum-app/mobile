@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -18,6 +19,7 @@ fun MusicorumTopBar(
     fadeable: Boolean,
     likeAction: @Composable RowScope.() -> Unit
 ) {
+    val analytics = LocalAnalytics.current!!
     val nav = LocalNavigation.current
     val fraction = scrollBehavior.state.overlappedFraction
     val colors = TopAppBarDefaults.smallTopAppBarColors(
@@ -38,7 +40,10 @@ fun MusicorumTopBar(
         },
         navigationIcon = {
             IconButton(
-                onClick = { nav?.popBackStack() },
+                onClick = {
+                    nav?.popBackStack()
+                    analytics.logEvent("topbar_back_pressed", null)
+                },
             ) {
                 Icon(Icons.Rounded.ArrowBack, contentDescription = "")
             }

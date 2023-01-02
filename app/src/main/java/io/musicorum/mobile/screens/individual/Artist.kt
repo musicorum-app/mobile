@@ -20,6 +20,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
@@ -34,6 +37,12 @@ import io.musicorum.mobile.viewmodels.ArtistViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
+    val analytics = LocalAnalytics.current!!
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "artist")
+        }
+    }
     val artist = artistViewModel.artist.observeAsState().value
     val topAlbums = artistViewModel.topAlbums.observeAsState().value
     val topTracks = artistViewModel.topTracks.observeAsState().value

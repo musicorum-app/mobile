@@ -18,27 +18,42 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavHostController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
+import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MostListened(
-    mostListenedViewModel: MostListenedViewModel,
-    nav: NavHostController
-) {
+fun MostListened(mostListenedViewModel: MostListenedViewModel) {
+    val analytics = LocalAnalytics.current!!
+    LaunchedEffect(Unit) {
+        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+            param(FirebaseAnalytics.Param.SCREEN_NAME, "most_listened")
+        }
+    }
+
     val mostListened = mostListenedViewModel.mosListenedTracks.observeAsState()
+    val snack = LocalSnackbar.current
     val user = LocalUser.current!!
     LaunchedEffect(Unit) {
         if (mostListenedViewModel.mosListenedTracks.value == null) {
             mostListenedViewModel.fetchMostListened(user.user.name, FetchPeriod.WEEK, null)
         }
     }
+
+    LaunchedEffect(mostListenedViewModel.error.value) {
+        if (mostListenedViewModel.error.value == true) {
+            snack.showSnackbar("Failed to fetch")
+        }
+    }
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         topBar = {

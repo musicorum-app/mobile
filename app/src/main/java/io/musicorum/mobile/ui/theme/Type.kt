@@ -2,7 +2,6 @@ package io.musicorum.mobile.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,18 +30,10 @@ val Heading4 = TextStyle(
     fontSize = 20.sp,
 )
 
-val BodySmall = TextStyle(
-    fontFamily = Author,
-    fontWeight = FontWeight.Medium,
-    fontSize = 12.sp,
-    platformStyle = PlatformTextStyle(includeFontPadding = false)
-)
-
 val BodyLarge = TextStyle(
     fontFamily = Author,
     fontWeight = FontWeight.Medium,
     fontSize = 18.sp,
-    platformStyle = PlatformTextStyle(includeFontPadding = false)
 )
 
 val Subtitle1 = TextStyle(
@@ -50,7 +41,6 @@ val Subtitle1 = TextStyle(
     fontWeight = FontWeight(400),
     fontSize = 12.sp,
     color = Color(255, 255, 255, 140),
-    platformStyle = PlatformTextStyle(includeFontPadding = false)
 )
 
 val LabelMedium2 = TextStyle(
