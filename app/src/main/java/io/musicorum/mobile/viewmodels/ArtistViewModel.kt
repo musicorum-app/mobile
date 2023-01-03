@@ -25,7 +25,7 @@ class ArtistViewModel : ViewModel() {
                 artists.addAll(res.artist.similar?.artist!!)
 
                 val musArtistsRes =
-                    MusicorumArtistEndpoint().fetchArtist(artists.toList())
+                    MusicorumArtistEndpoint.fetchArtist(artists.toList())
                 res.artist.bestImageUrl =
                     musArtistsRes.toMutableList().removeAt(0).bestResource?.bestImageUrl.toString()
                 res.artist.similar.artist.onEachIndexed { i, artist ->

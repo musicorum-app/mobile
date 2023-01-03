@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import io.ktor.http.*
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -38,14 +39,13 @@ fun TrackItem(
     showTimespan: Boolean = false,
     trackRowViewModel: TrackRowViewModel = viewModel()
 ) {
-    val partialTrack = NavigationTrack(track.name, track.artist.name)
+    val partialTrack = NavigationTrack(track.name.encodeURLPathPart(), track.artist.name)
     val dest = Json.encodeToString(partialTrack)
     val listColors = ListItemDefaults.colors(
         containerColor = KindaBlack
     )
     val ctx = LocalContext.current
     val nav = LocalNavigation.current!!
-
 
     ListItem(
         modifier = Modifier

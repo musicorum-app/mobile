@@ -12,6 +12,7 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
+import io.ktor.http.*
 import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
@@ -36,6 +38,7 @@ import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.viewmodels.AlbumViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -143,7 +146,7 @@ fun Album(
                         stringResource(R.string.your_scrobbles) to album.userPlayCount?.toLong()
                     )
 
-                    album.tags?.let {
+                    album.albumTags?.let {
                         Spacer(Modifier.height(20.dp))
                         TagList(
                             tags = it.tags,
@@ -161,37 +164,45 @@ fun Album(
 
                     Divider(Modifier.padding(vertical = 20.dp))
 
-                    ContextRow(appearsOn = null, from = Pair(album.artist, artistImage), null)
-
+                    ContextRow(appearsOn = null, from = Pair(album.artist, artistImage))
+                    val navAlbum =
+                        PartialAlbum(album.name.encodeURLPathPart(), album.artist ?: "Unknown")
                     album.tracks?.tracks?.let {
                         Divider(Modifier.padding(vertical = 20.dp))
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(50.dp)
-                                .clickable { nav.navigate("albumTracklist") }
+                                .clickable {
+                                    nav.navigate(
+                                        "albumTracklist/${Json.encodeToString(navAlbum)}"
+                                    )
+                                }
                         ) {
-                            Text(
-                                text = stringResource(id = R.string.tracks),
-                                style = Heading4,
-                                modifier = Modifier.padding(start = 20.dp)
-                            )
+                            Column {
+                                Text(
+                                    text = stringResource(id = R.string.tracks),
+                                    style = Heading4,
+                                    modifier = Modifier.padding(start = 20.dp)
+                                )
+                                Text(
+                                    text = pluralStringResource(
+                                        id = R.plurals.tracks_quantity,
+                                        count = it.size,
+                                        it.size
+                                    ),
+                                    modifier = Modifier.padding(start = 20.dp),
+                                    style = Subtitle1
+                                )
+                            }
                             Icon(
                                 Icons.Rounded.ChevronRight,
                                 null,
                                 modifier = Modifier.padding(end = 20.dp)
                             )
                         }
-                        Text(
-                            text = pluralStringResource(
-                                id = R.plurals.tracks_quantity,
-                                count = it.size,
-                                it.size
-                            ),
-                            modifier = Modifier.padding(start = 20.dp),
-                            style = Subtitle1
-                        )
 
                         it.take(4).forEachIndexed { i, track ->
                             AlbumTrack(i + 1, track.name)

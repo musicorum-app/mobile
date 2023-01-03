@@ -45,10 +45,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.screens.*
-import io.musicorum.mobile.screens.individual.Album
-import io.musicorum.mobile.screens.individual.Artist
-import io.musicorum.mobile.screens.individual.Track
-import io.musicorum.mobile.screens.individual.User
+import io.musicorum.mobile.screens.individual.*
 import io.musicorum.mobile.screens.login.loginGraph
 import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
@@ -58,6 +55,8 @@ import io.musicorum.mobile.utils.MessagingService
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userdata")
 val LocalUser = compositionLocalOf<User?> { null }
@@ -238,9 +237,20 @@ class MainActivity : ComponentActivity() {
                                     })
                                 ) {
                                     Track(
-                                        it.arguments?.getString("trackData"),
-                                        nav = navController
+                                        it.arguments?.getString("trackData")
                                     )
+                                }
+
+                                composable(
+                                    "albumTracklist/{albumData}",
+                                    arguments = listOf(navArgument("albumData") {
+                                        type = NavType.StringType
+                                    })
+                                ) {
+                                    val partialAlbum = Json.decodeFromString<PartialAlbum>(
+                                        it.arguments!!.getString("albumData")!!
+                                    )
+                                    AlbumTracklist(partialAlbum = partialAlbum)
                                 }
                             }
                         }

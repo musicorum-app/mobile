@@ -8,7 +8,7 @@ import io.musicorum.mobile.serialization.Album
 import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
 
-class MusicorumAlbumEndpoint {
+object MusicorumAlbumEndpoint {
     suspend fun fetchAlbums(albums: List<Album?>): List<TrackResponse>? {
         if (albums.isEmpty()) return null
         val albumList: MutableList<RequestAlbum> = mutableListOf()

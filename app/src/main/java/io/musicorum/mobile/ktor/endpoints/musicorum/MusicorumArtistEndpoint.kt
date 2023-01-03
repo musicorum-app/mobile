@@ -14,7 +14,7 @@ internal val json = Json {
     ignoreUnknownKeys = true
 }
 
-class MusicorumArtistEndpoint {
+object MusicorumArtistEndpoint {
     suspend fun fetchArtist(artists: List<Artist>): List<TrackResponse> {
         val artistsList = mutableListOf<String>()
         artists.forEach { artist -> artistsList.add(artist.name) }

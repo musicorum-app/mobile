@@ -15,8 +15,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import io.ktor.http.*
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -35,11 +36,15 @@ import kotlinx.serialization.json.Json
 fun ContextRow(
     appearsOn: Pair<String?, String?>?,
     from: Pair<String?, String?>?,
-    nav: NavHostController?
 ) {
+    val nav = LocalNavigation.current
+
     Row(modifier = Modifier.padding(start = 20.dp)) {
         if (appearsOn != null) {
-            val partialAlbum = PartialAlbum(appearsOn.first ?: "Unknown", from!!.first ?: "Unknown")
+            val partialAlbum = PartialAlbum(
+                appearsOn.first?.encodeURLPathPart() ?: "Unknown",
+                from!!.first ?: "Unknown"
+            )
             val partialAlbumArgument = Json.encodeToString(partialAlbum)
             val interactionSource = MutableInteractionSource()
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {

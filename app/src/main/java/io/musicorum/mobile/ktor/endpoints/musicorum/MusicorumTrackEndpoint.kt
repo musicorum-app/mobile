@@ -9,7 +9,7 @@ import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
-class MusicorumTrackEndpoint {
+object MusicorumTrackEndpoint {
 
     private val json = Json {
         ignoreUnknownKeys = true

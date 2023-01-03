@@ -59,6 +59,7 @@ object UserEndpoint {
     ): RecentTracks? {
         val extendedValue = if (extended == true) "1" else "0"
         val res = KtorConfiguration.lastFmClient.get {
+            headers.remove("Cache-Control")
             parameter("method", "user.getRecentTracks")
             parameter("user", user)
             parameter("from", from)
@@ -77,6 +78,7 @@ object UserEndpoint {
             parameter("method", "user.getFriends")
             parameter("username", user)
             parameter("limit", limit)
+            headers.remove("Cache-Control")
         }
         return if (res.status.isSuccess()) {
             res.body<FriendsResponse>()

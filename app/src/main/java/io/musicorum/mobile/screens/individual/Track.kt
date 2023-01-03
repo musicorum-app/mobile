@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -46,8 +45,7 @@ import kotlinx.serialization.json.Json
 @Composable
 fun Track(
     trackData: String?,
-    trackViewModel: TrackViewModel = viewModel(),
-    nav: NavHostController
+    trackViewModel: TrackViewModel = viewModel()
 ) {
     val analytics = LocalAnalytics.current!!
     LaunchedEffect(Unit) {
@@ -191,8 +189,7 @@ fun Track(
                     Divider(Modifier.padding(vertical = 20.dp))
                     ContextRow(
                         appearsOn = track.album?.name to track.album?.bestImageUrl,
-                        from = track.artist.name to track.artist.bestImageUrl,
-                        nav
+                        from = track.artist.name to track.artist.bestImageUrl
                     )
                     similarTracks?.let {
                         Divider(Modifier.padding(vertical = 20.dp))

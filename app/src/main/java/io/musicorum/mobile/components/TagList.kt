@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -32,7 +33,9 @@ fun TagList(tags: List<TagData>, referencePalette: Palette?, visible: Boolean) {
             ?: Color.LightGray
     val background = darkenColor(borderColor.toArgb(), 0.70f)
     LazyRow(
-        Modifier.padding(start = 20.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

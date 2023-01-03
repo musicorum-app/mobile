@@ -22,7 +22,7 @@ class AlbumViewModel : ViewModel() {
             if (res == null) errored.value = true
         }
         viewModelScope.launch {
-            val musRes = MusicorumArtistEndpoint().fetchArtist(listOf(Artist(artistName)))
+            val musRes = MusicorumArtistEndpoint.fetchArtist(listOf(Artist(artistName)))
             val artistBestImage = musRes.getOrNull(0)?.resources?.getOrNull(0)?.bestImageUrl
             artistBestImage?.let {
                 artistImage.value = it

@@ -1,12 +1,12 @@
 package io.musicorum.mobile.serialization
 
-import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
+
+private val json = Json { ignoreUnknownKeys = true }
 
 @Serializable
 data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
@@ -17,7 +17,7 @@ data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
     val artist: String? = null,
     @SerialName("playcount")
     val playCount: String? = null,
-    val tags: Tag? = null,
+    private val tags: JsonElement? = null,
     val tracks: AlbumTrack? = null,
     val listeners: String? = null,
     @SerialName("userplaycount")
@@ -32,10 +32,14 @@ data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
         ?: images?.find { it.size == "unknown" }?.url
         ?: ""
 
-    suspend fun fetchExternalImage(): String {
-        val musRes = MusicorumAlbumEndpoint().fetchAlbums(listOf(this))
-        return musRes?.getOrNull(0)?.resources?.getOrNull(0)?.bestImageUrl ?: ""
-        // TODO fallback to a placeholder image
+    val albumTags = try {
+        if (tags?.jsonPrimitive?.content?.isEmpty() == true) {
+            null
+        } else {
+            null
+        }
+    } catch (e: IllegalArgumentException) {
+        json.decodeFromString<Tag>(tags?.jsonObject.toString())
     }
 }
 
