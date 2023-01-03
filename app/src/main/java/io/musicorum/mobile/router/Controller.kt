@@ -80,8 +80,7 @@ fun NavigationRouter(controller: NavHostController) {
             })
         ) {
             Track(
-                it.arguments?.getString("trackData"),
-                nav = controller
+                it.arguments?.getString("trackData")
             )
         }
     }
