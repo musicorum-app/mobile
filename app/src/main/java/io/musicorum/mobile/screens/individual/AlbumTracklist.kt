@@ -38,7 +38,7 @@ fun AlbumTracklist(partialAlbum: PartialAlbum, model: AlbumViewModel = viewModel
             ) {}
         }) {
             LazyColumn(modifier = Modifier.padding(it)) {
-                album.tracks?.tracks?.let { trackList ->
+                album.tracks?.let { trackList ->
                     itemsIndexed(trackList) { i, track ->
                         AlbumTrack(position = i + 1, name = track.name)
                     }

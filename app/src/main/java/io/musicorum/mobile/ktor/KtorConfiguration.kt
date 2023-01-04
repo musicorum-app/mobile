@@ -15,6 +15,7 @@ import kotlinx.serialization.json.Json
 
 object KtorConfiguration {
     private val jsonConfig = Json { ignoreUnknownKeys = true; isLenient = true }
+    private val KEY_REQUIRED_METHODS = listOf("user.getInfo", "track.love", "track.unlove")
     private fun createLastFmClient(): HttpClient {
         val lastFmClient = HttpClient {
             install(ContentNegotiation) {
@@ -38,20 +39,24 @@ object KtorConfiguration {
                     path("2.0/")
                     parameters.append("api_key", BuildConfig.LASTFM_API_KEY)
                     parameters.append("format", "json")
-                    header("Cache-Control", "max-age=3600, public")
+                    headers {
+                        append("Cache-Control", "max-age=3600, public")
+                    }
                 }
             }
         }
         lastFmClient.plugin(HttpSend).intercept { req ->
-            var signature = ""
-            req.url.parameters.names().sorted().forEach { param ->
-                if (param != "format") {
-                    signature += param + req.url.parameters[param]
+            if (req.url.parameters["method"] in KEY_REQUIRED_METHODS) {
+                var signature = ""
+                req.url.parameters.names().sorted().forEach { param ->
+                    if (param != "format") {
+                        signature += param + req.url.parameters[param]
+                    }
                 }
+                signature += BuildConfig.LASTFM_SECRET
+                val md5 = md5Hash(signature)
+                req.parameter("api_sig", md5)
             }
-            signature += BuildConfig.LASTFM_SECRET
-            val md5 = md5Hash(signature)
-            req.parameter("api_sig", md5)
             execute(req)
         }
         return lastFmClient

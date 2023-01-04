@@ -170,10 +170,10 @@ class MainActivity : ComponentActivity() {
                             AnimatedNavHost(
                                 navController = navController,
                                 startDestination = "home",
-                                enterTransition = { slideInHorizontally(tween(800)) { fullWidth -> fullWidth } },
-                                exitTransition = { slideOutHorizontally(tween(800)) { fullWidth -> -fullWidth / 2 } },
-                                popExitTransition = { slideOutHorizontally(tween(800)) { fullWidth -> fullWidth / 2 } },
-                                popEnterTransition = { slideInHorizontally(tween(800)) { fullWidth -> -fullWidth } }
+                                enterTransition = { slideInHorizontally(tween(500)) { fullWidth -> fullWidth } },
+                                exitTransition = { slideOutHorizontally(tween(500)) { fullWidth -> -fullWidth / 2 } },
+                                popExitTransition = { slideOutHorizontally(tween(500)) { fullWidth -> fullWidth / 2 } },
+                                popEnterTransition = { slideInHorizontally(tween(500)) { fullWidth -> -fullWidth } }
                             ) {
                                 loginGraph(navController = navController)
 

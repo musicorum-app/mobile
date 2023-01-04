@@ -33,7 +33,7 @@ class TrackViewModel : ViewModel() {
                         name = musRes.getOrNull(0)?.album ?: res.track.name,
                         images = listOf(Image("unknown", it)),
                         tags = null,
-                        tracks = null,
+                        _tracks = null,
                         artist = res.track.artist.name
                     )
             }

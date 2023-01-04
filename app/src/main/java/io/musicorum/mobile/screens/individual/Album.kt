@@ -167,45 +167,48 @@ fun Album(
                     ContextRow(appearsOn = null, from = Pair(album.artist, artistImage))
                     val navAlbum =
                         PartialAlbum(album.name.encodeURLPathPart(), album.artist ?: "Unknown")
-                    album.tracks?.tracks?.let {
-                        Divider(Modifier.padding(vertical = 20.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                                .clickable {
-                                    nav.navigate(
-                                        "albumTracklist/${Json.encodeToString(navAlbum)}"
+
+                    album.tracks?.let {
+                        if (it.size > 1) {
+                            Divider(Modifier.padding(vertical = 20.dp))
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp)
+                                    .clickable {
+                                        nav.navigate(
+                                            "albumTracklist/${Json.encodeToString(navAlbum)}"
+                                        )
+                                    }
+                            ) {
+                                Column {
+                                    Text(
+                                        text = stringResource(id = R.string.tracks),
+                                        style = Heading4,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                    Text(
+                                        text = pluralStringResource(
+                                            id = R.plurals.tracks_quantity,
+                                            count = it.size,
+                                            it.size
+                                        ),
+                                        modifier = Modifier.padding(start = 20.dp),
+                                        style = Subtitle1
                                     )
                                 }
-                        ) {
-                            Column {
-                                Text(
-                                    text = stringResource(id = R.string.tracks),
-                                    style = Heading4,
-                                    modifier = Modifier.padding(start = 20.dp)
-                                )
-                                Text(
-                                    text = pluralStringResource(
-                                        id = R.plurals.tracks_quantity,
-                                        count = it.size,
-                                        it.size
-                                    ),
-                                    modifier = Modifier.padding(start = 20.dp),
-                                    style = Subtitle1
+                                Icon(
+                                    Icons.Rounded.ChevronRight,
+                                    null,
+                                    modifier = Modifier.padding(end = 20.dp)
                                 )
                             }
-                            Icon(
-                                Icons.Rounded.ChevronRight,
-                                null,
-                                modifier = Modifier.padding(end = 20.dp)
-                            )
-                        }
 
-                        it.take(4).forEachIndexed { i, track ->
-                            AlbumTrack(i + 1, track.name)
+                            it.take(4).forEachIndexed { i, track ->
+                                AlbumTrack(i + 1, track.name)
+                            }
                         }
                     }
                     Spacer(Modifier.width(20.dp))

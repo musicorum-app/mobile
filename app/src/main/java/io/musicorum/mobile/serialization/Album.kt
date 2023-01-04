@@ -18,7 +18,8 @@ data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
     @SerialName("playcount")
     val playCount: String? = null,
     private val tags: JsonElement? = null,
-    val tracks: AlbumTrack? = null,
+    @SerialName("tracks")
+    val _tracks: JsonElement? = null,
     val listeners: String? = null,
     @SerialName("userplaycount")
     private val _userPlayCount: JsonPrimitive? = null,
@@ -41,10 +42,28 @@ data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
     } catch (e: IllegalArgumentException) {
         json.decodeFromString<Tag>(tags?.jsonObject.toString())
     }
+
+    @kotlinx.serialization.Transient
+    val tracks = try {
+        if (_tracks?.jsonArray != null) {
+            val d = json.decodeFromString<AlbumTrack>(_tracks.jsonArray.toString())
+            d.tracks
+        } else null
+    } catch (e: Exception) {
+        if (_tracks?.jsonObject != null) {
+            val d = json.decodeFromString<SingleAlbumTrack>(_tracks.jsonObject.toString())
+            listOf(d.track)
+        } else null
+    }
 }
 
 @Serializable
 data class AlbumTrack(
     @SerialName("track")
     val tracks: List<Track>
+)
+
+@Serializable
+data class SingleAlbumTrack(
+    val track: Track
 )
