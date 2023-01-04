@@ -34,11 +34,12 @@ import kotlinx.serialization.json.Json
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrackItem(
-    track: Track,
+    track: Track?,
     favoriteIcon: Boolean = true,
     showTimespan: Boolean = false,
     trackRowViewModel: TrackRowViewModel = viewModel()
 ) {
+    if (track == null) return
     val partialTrack = NavigationTrack(track.name.encodeURLPathPart(), track.artist.name)
     val dest = Json.encodeToString(partialTrack)
     val listColors = ListItemDefaults.colors(

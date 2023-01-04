@@ -126,10 +126,10 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
                 Divider(modifier = Modifier.padding(vertical = 18.dp))
                 Section(title = "Top Tracks")
                 topTracks?.let {
-                    TrackItem(track = it[0], favoriteIcon = false)
-                    TrackItem(track = it[1], favoriteIcon = false)
-                    TrackItem(track = it[2], favoriteIcon = false)
-                    TrackItem(track = it[3], favoriteIcon = false)
+                    TrackItem(track = it.getOrNull(0), favoriteIcon = false)
+                    TrackItem(track = it.getOrNull(1), favoriteIcon = false)
+                    TrackItem(track = it.getOrNull(2), favoriteIcon = false)
+                    TrackItem(track = it.getOrNull(3), favoriteIcon = false)
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
