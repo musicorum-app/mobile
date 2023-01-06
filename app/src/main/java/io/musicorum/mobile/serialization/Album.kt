@@ -45,8 +45,8 @@ data class Album @OptIn(ExperimentalSerializationApi::class) constructor(
 
     @kotlinx.serialization.Transient
     val tracks = try {
-        if (_tracks?.jsonArray != null) {
-            val d = json.decodeFromString<AlbumTrack>(_tracks.jsonArray.toString())
+        if (_tracks?.jsonObject != null) {
+            val d = json.decodeFromString<AlbumTrack>(_tracks.toString())
             d.tracks
         } else null
     } catch (e: Exception) {

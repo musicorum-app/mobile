@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import io.ktor.http.*
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
@@ -76,7 +77,7 @@ fun HorizontalTracksRow(
 @Composable
 fun TrackCard(track: Track, labelType: LabelType, nav: NavHostController) {
     val interactionSource = remember { MutableInteractionSource() }
-    val navTrack = NavigationTrack(track.name, track.artist.name)
+    val navTrack = NavigationTrack(track.name.encodeURLPathPart(), track.artist.name)
     val dest = Json.encodeToString(navTrack)
     Column(
         horizontalAlignment = Alignment.Start,

@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -25,7 +24,6 @@ fun GradientHeader(backgroundUrl: String?, coverUrl: String?, shape: Shape, plac
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .zIndex(1f)
     ) {
         AsyncImage(
             model = backgroundUrl,

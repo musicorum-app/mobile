@@ -100,7 +100,9 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
         )
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d("FCM", "fcm token: ${task.result}")

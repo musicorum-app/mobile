@@ -10,12 +10,15 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.musicorum.mobile.BuildConfig
+import io.musicorum.mobile.utils.CustomCacheControl
 import io.musicorum.mobile.utils.md5Hash
 import kotlinx.serialization.json.Json
 
 object KtorConfiguration {
     private val jsonConfig = Json { ignoreUnknownKeys = true; isLenient = true }
-    private val KEY_REQUIRED_METHODS = listOf("user.getInfo", "track.love", "track.unlove")
+    private val KEY_REQUIRED_METHODS =
+        listOf("user.getInfo", "track.love", "track.unlove", "auth.getSession")
+
     private fun createLastFmClient(): HttpClient {
         val lastFmClient = HttpClient {
             install(ContentNegotiation) {
@@ -30,6 +33,7 @@ object KtorConfiguration {
                 level = LogLevel.INFO
             }
             install(HttpCache) {
+                publicStorage(CustomCacheControl)
             }
 
             defaultRequest {
@@ -85,7 +89,7 @@ object KtorConfiguration {
                 path("/v2/resources")
                 parameters.append("sources", "spotify,deezer")
                 parameters.append("api_key", BuildConfig.MUSICORUM_API_KEY)
-                header("Cache-Control", "max-age=3600, public")
+                header("Cache-Control", "max-age=3600")
             }
         }
     }

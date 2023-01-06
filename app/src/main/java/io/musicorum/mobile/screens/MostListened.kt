@@ -54,6 +54,7 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
         }
     }
 
+    val state = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
         topBar = {
@@ -62,7 +63,8 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
                 scrollBehavior = scrollBehavior,
                 fadeable = false
             ) {}
-        }
+        },
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         if (mostListened.value == null) {
             Row(
@@ -77,15 +79,14 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
             }
         } else {
             LazyColumn(
-                state = rememberLazyListState(),
+                state = state,
                 modifier = Modifier
-                    .padding(it)
+                    .padding(it),
             ) {
                 items(mostListened.value!!.topTracks.tracks) { track ->
                     TrackItem(track = track)
                 }
             }
         }
-
     }
 }

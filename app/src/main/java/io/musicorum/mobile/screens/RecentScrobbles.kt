@@ -1,6 +1,5 @@
 package io.musicorum.mobile.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,7 +24,6 @@ import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackItem
-import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 import java.time.Instant
 
@@ -62,9 +60,7 @@ fun RecentScrobbles(
                 fadeable = false
             ) {}
         },
-        modifier = Modifier
-            .background(EvenLighterGray)
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
         Column(
             modifier = Modifier
@@ -79,7 +75,9 @@ fun RecentScrobbles(
                     CircularProgressIndicator()
                 }
             } else {
-                val tracks = recentTracks.value!!.tracks
+                val tracks = recentTracks.value!!.tracks.dropWhile { t ->
+                    t.attributes?.nowPlaying.toBoolean()
+                }
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp), state = state) {
                     items(tracks) { track ->
                         TrackItem(track = track)
