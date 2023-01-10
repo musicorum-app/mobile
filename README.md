@@ -7,6 +7,11 @@ It's time to browse through your scrobbles differently. That's why we are develo
 <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="width: auto; height: 4rem;"/>
 </a>
 
+## Contribute
+- We appreciate it if you leave your feedback on [our Discord server](https://discord.musc.pw/) :)
+- You can contribute directly to this repository as well
+- But also help us with [translations on Crowdin!](https://musicorum.crowdin.com/mobile) If you'd like to contribute with a language that's not listed on Crowing, please reach us on our Discord server.
+
 ## Build
 - Requires Gradle 7.4.x and AGP 7.3
 - Requires Author font. For legal reasons we cannot distribute this font, so you must download it from [here](https://www.fontshare.com/fonts/author).
