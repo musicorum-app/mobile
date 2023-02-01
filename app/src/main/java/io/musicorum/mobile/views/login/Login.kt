@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.login
+package io.musicorum.mobile.views.login
 
 import android.net.Uri
 import android.util.Log

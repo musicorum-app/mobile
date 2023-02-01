@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.login
+package io.musicorum.mobile.views.login
 
 import android.content.Intent
 import android.os.Bundle

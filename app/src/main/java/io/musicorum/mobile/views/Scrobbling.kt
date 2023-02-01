@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens
+package io.musicorum.mobile.views
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -92,7 +92,7 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     // 0: closed; 1: open;
     val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 200f, 1f, 0f)
     val clamped = interpolated.coerceIn(0f..1f)
-    val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f)
+    val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f, label = "")
 
     LaunchedEffect(key1 = scrobblingViewModel.recentScrobbles.value) {
         if (scrobblingViewModel.recentScrobbles.value == null) {
@@ -153,12 +153,12 @@ fun NowPlayingCard(track: Track?, fraction: Float) {
 
     val vibrant = animateColorAsState(
         targetValue = gradient[0],
-        animationSpec = spring(stiffness = StiffnessLow)
+        animationSpec = spring(stiffness = StiffnessLow), label = ""
     )
     val dark =
         animateColorAsState(
             targetValue = gradient[1],
-            animationSpec = spring(stiffness = StiffnessLow)
+            animationSpec = spring(stiffness = StiffnessLow), label = ""
         )
 
     val brush = if (track?.attributes?.nowPlaying == "true") {

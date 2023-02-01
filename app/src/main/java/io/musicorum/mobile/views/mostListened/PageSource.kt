@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.mostListened
+package io.musicorum.mobile.views.mostListened
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState

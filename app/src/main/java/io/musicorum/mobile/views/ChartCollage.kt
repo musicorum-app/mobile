@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens
+package io.musicorum.mobile.views
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility

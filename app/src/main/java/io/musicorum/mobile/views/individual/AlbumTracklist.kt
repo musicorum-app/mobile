@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.individual
+package io.musicorum.mobile.views.individual
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn

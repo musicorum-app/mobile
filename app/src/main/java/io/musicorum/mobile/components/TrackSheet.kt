@@ -49,12 +49,12 @@ import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.router.Routes
-import io.musicorum.mobile.screens.individual.PartialAlbum
 import io.musicorum.mobile.serialization.Track
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.Typography
+import io.musicorum.mobile.views.individual.PartialAlbum
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

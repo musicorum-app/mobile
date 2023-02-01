@@ -64,23 +64,6 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.screens.Account
-import io.musicorum.mobile.screens.ChartCollage
-import io.musicorum.mobile.screens.Charts
-import io.musicorum.mobile.screens.Discover
-import io.musicorum.mobile.screens.Home
-import io.musicorum.mobile.screens.MostListened
-import io.musicorum.mobile.screens.RecentScrobbles
-import io.musicorum.mobile.screens.Scrobbling
-import io.musicorum.mobile.screens.individual.Album
-import io.musicorum.mobile.screens.individual.AlbumTracklist
-import io.musicorum.mobile.screens.individual.Artist
-import io.musicorum.mobile.screens.individual.PartialAlbum
-import io.musicorum.mobile.screens.individual.Track
-import io.musicorum.mobile.screens.individual.User
-import io.musicorum.mobile.screens.login.loginGraph
-import io.musicorum.mobile.screens.settings.ScrobbleSettings
-import io.musicorum.mobile.screens.settings.Settings
 import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
@@ -89,6 +72,23 @@ import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
 import io.musicorum.mobile.utils.MessagingService
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
+import io.musicorum.mobile.views.Account
+import io.musicorum.mobile.views.ChartCollage
+import io.musicorum.mobile.views.Charts
+import io.musicorum.mobile.views.Discover
+import io.musicorum.mobile.views.Home
+import io.musicorum.mobile.views.RecentScrobbles
+import io.musicorum.mobile.views.Scrobbling
+import io.musicorum.mobile.views.individual.Album
+import io.musicorum.mobile.views.individual.AlbumTracklist
+import io.musicorum.mobile.views.individual.Artist
+import io.musicorum.mobile.views.individual.PartialAlbum
+import io.musicorum.mobile.views.individual.Track
+import io.musicorum.mobile.views.individual.User
+import io.musicorum.mobile.views.login.loginGraph
+import io.musicorum.mobile.views.mostListened.MostListened
+import io.musicorum.mobile.views.settings.ScrobbleSettings
+import io.musicorum.mobile.views.settings.Settings
 import io.sentry.android.core.SentryAndroid
 import io.sentry.compose.withSentryObservableEffect
 import kotlinx.coroutines.flow.firstOrNull
@@ -195,7 +195,10 @@ class MainActivity : ComponentActivity() {
             }
         }
         if (!BuildConfig.DEBUG) {
-            SentryAndroid.init(this)
+            try {
+                SentryAndroid.init(this)
+            } catch (_: Exception) {
+            }
         }
 
         setContent {

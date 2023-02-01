@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.login
+package io.musicorum.mobile.views.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

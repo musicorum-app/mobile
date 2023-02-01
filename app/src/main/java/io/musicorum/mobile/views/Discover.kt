@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens
+package io.musicorum.mobile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row

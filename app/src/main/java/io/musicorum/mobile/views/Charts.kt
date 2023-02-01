@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens
+package io.musicorum.mobile.views
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
@@ -260,7 +260,7 @@ fun ChartComponentBox(
     top: String
 ) {
     val vibrant = remember { mutableStateOf(Color.Gray) }
-    val vibrantState = animateColorAsState(targetValue = vibrant.value)
+    val vibrantState = animateColorAsState(targetValue = vibrant.value, label = "vibrant")
     val ctx = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {

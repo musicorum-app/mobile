@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.settings
+package io.musicorum.mobile.views.settings
 
 import android.content.Intent
 import android.net.Uri

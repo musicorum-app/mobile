@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens.individual
+package io.musicorum.mobile.views.individual
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background

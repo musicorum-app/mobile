@@ -10,11 +10,11 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
-import io.musicorum.mobile.screens.*
-import io.musicorum.mobile.screens.individual.Album
-import io.musicorum.mobile.screens.individual.Track
-import io.musicorum.mobile.screens.individual.User
-import io.musicorum.mobile.screens.login.loginGraph
+import io.musicorum.mobile.views.*
+import io.musicorum.mobile.views.individual.Album
+import io.musicorum.mobile.views.individual.Track
+import io.musicorum.mobile.views.individual.User
+import io.musicorum.mobile.views.login.loginGraph
 
 private val startTransition = slideInHorizontally(tween(800)) { fullWidth -> fullWidth }
 private val exitTransition = slideOutHorizontally(tween(800)) { fullWidth -> -fullWidth / 2 }

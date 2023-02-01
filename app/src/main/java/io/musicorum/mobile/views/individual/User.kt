@@ -1,7 +1,12 @@
-package io.musicorum.mobile.screens.individual
+package io.musicorum.mobile.views.individual
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -22,10 +27,20 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
-import io.musicorum.mobile.components.*
+import io.musicorum.mobile.components.CenteredLoadingSpinner
+import io.musicorum.mobile.components.GradientHeader
+import io.musicorum.mobile.components.Section
+import io.musicorum.mobile.components.StatisticRow
+import io.musicorum.mobile.components.TopAlbumsRow
+import io.musicorum.mobile.components.TopArtistsRow
+import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.components.skeletons.GenericListItemSkeleton
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
-import io.musicorum.mobile.ui.theme.*
+import io.musicorum.mobile.ui.theme.ContentSecondary
+import io.musicorum.mobile.ui.theme.Heading4
+import io.musicorum.mobile.ui.theme.KindaBlack
+import io.musicorum.mobile.ui.theme.Subtitle1
+import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.viewmodels.UserViewModel
 

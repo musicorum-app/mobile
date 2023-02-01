@@ -1,4 +1,4 @@
-package io.musicorum.mobile.screens
+package io.musicorum.mobile.views.mostListened
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -7,9 +7,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,15 +23,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
-import io.musicorum.mobile.R
-import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 
@@ -42,6 +47,7 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
     val mostListened = mostListenedViewModel.mosListenedTracks.observeAsState()
     val snack = LocalSnackbar.current
     val user = LocalUser.current!!
+    val nav = LocalNavigation.current!!
     LaunchedEffect(Unit) {
         if (mostListenedViewModel.mosListenedTracks.value == null) {
             mostListenedViewModel.fetchMostListened(user.user.name, FetchPeriod.WEEK, null)
@@ -55,14 +61,22 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
     }
 
     val state = rememberLazyListState()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val appBarColors = TopAppBarDefaults.topAppBarColors(
+        scrolledContainerColor = LighterGray,
+    )
     Scaffold(
         topBar = {
-            MusicorumTopBar(
-                text = stringResource(R.string.most_listened_tracks),
+            MediumTopAppBar(
+                title = { Text(text = "Most listened tracks") },
                 scrollBehavior = scrollBehavior,
-                fadeable = false
-            ) {}
+                colors = appBarColors,
+                navigationIcon = {
+                    IconButton(onClick = { nav.popBackStack() }) {
+                        Icon(Icons.Rounded.ArrowBack, null)
+                    }
+                }
+            )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {

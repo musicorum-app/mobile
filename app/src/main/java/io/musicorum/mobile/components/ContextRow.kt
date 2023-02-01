@@ -27,9 +27,9 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.router.Routes
-import io.musicorum.mobile.screens.individual.PartialAlbum
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.Typography
+import io.musicorum.mobile.views.individual.PartialAlbum
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

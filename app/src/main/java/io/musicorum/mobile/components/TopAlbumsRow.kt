@@ -6,7 +6,11 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +27,9 @@ import coil.compose.AsyncImage
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
-import io.musicorum.mobile.screens.individual.PartialAlbum
 import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.ui.theme.Typography
+import io.musicorum.mobile.views.individual.PartialAlbum
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
