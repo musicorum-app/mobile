@@ -8,6 +8,7 @@ val EvenLighterGray = Color(0xFF454545)
 
 val MostlyRed = Color(0xFFB71C1C)
 val LighterRed = Color(0xFFEB5757)
+val Success = Color(0xFF99E968)
 
 val ContentSecondary = Color(0x8cffffff)
 

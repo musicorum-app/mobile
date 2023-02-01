@@ -1,4 +1,4 @@
-package io.musicorum.mobile.utils
+package io.musicorum.mobile.repositories
 
 import androidx.compose.runtime.mutableStateOf
 import io.musicorum.mobile.serialization.RecentTracks

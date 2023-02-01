@@ -1,8 +1,13 @@
 package io.musicorum.mobile.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,24 +15,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
+import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
-import java.time.Instant
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun RecentScrobbles(
     recentSrcobblesViewModel: RecentSrcobblesViewModel = viewModel(),
@@ -38,18 +44,9 @@ fun RecentScrobbles(
             param(FirebaseAnalytics.Param.SCREEN_NAME, "recent_scrobbles")
         }
     }
-    val recentTracks = recentSrcobblesViewModel.recentTracks.observeAsState()
     val user = LocalUser.current!!
-    LaunchedEffect(key1 = recentSrcobblesViewModel) {
-        if (recentSrcobblesViewModel.recentTracks.value == null) {
-            recentSrcobblesViewModel.fetchRecentTracks(
-                user.user.name,
-                "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
-                null,
-                true
-            )
-        }
-    }
+    val recentTracks = recentSrcobblesViewModel.fetchRecentTracks(user.user.name)
+        .collectAsLazyPagingItems()
     val state = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     Scaffold(
@@ -66,21 +63,29 @@ fun RecentScrobbles(
             modifier = Modifier
                 .padding(it)
         ) {
-            if (recentTracks.value == null) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CircularProgressIndicator()
+            if (recentTracks.loadState.refresh == LoadState.Loading) {
+                CenteredLoadingSpinner()
+                return@Column
+            }
+
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp), state = state) {
+                items(recentTracks) { track ->
+                    TrackItem(track = track)
                 }
-            } else {
-                val tracks = recentTracks.value!!.tracks.dropWhile { t ->
-                    t.attributes?.nowPlaying.toBoolean()
-                }
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp), state = state) {
-                    items(tracks) { track ->
-                        TrackItem(track = track)
+
+
+                item {
+                    when (recentTracks.loadState.append) {
+                        LoadState.Loading -> {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(35.dp))
+                            }
+                        }
+
+                        else -> {}
                     }
                 }
             }

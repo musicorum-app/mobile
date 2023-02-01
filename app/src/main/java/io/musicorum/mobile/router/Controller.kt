@@ -33,20 +33,16 @@ fun NavigationRouter(controller: NavHostController) {
         popEnterTransition = { popEnterTransition }
     ) {
         loginGraph(navController = controller)
-        composable("home") {
-            Home(nav = controller)
-        }
+        composable("home") { Home() }
 
-        composable("recentScrobbles") {
-            RecentScrobbles()
-        }
+        composable("recentScrobbles") { RecentScrobbles() }
 
-/*        composable("mostListened") {
-            MostListened(
-                mostListenedViewModel = mostListenedViewModel,
-                nav = controller
-            )
-        }*/
+        /*        composable("mostListened") {
+                    MostListened(
+                        mostListenedViewModel = mostListenedViewModel,
+                        nav = controller
+                    )
+                }*/
 
         composable(
             "user/{username}",
@@ -54,9 +50,7 @@ fun NavigationRouter(controller: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            User(
-                username = it.arguments?.getString("username")!!
-            )
+            User(username = it.arguments?.getString("username")!!)
         }
 
         composable(
@@ -79,9 +73,7 @@ fun NavigationRouter(controller: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            Track(
-                it.arguments?.getString("trackData")
-            )
+            Track(it.arguments?.getString("trackData"))
         }
     }
 }

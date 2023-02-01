@@ -1,24 +1,14 @@
 package io.musicorum.mobile.viewmodels
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.serialization.RecentTracksData
-import kotlinx.coroutines.launch
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import io.musicorum.mobile.repositories.RecentTracksRepository
+import io.musicorum.mobile.serialization.Track
+import kotlinx.coroutines.flow.Flow
 
 class RecentSrcobblesViewModel : ViewModel() {
-    val recentTracks by lazy { MutableLiveData<RecentTracksData>() }
-
-    suspend fun fetchRecentTracks(
-        username: String,
-        from: String?,
-        limit: Int?,
-        extended: Boolean?
-    ) {
-        viewModelScope.launch {
-            val res = UserEndpoint.getRecentTracks(username, from, limit, extended)
-            recentTracks.value = res?.recentTracks
-        }
-    }
+    fun fetchRecentTracks(username: String): Flow<PagingData<Track>> =
+        RecentTracksRepository.getRecentTracks(username).cachedIn(viewModelScope)
 }

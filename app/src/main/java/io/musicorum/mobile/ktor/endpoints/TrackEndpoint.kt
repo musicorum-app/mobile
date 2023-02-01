@@ -2,14 +2,16 @@ package io.musicorum.mobile.ktor.endpoints
 
 import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.musicorum.mobile.dataStore
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.BaseIndividualTrack
 import io.musicorum.mobile.serialization.SimilarTrack
 import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.userData
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -36,7 +38,7 @@ object TrackEndpoint {
     }
 
     suspend fun updateFavoritePreference(track: Track, ctx: Context) {
-        val sessionKey = ctx.dataStore.data.map { prefs ->
+        val sessionKey = ctx.userData.data.map { prefs ->
             prefs[stringPreferencesKey("session_key")]!!
         }.first()
         KtorConfiguration.lastFmClient.post {
@@ -48,7 +50,7 @@ object TrackEndpoint {
     }
 
     suspend fun updateFavoritePreference(track: Track, loved: Boolean, ctx: Context) {
-        val sessionKey = ctx.dataStore.data.map { prefs ->
+        val sessionKey = ctx.userData.data.map { prefs ->
             prefs[stringPreferencesKey("session_key")]!!
         }.first()
         KtorConfiguration.lastFmClient.post {

@@ -7,16 +7,30 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +45,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.crowdin.platform.Crowdin
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -41,14 +56,32 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.screens.*
-import io.musicorum.mobile.screens.individual.*
+import io.musicorum.mobile.screens.Account
+import io.musicorum.mobile.screens.Charts
+import io.musicorum.mobile.screens.Discover
+import io.musicorum.mobile.screens.Home
+import io.musicorum.mobile.screens.MostListened
+import io.musicorum.mobile.screens.RecentScrobbles
+import io.musicorum.mobile.screens.Scrobbling
+import io.musicorum.mobile.screens.individual.Album
+import io.musicorum.mobile.screens.individual.AlbumTracklist
+import io.musicorum.mobile.screens.individual.Artist
+import io.musicorum.mobile.screens.individual.PartialAlbum
+import io.musicorum.mobile.screens.individual.Track
+import io.musicorum.mobile.screens.individual.User
 import io.musicorum.mobile.screens.login.loginGraph
+import io.musicorum.mobile.screens.settings.ScrobbleSettings
+import io.musicorum.mobile.screens.settings.Settings
 import io.musicorum.mobile.serialization.User
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
+import io.musicorum.mobile.utils.CrowdinUtils
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
 import io.musicorum.mobile.utils.MessagingService
@@ -58,7 +91,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "userdata")
+val Context.userData: DataStore<Preferences> by preferencesDataStore(name = "userdata")
+val Context.scrobblePrefs by preferencesDataStore(name = "scrobblePrefs")
 val LocalUser = compositionLocalOf<User?> { null }
 val LocalNavigation = compositionLocalOf<NavHostController?> { null }
 val MutableUserState = mutableStateOf<User?>(null)
@@ -82,12 +116,34 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(Crowdin.wrapContext(newBase))
+    }
 
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (BuildConfig.DEBUG) {
+            Crowdin.registerShakeDetector(this)
+        }
+
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 10
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("remote config", "update success")
+            }
+        }
+        Log.d("remove config", remoteConfig.all.toString())
+
+
+        CrowdinUtils.initCrowdin(applicationContext)
         askNotificationPermission()
-        MessagingService.createNotificationChannel(this.applicationContext)
+        MessagingService.createNotificationChannel(applicationContext)
 
         if (GoogleApiAvailability.getInstance()
                 .isGooglePlayServicesAvailable(this) == SERVICE_MISSING
@@ -95,13 +151,15 @@ class MainActivity : ComponentActivity() {
             GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
         }
 
-        firebaseAnalytics = Firebase.analytics
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
-
         WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        firebaseAnalytics = Firebase.analytics
+        /*        window.setFlags(
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                )
+
+                WindowCompat.setDecorFitsSystemWindows(window, false)*/
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -110,6 +168,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val useDarkIcons = !isSystemInDarkTheme()
             navController = rememberAnimatedNavController()
 
             val mostListenedViewModel: MostListenedViewModel = viewModel()
@@ -120,7 +179,7 @@ class MainActivity : ComponentActivity() {
             if (intent?.data == null) {
                 if (MutableUserState.value == null) {
                     LaunchedEffect(Unit) {
-                        val sessionKey = ctx.applicationContext.dataStore.data.map { prefs ->
+                        val sessionKey = ctx.applicationContext.userData.data.map { prefs ->
                             prefs[stringPreferencesKey("session_key")]
                         }.firstOrNull()
                         if (sessionKey == null) {
@@ -132,9 +191,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            SideEffect {
+            DisposableEffect(systemUiController, useDarkIcons) {
                 systemUiController.setNavigationBarColor(Color.Transparent)
-                systemUiController.setStatusBarColor(Color.Transparent)
+                systemUiController.setSystemBarsColor(KindaBlack)
+
+                onDispose { }
             }
 
             val showNav =
@@ -179,20 +240,12 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 loginGraph(navController = navController)
 
-                                composable("home") {
-                                    Home(
-                                        nav = navController
-                                    )
-                                }
+                                composable("home") { Home() }
 
-                                composable("recentScrobbles") {
-                                    RecentScrobbles()
-                                }
+                                composable("recentScrobbles") { RecentScrobbles() }
 
                                 composable("mostListened") {
-                                    MostListened(
-                                        mostListenedViewModel = mostListenedViewModel
-                                    )
+                                    MostListened(mostListenedViewModel = mostListenedViewModel)
                                 }
 
                                 composable(
@@ -214,8 +267,7 @@ class MainActivity : ComponentActivity() {
                                 ) {
                                     Artist(
                                         artistName = it.arguments?.getString("artistName")!!,
-
-                                        )
+                                    )
                                 }
 
                                 composable(
@@ -238,9 +290,7 @@ class MainActivity : ComponentActivity() {
                                         type = NavType.StringType
                                     })
                                 ) {
-                                    Track(
-                                        it.arguments?.getString("trackData")
-                                    )
+                                    Track(it.arguments?.getString("trackData"))
                                 }
 
                                 composable(
@@ -254,6 +304,9 @@ class MainActivity : ComponentActivity() {
                                     )
                                     AlbumTracklist(partialAlbum = partialAlbum)
                                 }
+
+                                composable("settings") { Settings() }
+                                composable("settings/scrobble") { ScrobbleSettings() }
                             }
                         }
                     }

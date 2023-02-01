@@ -1,10 +1,18 @@
 package io.musicorum.mobile.ktor.endpoints
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
-import io.musicorum.mobile.serialization.*
+import io.musicorum.mobile.serialization.FriendsResponse
+import io.musicorum.mobile.serialization.RecentTracks
+import io.musicorum.mobile.serialization.TopAlbumsResponse
+import io.musicorum.mobile.serialization.TopArtistsResponse
+import io.musicorum.mobile.serialization.TopTracks
+import io.musicorum.mobile.serialization.User
 
 object UserEndpoint {
     suspend fun getUser(username: String): User? {
@@ -53,9 +61,10 @@ object UserEndpoint {
 
     suspend fun getRecentTracks(
         user: String,
-        from: String?,
-        limit: Int?,
-        extended: Boolean?
+        from: String? = null,
+        limit: Int? = null,
+        extended: Boolean? = false,
+        page: Int? = null
     ): RecentTracks? {
         val extendedValue = if (extended == true) "1" else "0"
         val res = KtorConfiguration.lastFmClient.get {
@@ -65,6 +74,7 @@ object UserEndpoint {
             parameter("from", from)
             parameter("limit", limit)
             parameter("extended", extendedValue)
+            parameter("page", page)
         }
         return if (res.status.isSuccess()) {
             res.body<RecentTracks>()
@@ -112,5 +122,43 @@ object UserEndpoint {
         } else {
             null
         }
+    }
+
+    suspend fun updateNowPlaying(
+        track: String,
+        artist: String,
+        album: String?,
+        albumArtist: String?,
+        sessionKey: String
+    ): Boolean {
+        val req = KtorConfiguration.lastFmClient.post {
+            parameter("artist", artist)
+            parameter("track", track)
+            parameter("album", album)
+            parameter("albumArtist", albumArtist)
+            parameter("sk", sessionKey)
+            parameter("method", "track.updateNowPlaying")
+        }
+        return req.status.isSuccess()
+    }
+
+    suspend fun scrobble(
+        track: String,
+        artist: String,
+        album: String?,
+        albumArtist: String?,
+        sessionKey: String,
+        timestamp: Long
+    ): HttpResponse {
+        val req = KtorConfiguration.lastFmClient.post {
+            parameter("artist", artist)
+            parameter("track", track)
+            parameter("album", album)
+            parameter("albumArtist", albumArtist)
+            parameter("sk", sessionKey)
+            parameter("method", "track.scrobble")
+            parameter("timestamp", timestamp)
+        }
+        return req
     }
 }

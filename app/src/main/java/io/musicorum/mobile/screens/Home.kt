@@ -1,11 +1,13 @@
 package io.musicorum.mobile.screens
 
+import android.content.Context
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -32,6 +34,13 @@ import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.skydoves.balloon.ArrowOrientation
+import com.skydoves.balloon.ArrowPositionRules
+import com.skydoves.balloon.compose.Balloon
+import com.skydoves.balloon.compose.rememberBalloonBuilder
+import com.skydoves.balloon.compose.setBackgroundColor
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
@@ -50,7 +59,7 @@ import kotlinx.coroutines.launch
 import java.time.Instant
 
 @Composable
-fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController) {
+fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
     val user = LocalUser.current
     val recentTracks = homeViewModel.recentTracks.observeAsState().value
     val palette = homeViewModel.userPalette.observeAsState().value
@@ -59,6 +68,24 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController)
     val friendsActivity = homeViewModel.friendsActivity.observeAsState().value
     val ctx = LocalContext.current
     val errored = homeViewModel.errored.observeAsState().value
+    val nav = LocalNavigation.current!!
+    val experiment = FirebaseRemoteConfig.getInstance().getBoolean("device_scrobbling")
+    val prefs = ctx.getSharedPreferences("settings", Context.MODE_PRIVATE)
+    val scrobbleConsent = prefs.getBoolean("balloon_seen", false)
+
+    val showBalloon = remember { mutableStateOf(false) }
+    val builder = rememberBalloonBuilder {
+        setArrowSize(15)
+        setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
+        setArrowOrientation(ArrowOrientation.TOP)
+        setArrowPosition(0.91f)
+        setWidth(70)
+        setHeight(20)
+        setPadding(12)
+        setCornerRadius(4f)
+        setAutoDismissDuration(3000L)
+        setBackgroundColor(Color(0xFF3B72EB))
+    }
 
     LaunchedEffect(user, recentTracks, errored) {
         launch {
@@ -84,9 +111,15 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController)
         }
     }
 
-
     val isRefreshing = homeViewModel.isRefreshing.collectAsState()
 
+    if (experiment && !scrobbleConsent) {
+        prefs.edit().apply {
+            putBoolean("balloon_seen", true)
+            apply()
+        }
+        showBalloon.value = true
+    }
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing.value),
@@ -97,11 +130,28 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController)
                 .background(KindaBlack)
                 .padding(top = 30.dp, bottom = 20.dp)
         ) {
-            Text(
-                text = "Home",
-                style = Typography.displaySmall,
-                modifier = Modifier.padding(start = 20.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Home",
+                    style = Typography.displaySmall,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+                Balloon(
+                    builder = builder,
+                    balloonContent = { Text(text = "You can now scrobble from this device") }) { window ->
+                    LaunchedEffect(key1 = showBalloon.value) {
+                        if (showBalloon.value) window.showAlignBottom()
+                    }
+
+                    IconButton(onClick = { nav.navigate("settings") }) {
+                        Icon(Icons.Rounded.Settings, contentDescription = null)
+                    }
+                }
+            }
 
             if (user != null && palette != null) {
                 UserCard(user.user, palette, recentTracks, nav)
@@ -210,7 +260,6 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel(), nav: NavHostController)
                     }
                 }
             }
-
         }
     }
 }

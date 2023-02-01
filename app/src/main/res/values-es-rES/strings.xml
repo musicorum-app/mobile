@@ -1,13 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Musicorum</string>
-    <string name="bottom_navigation_item_home" translatable="false">Home</string>
     <string name="bottom_navigation_item_scrobbling">Scrobbles</string>
-    <string name="bottom_navigation_item_charts" translatable="false">Charts</string>
-    <string name="bottom_navigation_item_profile">Profile</string>
-
+    <string name="bottom_navigation_item_profile">Perfil</string>
     <!-- Common -->
     <string name="view_more">View more</string>
-
     <string name="artists">Artists</string>
     <string name="artist">Artist</string>
     <string name="albums">Albums</string>
@@ -16,50 +12,36 @@
     <string name="track">Track</string>
     <string name="users">Users</string>
     <string name="user">User</string>
-
     <string name="top_tracks">Top tracks</string>
     <string name="top_albums">Top albums</string>
     <string name="top_artists">Top artists</string>
-
     <plurals name="tracks_quantity">
-        <item quantity="zero">No tracks</item>
         <item quantity="one">%1$s track</item>
         <item quantity="other">%1$s tracks</item>
     </plurals>
-
     <plurals name="albums_quantity">
-        <item quantity="zero">No albums</item>
         <item quantity="one">%1$s album</item>
         <item quantity="other">%1$s albums</item>
     </plurals>
-
     <plurals name="artists_quantity">
-        <item quantity="zero">No artists</item>
         <item quantity="one">%1$s artist</item>
         <item quantity="other">%1$s artists</item>
     </plurals>
-
     <string name="listeners">Listeners</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="your_scrobbles">Your scrobbles</string>
-
-
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
-
-
     <!-- Home -->
     <string name="home_page_scrobbles_text">%1$s scrobbles • last 7 days</string>
     <string name="home_page_image_content_user">User profile image</string>
-
     <!-- Discover -->
     <plurals name="discover_page_results_text">
         <item quantity="one">%1$s result</item>
         <item quantity="other">%1$s results</item>
     </plurals>
     <string name="discover_page_no_results">Nothing found</string>
-
     <!-- Artist -->
     <string name="similar_artists">Similar artists</string>
     <string name="recent_scrobbles">Recent scrobbles</string>
@@ -87,38 +69,4 @@
     <string name="hold_on">Hold on</string>
     <string name="last_month">Last 30 days</string>
     <string name="no_data_available">No data available</string>
-    <string name="device_scrobbling_description">Register the songs you listen on this device to your Last.fm account</string>
-    <string name="enable_scrobbling">Enable Scrobbling</string>
-    <string name="notification_access">Notification access</string>
-    <string name="notification_permission_help_text">Notification access is needed in order to see which song is being played on the device. Tap here to manage</string>
-    <string name="scrobble_point">Scrobble Point</string>
-    <string name="scrobble_point_description">The percentage where the song will be considered as listened</string>
-    <string name="media_apps">Media apps</string>
-    <string name="media_apps_description">Select apps to scrobble from</string>
-    <string name="enable_scrobbling_for_spotify">Enable scrobbling for Spotify?</string>
-    <string name="spotify_scrobble_description">Make sure you don’t have the Last.fm Spotify connection enabled, otherwise your scrobbles might start duplicating.</string>
-    <string name="dismiss">Dismiss</string>
-    <string name="enable">Enable</string>
-    <string name="disabled">Disabled</string>
-    <string name="device_scrobbling">Device Scrobbling</string>
-    <string name="scrobbling_settings">Scrobbling settings</string>
-    <string name="about">About</string>
-    <string name="donate_on_patreon">Donate on Patreon</string>
-    <string name="join_our_discord_server">Join our Discord server</string>
-    <string name="view_source_code_on_github">View source code on GitHub</string>
-    <string name="last_fm_website">Last.fm Website</string>
-    <string name="made_by">Made by Pedro Piva and Matheus Dias. Powered by Musicorum</string>
-    <string name="grant_notification_access">Grant notification access?</string>
-    <string name="grant_nofication_access_onboard_description">You need to grant notification access so we can see what you’re listening to if you want to scrobble from this device</string>
-    <string name="open_notification_settings">Open notification settings</string>
-    <string name="notification_access_skip">I\'ll do it later</string>
-    <string name="beta">Beta</string>
-    <string name="scrobbling_enabled_no_apps">Enabled • no apps</string>
-    <string name="update_now_playing">Update now playing</string>
-    <string name="update_now_playing_description">Whether this will update your profile with the current playing song, even if it hasn\'t finished scrobbling</string>
-    <string name="nothing_playing">Nothing playing</string>
-    <plurals name="scrobble_apps">
-        <item quantity="one">Enabled • %1$d app</item>
-        <item quantity="other">Enabled • %1$d apps</item>
-    </plurals>
 </resources>

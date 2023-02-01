@@ -5,7 +5,13 @@ import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +38,7 @@ import io.musicorum.mobile.utils.handleAuth
 fun Login(nav: NavController, deepLinkToken: String?) {
     val customTabsIntent = CustomTabsIntent.Builder()
         .build()
+
     val ctx = LocalContext.current
     val authorizationURL =
         "http://www.last.fm/api/auth/?api_key=${BuildConfig.LASTFM_API_KEY}&cb=musicorum://auth-callback"

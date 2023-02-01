@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.musicorum.mobile.utils.ScrobbleRepository
+import io.musicorum.mobile.repositories.ScrobbleRepository
 import javax.inject.Singleton
 
 @Module

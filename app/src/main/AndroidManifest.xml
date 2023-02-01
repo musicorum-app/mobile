@@ -6,8 +6,23 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
+    <!--<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" /> -->
+
+    <queries>
+        <package android:name="com.spotify.music" />
+        <package android:name="deezer.android.app" />
+        <package android:name="com.apple.android.music" />
+        <package android:name="com.google.android.apps.youtube.music" />
+        <package android:name="com.aspiro.tidal" />
+        <package android:name="com.sec.android.app.music" />
+        <package android:name="com.samsung.sec.android.MusicPlayer" />
+        <package android:name="com.android.music" />
+        <package android:name="com.moonvideo.android.resso" />
+    </queries>
 
     <application
+        android:name=".MusicorumApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,7 +31,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Musicorum"
-        android:name=".MusicorumApp"
         tools:targetApi="31">
 
         <service
@@ -24,6 +38,17 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".NotificationListener"
+            android:exported="false"
+            android:label="notification listener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
 
@@ -43,6 +68,7 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Musicorum.SplashScreenTheme">
 
             <intent-filter>
@@ -65,6 +91,7 @@
                     android:scheme="musicorum" />
             </intent-filter>
         </activity>
+
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.utils.ScrobbleRepository
+import io.musicorum.mobile.repositories.ScrobbleRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

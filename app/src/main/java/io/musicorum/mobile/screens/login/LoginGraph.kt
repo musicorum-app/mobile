@@ -20,5 +20,7 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
         ) {
             UserConfirmation(nav = navController, it.arguments?.getString("session_key")!!)
         }
+
+        composable("deviceScrobble") { Scrobble() }
     }
 }

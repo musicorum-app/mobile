@@ -9,8 +9,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
-import io.musicorum.mobile.serialization.*
-import io.musicorum.mobile.utils.ScrobbleRepository
+import io.musicorum.mobile.repositories.ScrobbleRepository
+import io.musicorum.mobile.serialization.Image
+import io.musicorum.mobile.serialization.RecentTracks
+import io.musicorum.mobile.serialization.TopTracks
+import io.musicorum.mobile.serialization.User
+import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.flow.MutableStateFlow
