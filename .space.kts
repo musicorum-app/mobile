@@ -9,14 +9,13 @@ job("Build and release to internal testing") {
     
     container("Build and publish to internal", "musicorum.registry.jetbrains.space/p/main/containers/android-publisher:latest") {
         env["GOOGLE_SA_KEY"] = Secrets("google_sa_key")
-        env["KEY_STORE"] = Secrets("key_store_password")
+        env["KEY_STORE"] = Secrets("upload_key")
         env["KEY_STORE_PASSWORD"] = Secrets("key_store_password")
         env["KEY_PASSWORD"] = Secrets("key_password")
         env["KEY_ALIAS"] = Params("key_alias")
         env["BUILD_CONFIG_PROPERTIES"] = Secrets("build_config_properties")
         env["GOOGLE_SERVICES_JSON"] = Secrets("google_services_json")
         env["CROWDIN_PROPERTIES"] = Secrets("crowdin_properties")
-
         env["AUTHORIZATION_SECRET"] = Secrets("file_repo_secret")
 
         shellScript {
