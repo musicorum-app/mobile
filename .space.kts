@@ -20,7 +20,7 @@ job("Build and release to internal testing") {
                 xxd -plain -revert google_sa_key.hex  google_sa_key.json
                 echo Get tokens.release.properties...
                 echo ${'$'}BUILD_CONFIG_PROPERTIES > tokens.release.hex
-                xxd -plain -revert tokens_release.hex  tokens.release.properties
+                xxd -plain -revert tokens.release.hex  tokens.release.properties
                 cp ./tokens.release.properties ./tokens.properties
                 echo Get google-services.json...
                 echo ${'$'}GOOGLE_SERVICES_JSON > google_services.hex
