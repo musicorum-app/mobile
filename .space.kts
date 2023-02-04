@@ -36,10 +36,11 @@ job("Build and release to internal testing") {
                 echo ${'$'}CROWDIN_PROPERTIES > crowdin_properties.hex
                 xxd -plain -revert crowdin_properties.hex crowdin.properties
                 echo Downloading fonts...
+                CURRENT_PATH=$(pwd)
                 mkdir ./app/src/main/res/font
                 curl -f -L -H "Authorization: Bearer ${'$'}AUTHORIZATION_SECRET" -o ./app/src/main/res/font/author.zip https://files.pkg.jetbrains.space/musicorum/p/main/android-fonts/author/font.zip
                 echo Unzipping fonts...
-                cd ./app/src/main/res/font && unzip author.zip && cd
+                cd ./app/src/main/res/font && unzip author.zip && cd $CURRENT_PATH
                 rm ./app/src/main/res/font/author.zip
                 echo Build and pulbish AAB...
                 ./gradlew publishBundle
