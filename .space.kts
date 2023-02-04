@@ -5,7 +5,7 @@ job("Build and release to internal testing") {
 
     container("Build and publish to internal", "musicorum.registry.jetbrains.space/p/main/containers/android-publisher:latest") {
         env["GOOGLE_SA_KEY"] = Secrets("google_sa_key")
-        env["KEY_STORE"] = Secrets("key_store")
+        env["KEY_STORE"] = Secrets("key_store_password")
         env["KEY_STORE_PASSWORD"] = Secrets("key_store_password")
         env["KEY_PASSWORD"] = Secrets("key_password")
         env["KEY_ALIAS"] = Params("key_alias")
