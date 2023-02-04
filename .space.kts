@@ -21,11 +21,12 @@ job("Build and release to internal testing") {
                 echo Get tokens.release.properties...
                 echo ${'$'}BUILD_CONFIG_PROPERTIES > tokens.release.hex
                 xxd -plain -revert tokens_release.hex  tokens.release.properties
+                cp ./tokens.release.properties ./tokens.properties
                 echo Get google-services.json...
                 echo ${'$'}GOOGLE_SERVICES_JSON > google_services.hex
                 xxd -plain -revert google_services.hex google-services.json
                 echo "Moving file..."
-                mv ../google-services.json ../app/google-services.json
+                mv ./google-services.json ./app/google-services.json
                 echo Get crowdin.properties...
                 echo ${'$'}CROWDIN_PROPERTIES > crowdin_properties.hex
                 xxd -plain -revert crowdin_properties.hex crowdin.properties
