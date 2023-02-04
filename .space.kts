@@ -26,6 +26,9 @@ job("Build and release to internal testing") {
                 xxd -plain -revert google_services.hex google-services.json
                 echo "Moving file..."
                 mv ../google-services.json ../app/google-services.json
+                echo Get crowdin.properties...
+                echo ${'$'}CROWDIN_PROPERTIES > crowdin_properties.hex
+                xxd -plain -revert crowdin_properties.hex crowdin.properties
                 echo Build and pulbish AAB...
                 ./gradlew publishBundle
             """
