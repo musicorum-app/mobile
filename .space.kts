@@ -12,6 +12,7 @@ job("Build and release to internal testing") {
 
         shellScript {
             content = """
+                echo Project key: ${'$'}GOOGLE_SERVICES_JSON
                 echo Get private signing key...
                 echo ${'$'}KEY_STORE > upload_key.hex
                 xxd -plain -revert upload_key.hex upload_key.jks
