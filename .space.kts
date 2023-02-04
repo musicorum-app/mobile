@@ -9,9 +9,9 @@ job("Build and release to internal testing") {
         env["KEY_STORE_PASSWORD"] = Secrets("key_store_password")
         env["KEY_PASSWORD"] = Secrets("key_password")
         env["KEY_ALIAS"] = Params("key_alias")
-        env["BUILD_CONFIG_PROPERTIES"] = Param("build_config_properties")
-        env["GOOGLE_SERVICES_JSON"] = Param("google_services_json")
-        env["CROWDIN_PROPERTIES"] = Param("crowdin_properties")
+        env["BUILD_CONFIG_PROPERTIES"] = Secrets("build_config_properties")
+        env["GOOGLE_SERVICES_JSON"] = Secrets("google_services_json")
+        env["CROWDIN_PROPERTIES"] = Secrets("crowdin_properties")
         
 
         shellScript {
