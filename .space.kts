@@ -40,6 +40,7 @@ job("Build and release to internal testing") {
                 curl -f -L -H "Authorization: Bearer ${'$'}AUTHORIZATION_SECRET" -o ./app/src/main/res/font/author.zip https://files.pkg.jetbrains.space/musicorum/p/main/android-fonts/author/font.zip
                 echo Unzipping fonts...
                 unzip ./app/src/main/res/font/author.zip
+                rm -rf ./app/src/main/res/font/author.zip
                 echo Build and pulbish AAB...
                 ./gradlew publishBundle
             """
