@@ -32,8 +32,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.NotificationListener
 import io.musicorum.mobile.R
+import io.musicorum.mobile.services.NotificationListener
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.Typography
 

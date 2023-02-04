@@ -72,7 +72,7 @@ fun Settings() {
     val ctx = LocalContext.current
     val nav = LocalNavigation.current
     val coroutineScope = rememberCoroutineScope()
-    val experiment = Firebase.remoteConfig.getBoolean("device_scrobbling")
+    val experiment = Firebase.remoteConfig.getBoolean("device_scrobbling") || BuildConfig.DEBUG
 
     val enabledApps = runBlocking {
         ctx.scrobblePrefs.data.map { p ->
@@ -88,7 +88,7 @@ fun Settings() {
 
     val label = if (enabled == true && enabledApps.isNullOrEmpty()) {
         stringResource(R.string.scrobbling_enabled_no_apps)
-    } else if (enabled == false) {
+    } else if (enabled == false || enabled == null) {
         stringResource(R.string.disabled)
     } else {
         pluralStringResource(

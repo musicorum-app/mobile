@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <!--<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" /> -->
@@ -42,7 +43,7 @@
         </service>
 
         <service
-            android:name=".NotificationListener"
+            android:name=".services.NotificationListener"
             android:exported="false"
             android:label="notification listener"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">

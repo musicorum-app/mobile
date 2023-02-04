@@ -1,10 +1,14 @@
-package io.musicorum.mobile
+package io.musicorum.mobile.services
 
 import android.content.ComponentName
 import android.content.Context
 import android.media.MediaMetadata
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -18,6 +22,8 @@ import com.google.firebase.ktx.Firebase
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
+import io.musicorum.mobile.scrobblePrefs
+import io.musicorum.mobile.userData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,9 +37,31 @@ import java.util.Date
 class NotificationListener : NotificationListenerService() {
     private val tag = "NotificationListener"
     private var job: Job? = null
+    private var isScrobbleAllowed = false
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+            isScrobbleAllowed = true
+            Log.d(tag, "internet connection available")
+        }
+
+        override fun onLost(network: Network) {
+            super.onLost(network)
+            Log.d(tag, "internet connection lost")
+            isScrobbleAllowed = false
+        }
+    }
 
     override fun onListenerConnected() {
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .build()
         Log.d(tag, "listened connected")
+        val connectivityManager =
+            getSystemService(ConnectivityManager::class.java) as ConnectivityManager
+        connectivityManager.requestNetwork(networkRequest, networkCallback)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
@@ -49,7 +77,7 @@ class NotificationListener : NotificationListenerService() {
         } ?: return
 
         if (scrobbleEnabled == null || scrobbleEnabled == false) return
-        if (packageName !in apps) return
+        if (sbn?.packageName !in apps) return
 
         val scrobblePoint = runBlocking {
             applicationContext.scrobblePrefs.data.map { p ->
@@ -84,8 +112,6 @@ class NotificationListener : NotificationListenerService() {
 
         val timeToScrobble = ((trackDuration / 100) * scrobblePoint) - elapsed!!
 
-        if (timeToScrobble < 0) return
-
         val sessionKey = runBlocking {
             applicationContext.userData.data.map { p ->
                 p[stringPreferencesKey("session_key")]
@@ -106,6 +132,7 @@ class NotificationListener : NotificationListenerService() {
                 Log.d(tag, "is now playing? $success")
             }
         }
+        if (timeToScrobble < 0) return
 
         job = if (isPlayerPaused) {
             Log.d(tag, "player has been paused")

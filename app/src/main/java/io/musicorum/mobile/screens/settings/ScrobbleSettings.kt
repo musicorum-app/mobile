@@ -31,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,10 +55,10 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import io.musicorum.mobile.NotificationListener
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.scrobblePrefs
+import io.musicorum.mobile.services.NotificationListener
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.LighterGray
@@ -108,7 +109,15 @@ fun ScrobbleSettings() {
         ctx.scrobblePrefs.data.map { p -> p[updateNowPlayingKey] }.first()
     }
 
-    val scrobblePoint = remember { mutableStateOf(scrobblePointData ?: 0f) }
+    if (scrobblePointData == null) {
+        LaunchedEffect(key1 = Unit) {
+            ctx.scrobblePrefs.edit { p ->
+                p[scrobblePointKey] = 50f
+            }
+        }
+    }
+
+    val scrobblePoint = remember { mutableStateOf(scrobblePointData ?: 50f) }
     val enabled = remember { mutableStateOf(enabledData ?: false) }
     val updatesNowPlaying = remember { mutableStateOf(updateNowPlayingData ?: false) }
     // val newApps = remember { mutableStateOf(newAppsData ?: false) }

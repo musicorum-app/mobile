@@ -14,3 +14,4 @@ tokens.release.properties
 app/google-services.json
 
 app/src/main/res/font
+crowdin.properties

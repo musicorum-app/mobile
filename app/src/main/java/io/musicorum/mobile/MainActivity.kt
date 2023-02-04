@@ -52,6 +52,9 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.common.ConnectionResult.SERVICE_MISSING
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -132,14 +135,38 @@ class MainActivity : ComponentActivity() {
             minimumFetchIntervalInSeconds = 10
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
-
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d("remote config", "update success")
             }
         }
-        Log.d("remove config", remoteConfig.all.toString())
 
+        val appUpdateManager = AppUpdateManagerFactory.create(this.applicationContext)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+
+        appUpdateInfoTask.addOnSuccessListener { info ->
+            if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                appUpdateManager.startUpdateFlowForResult(
+                    info,
+                    IMMEDIATE,
+                    this,
+                    145
+                )
+                return@addOnSuccessListener
+            }
+
+            if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && info.updatePriority() >= 4
+                && info.isUpdateTypeAllowed(IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    info,
+                    IMMEDIATE,
+                    this,
+                    145
+                )
+            }
+        }
 
         CrowdinUtils.initCrowdin(applicationContext)
         askNotificationPermission()
