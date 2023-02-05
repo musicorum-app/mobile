@@ -17,8 +17,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
@@ -133,6 +132,7 @@ class NotificationListener : NotificationListenerService() {
             }
         }
         if (timeToScrobble < 0) return
+        val analytics = FirebaseAnalytics.getInstance(applicationContext)
 
         job = if (isPlayerPaused) {
             Log.d(tag, "player has been paused")
@@ -157,13 +157,13 @@ class NotificationListener : NotificationListenerService() {
                 val success = req.status.isSuccess()
                 Log.d(tag, "is scrobble success? $success")
                 if (success) {
-                    Firebase.analytics.logEvent("device_scrobble_success", null)
+                    analytics.logEvent("device_scrobble_success", null)
                 } else {
                     val bundle = Bundle()
                     bundle.putInt("status_code", req.status.value)
                     bundle.putString("body", req.bodyAsText())
                     bundle.putString("attempted_song", "$track by $artist, on $album")
-                    Firebase.analytics.logEvent("device_scrobble_failed", bundle)
+                    analytics.logEvent("device_scrobble_failed", bundle)
                 }
             }
         }
