@@ -96,9 +96,8 @@ class NotificationListener : NotificationListenerService() {
         val component = ComponentName(applicationContext, NotificationListener::class.java)
 
 		val activeSessions = media.getActiveSessions(component)
-        activeSessions.getOrNull(0) ?: return
+        val player = activeSessions.getOrNull(0) ?: return
 
-        val player = activeSessions[0]
         val isPlayerPaused = player.playbackState?.state == PlaybackState.STATE_PAUSED
         val trackDuration = player.metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
         val elapsed = player.playbackState?.position
