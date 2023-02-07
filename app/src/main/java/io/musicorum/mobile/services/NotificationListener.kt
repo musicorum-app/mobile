@@ -18,6 +18,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
@@ -146,24 +147,31 @@ class NotificationListener : NotificationListenerService() {
                 Log.d("listener job", "this job will wait ${timeToScrobble / 1000} seconds.")
                 delay(timeToScrobble.toLong())
                 Log.d("listener job", "time reached - scrobbling.")
-                val req = UserEndpoint.scrobble(
-                    track = track!!,
-                    artist = artist!!,
-                    album = album,
-                    albumArtist = albumArtist,
-                    sessionKey = sessionKey!!,
-                    timestamp = timestamp.time / 1000
-                )
-                val success = req.status.isSuccess()
-                Log.d(tag, "is scrobble success? $success")
-                if (success) {
-                    analytics.logEvent("device_scrobble_success", null)
-                } else {
-                    val bundle = Bundle()
-                    bundle.putInt("status_code", req.status.value)
-                    bundle.putString("body", req.bodyAsText())
-                    bundle.putString("attempted_song", "$track by $artist, on $album")
-                    analytics.logEvent("device_scrobble_failed", bundle)
+                try {
+                    val req = UserEndpoint.scrobble(
+                        track = track!!,
+                        artist = artist!!,
+                        album = album,
+                        albumArtist = albumArtist,
+                        sessionKey = sessionKey!!,
+                        timestamp = timestamp.time / 1000
+                    )
+
+                    val success = req.status.isSuccess()
+                    Log.d(tag, "is scrobble success? $success")
+                    if (success) {
+                        analytics.logEvent("device_scrobble_success", null)
+                    } else {
+                        val bundle = Bundle()
+                        bundle.putInt("status_code", req.status.value)
+                        bundle.putString("body", req.bodyAsText())
+                        bundle.putString("attempted_song", "$track by $artist, on $album")
+                        analytics.logEvent("device_scrobble_failed", bundle)
+                    }
+                } catch (e: Exception) {
+                    analytics.logEvent("device_scrobble_exception") {
+                        param("error", e.message ?: e.toString())
+                    }
                 }
             }
         }
