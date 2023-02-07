@@ -1,6 +1,11 @@
 job("Build and release to internal testing") {
     startOn {
-        gitPush { enabled = true }
+        // trigger the job on every push to the main branch
+        gitPush {
+            branchFilter {
+                + "refs/heads/main"
+            }
+        }
     }
 
 	requirements {
