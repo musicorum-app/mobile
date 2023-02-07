@@ -95,7 +95,7 @@ class NotificationListener : NotificationListenerService() {
             applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val component = ComponentName(applicationContext, NotificationListener::class.java)
 
-		val activeSessions = media.getActiveSessions(component)
+        val activeSessions = media.getActiveSessions(component)
         val player = activeSessions.getOrNull(0) ?: return
 
         val isPlayerPaused = player.playbackState?.state == PlaybackState.STATE_PAUSED
@@ -105,11 +105,11 @@ class NotificationListener : NotificationListenerService() {
         if (trackDuration == null || trackDuration < 0) return
 
         val track = player.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
-        val artist = player?.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
-        val album = player?.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+        val artist = player.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        val album = player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
         val albumArtist =
-            if (artist != player?.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) {
-                player?.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
+            if (artist != player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) {
+                player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
             } else null
 
         val timeToScrobble = ((trackDuration / 100) * scrobblePoint) - elapsed!!
