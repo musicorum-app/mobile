@@ -95,7 +95,7 @@ class NotificationListener : NotificationListenerService() {
             applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val component = ComponentName(applicationContext, NotificationListener::class.java)
 
-	val activeSessions = media.getActiveSessions(component)
+		val activeSessions = media.getActiveSessions(component)
         if (activeSessions.isEmpty()) return
 
         val player = activeSessions[0]
