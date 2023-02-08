@@ -65,7 +65,6 @@ job("Build IntelliJ IDEA indexes") {
     // Ide.CLion, Ide.GoLand, Ide.PhpStorm,
     // Ide.PyCharm, Ide.Rider
     warmup(ide = Ide.Idea) {
-        // optional custom script
-        scriptLocation = "./warmup_ide.sh"
+        
     }
 }
