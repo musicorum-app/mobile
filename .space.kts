@@ -56,15 +56,3 @@ job("Build and release to internal testing") {
         }
     }
 }
-
-job("Build IntelliJ IDEA indexes") {
-    // ide is an IDE you want Space to build indexes for:
-    // for JetBrains Fleet - Ide.Fleet
-    // for IntelliJ-based IDEs via Gateway -
-    // Ide.Idea, Ide.WebStorm, Ide.RubyMine,
-    // Ide.CLion, Ide.GoLand, Ide.PhpStorm,
-    // Ide.PyCharm, Ide.Rider
-    warmup(ide = Ide.Idea) {
-        
-    }
-}
