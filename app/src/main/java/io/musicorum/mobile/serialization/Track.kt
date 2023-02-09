@@ -42,7 +42,7 @@ data class Track @OptIn(ExperimentalSerializationApi::class) constructor(
         ?: ""
 
     @kotlinx.serialization.Transient
-    val loved = _loved == "1"
+    val loved = _loved == "1" || _loved.toBoolean()
 }
 
 @Serializable

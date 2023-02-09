@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,9 +23,9 @@ fun MusicorumTopBar(
     val analytics = LocalAnalytics.current!!
     val nav = LocalNavigation.current
     val fraction = scrollBehavior.state.overlappedFraction
-    val colors = TopAppBarDefaults.smallTopAppBarColors(
-        scrolledContainerColor = Color.DarkGray.copy(alpha = fraction),
-        containerColor = Color.Transparent
+    val colors = topAppBarColors(
+        containerColor = Color.Transparent,
+        scrolledContainerColor = Color.DarkGray.copy(alpha = fraction)
     )
     val alpha = if (fadeable) {
         fraction

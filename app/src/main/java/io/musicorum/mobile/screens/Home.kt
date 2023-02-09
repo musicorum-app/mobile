@@ -193,7 +193,6 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
             HorizontalTracksRow(
                 tracks = recentTracks?.recentTracks?.tracks,
                 labelType = LabelType.DATE,
-                nav = nav,
                 errored = recentTracks?.recentTracks?.tracks?.isEmpty()
             )
 
@@ -219,7 +218,6 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
             HorizontalTracksRow(
                 tracks = weekTracks?.topTracks?.tracks,
                 labelType = LabelType.ARTIST_NAME,
-                nav = nav,
                 errored = weekTracks?.topTracks?.tracks?.isEmpty()
             )
 
@@ -254,8 +252,7 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
                         FriendActivity(
                             track = rt.recentTracks.tracks[0],
                             friendImageUrl = friends?.get(i)?.bestImageUrl,
-                            friendUsername = friends?.get(i)?.name,
-                            nav = nav
+                            friendUsername = friends?.get(i)?.name
                         )
                     }
                 }
