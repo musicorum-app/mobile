@@ -1,15 +1,16 @@
 package io.musicorum.mobile.utils
 
+import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+
 object PeriodResolver {
-    fun resolve(period: String): String {
+    fun resolve(period: FetchPeriod): String {
         return when (period) {
-            "month" -> "last 30 days"
-            "week" -> "last 7 days"
-            "trimester" -> "last 3 months"
-            "semester" -> "last 6 months"
-            "year" -> "last 12 months"
-            "overall" -> "overall"
-            else -> ""
+            FetchPeriod.MONTH -> "last 30 days"
+            FetchPeriod.WEEK -> "last 7 days"
+            FetchPeriod.TRIMESTER -> "last 3 months"
+            FetchPeriod.SEMESTER -> "last 6 months"
+            FetchPeriod.YEAR -> "last 12 months"
+            FetchPeriod.OVERALL -> "overall"
         }
     }
 }

@@ -66,6 +66,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.screens.Account
+import io.musicorum.mobile.screens.ChartCollage
 import io.musicorum.mobile.screens.Charts
 import io.musicorum.mobile.screens.Discover
 import io.musicorum.mobile.screens.Home
@@ -271,6 +272,8 @@ class MainActivity : ComponentActivity() {
                                 composable("home") { Home() }
 
                                 composable("recentScrobbles") { RecentScrobbles() }
+
+                                composable("chartCollage") { ChartCollage() }
 
                                 composable("mostListened") {
                                     MostListened(mostListenedViewModel = mostListenedViewModel)

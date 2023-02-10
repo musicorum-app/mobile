@@ -12,5 +12,7 @@ data class TopTracks(
 @Serializable
 data class TopTracksData(
     @SerialName("track")
-    val tracks: List<Track>
+    val tracks: List<Track>,
+    @SerialName("@attr")
+    val attributes: RecentTracksAttributes
 )
