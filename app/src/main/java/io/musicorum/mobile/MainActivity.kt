@@ -230,6 +230,7 @@ class MainActivity : ComponentActivity() {
                     "home" -> true
                     "scrobbling" -> true
                     "profile" -> true
+                    "charts" -> true
                     else -> false
                 }
 

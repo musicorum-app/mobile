@@ -1,7 +1,13 @@
 package io.musicorum.mobile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,7 +26,6 @@ val HEADER_HEIGHT = 400.dp
 
 @Composable
 fun GradientHeader(backgroundUrl: String?, coverUrl: String?, shape: Shape, placeholderType: PlaceholderType) {
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
