@@ -1,6 +1,7 @@
 package io.musicorum.mobile.screens
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
+import androidx.compose.material.icons.outlined.Album
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,15 +42,20 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +67,7 @@ import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
+import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.ktor.endpoints.FetchPeriod
@@ -63,7 +75,6 @@ import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
-import io.musicorum.mobile.ui.theme.SkeletonPrimaryColor
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.PeriodResolver
@@ -138,7 +149,7 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                             Brush.linearGradient(userGradient.asReversed()),
                             RoundedCornerShape(12.dp)
                         )
-                        .padding(horizontal = 10.dp)
+                        .padding(start = 10.dp)
                         .fillMaxWidth()
                         .height(70.dp),
                     contentAlignment = Alignment.CenterStart
@@ -156,6 +167,13 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                         )
                         Text(text = "scrobbles", style = Typography.titleMedium)
                     }
+                    Image(
+                        painter = painterResource(id = R.drawable.chart_decorations),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(CenterEnd)
+                            .alpha(.15f)
+                    )
                 }
             }
 
@@ -165,24 +183,26 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                 val topArtist = topArtists[0]
                 ChartComponentBox(
                     leadImage = topArtist.bestImageUrl,
-                    trailDetail = null,
+                    trailDetail = Icons.Rounded.Star,
                     shape = CircleShape,
                     artist = topArtist.name,
                     scrobbleCount = topArtist.playCount,
+                    top = "artists",
                     album = null,
                     innerData = topArtists.drop(1).fold(mutableListOf()) { list, artist ->
                         list.add(ChartData(artist.name, artist.bestImageUrl, artist.playCount))
                         list
                     }
                 )
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(70.dp))
                 ChartComponentBox(
                     leadImage = topAlbums[0].bestImageUrl,
-                    trailDetail = null,
+                    trailDetail = Icons.Outlined.Album,
                     shape = RoundedCornerShape(6.dp),
                     artist = topAlbums[0].name,
                     scrobbleCount = topAlbums[0].playCount?.toInt() ?: 0,
                     album = null,
+                    top = "albums",
                     innerData = topAlbums.drop(1).fold(mutableListOf()) { list, album ->
                         list.add(
                             ChartData(
@@ -194,14 +214,15 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                         list
                     }
                 )
-                Spacer(modifier = Modifier.height(50.dp))
+                Spacer(modifier = Modifier.height(70.dp))
                 ChartComponentBox(
                     leadImage = topTracks.tracks[0].bestImageUrl,
-                    trailDetail = null,
+                    trailDetail = Icons.Rounded.MusicNote,
                     shape = RoundedCornerShape(6.dp),
                     artist = topTracks.tracks[0].name,
                     scrobbleCount = topTracks.tracks[0].playCount?.toInt() ?: 0,
                     album = null,
+                    top = "tracks",
                     innerData = topTracks.tracks.drop(1).fold(mutableListOf()) { list, track ->
                         list.add(
                             ChartData(
@@ -230,12 +251,13 @@ fun CollageFab() {
 @Composable
 fun ChartComponentBox(
     leadImage: String,
-    trailDetail: Any?,
+    trailDetail: ImageVector,
     shape: Shape,
     artist: String,
     scrobbleCount: Int,
     album: String?,
-    innerData: List<ChartData>?
+    innerData: List<ChartData>?,
+    top: String
 ) {
     val vibrant = remember { mutableStateOf(Color.Gray) }
     val vibrantState = animateColorAsState(targetValue = vibrant.value)
@@ -250,14 +272,27 @@ fun ChartComponentBox(
 
     val gradient = getDarkenGradient(vibrantState.value).asReversed()
 
+    Row(
+        modifier = Modifier.padding(start = 20.dp, end = 3.dp),
+        verticalAlignment = CenterVertically,
+    ) {
+        Icon(trailDetail, null)
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(text = "Top $top", style = Typography.headlineSmall)
+        Spacer(modifier = Modifier.weight(1f, true))
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(Icons.Rounded.ChevronRight, null)
+        }
+    }
+
     Box(
         modifier = Modifier
-            .padding(15.dp)
+            .padding(start = 15.dp, end = 15.dp, bottom = 15.dp)
             .fillMaxWidth()
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             modifier = Modifier
                 .background(
                     Brush.linearGradient(gradient),
@@ -283,13 +318,23 @@ fun ChartComponentBox(
                 }
                 Text("$scrobbleCount scrobbles", style = Typography.labelSmall)
             }
+            Spacer(Modifier.weight(1f))
+            Icon(
+                trailDetail,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(50.dp)
+                    .rotate(-15f)
+                    .alpha(.25f),
+                tint = LighterGray
+            )
         }
         Column(
             modifier = Modifier
-                .offset(y = 65.dp)
+                .offset(y = 60.dp)
                 .background(LighterGray, RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
                 .fillMaxWidth()
-                .padding(top = 5.dp),
+                .padding(top = 10.dp),
             verticalArrangement = Arrangement.spacedBy(0.dp),
         ) {
             innerData?.let { list ->
