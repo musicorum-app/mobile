@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 
 class ChartCollageViewModel : ViewModel() {
     val imageUrl: MutableLiveData<String> = MutableLiveData()
+    val ready = MutableLiveData(false)
 
     fun generate(
         username: String,
@@ -17,9 +18,11 @@ class ChartCollageViewModel : ViewModel() {
         period: String,
         showNames: Boolean
     ) {
+        ready.value = false
         viewModelScope.launch {
             val url = Generator.generateGrid(username, rowCount, colCount, entity, period, showNames)
             imageUrl.value = url
+            ready.value = true
         }
     }
 }

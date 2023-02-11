@@ -51,7 +51,7 @@ object Generator {
             period = period,
             entity = entity,
             style = "DEFAULT",
-            showPlaycount = true
+            showPlayCount = true
         )
         val generatorBody = GeneratorBody(
             user = username,
@@ -90,7 +90,7 @@ private data class GeneratorBody(
 @Serializable
 private data class GeneratorOptions(
     @SerialName("show_playcount")
-    val showPlaycount: Boolean = true,
+    val showPlayCount: Boolean,
     val rows: Int?,
     val columns: Int?,
     @SerialName("show_names")
