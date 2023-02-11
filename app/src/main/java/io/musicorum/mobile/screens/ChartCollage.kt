@@ -2,6 +2,7 @@ package io.musicorum.mobile.screens
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -276,14 +278,17 @@ fun DropdownMenu(
                 .fillMaxWidth(),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = openState.value) }
         )
+        val menuColors = MenuDefaults.itemColors()
         ExposedDropdownMenu(
             expanded = openState.value,
+            modifier = Modifier.background(LighterGray),
             onDismissRequest = { openState.value = false }) {
             options.forEach {
                 DropdownMenuItem(
                     text = { Text(it.first) },
                     onClick = { valueState.value = it; openState.value = false },
-                    contentPadding = PaddingValues(horizontal = 20.dp)
+                    contentPadding = PaddingValues(horizontal = 20.dp),
+                    modifier = Modifier.background(LighterGray)
                 )
             }
         }
