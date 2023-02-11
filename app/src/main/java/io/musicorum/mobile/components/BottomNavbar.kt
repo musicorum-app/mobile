@@ -1,12 +1,18 @@
 package io.musicorum.mobile.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.QueueMusic
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -18,14 +24,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
-import java.util.*
+import java.util.Locale
 
 @Composable
 fun BottomNavBar(nav: NavHostController) {
-    val items = listOf("Home", "Scrobbling", "Profile")
+    val items = listOf("Home", "Scrobbling", "Charts", "Profile")
     val icons = listOf(
         Icons.Rounded.Home,
         Icons.Rounded.QueueMusic,
+        Icons.Rounded.BarChart,
         Icons.Rounded.Person
     )
     val navItemColors = NavigationBarItemDefaults.colors(

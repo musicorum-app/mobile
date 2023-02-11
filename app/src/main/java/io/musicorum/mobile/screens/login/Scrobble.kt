@@ -61,7 +61,7 @@ fun Scrobble() {
 
         DisposableEffect(key1 = lcOwner) {
             val lifecycle = lcOwner.value.lifecycle
-            val observer = LifecycleEventObserver { owner, event ->
+            val observer = LifecycleEventObserver { _, event ->
                 Log.d("scrobble screen", event.name)
                 if (event == Lifecycle.Event.ON_RESUME) {
                     granted.value = NotificationManagerCompat.getEnabledListenerPackages(ctx)
