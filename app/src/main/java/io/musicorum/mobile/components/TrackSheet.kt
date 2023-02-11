@@ -1,7 +1,9 @@
 package io.musicorum.mobile.components
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,9 +37,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import coil.compose.AsyncImage
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -169,30 +173,30 @@ fun TrackSheet(
             colors = listColors,
             leadingContent = { Icon(Icons.Rounded.Album, null) }
         )
-        /*
-                val spotify = try {
-                    ctx.packageManager.getApplicationIcon("com.spotify.music")
-                        .toBitmap()
-                        .asImageBitmap()
-                } catch (_: PackageManager.NameNotFoundException) {
-                    null
-                }
 
-                spotify?.let {
-                    ListItem(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        headlineText = { Text(text = "Open on Spotify") },
-                        leadingContent = {
-                            /*Image(
-                                bitmap = it,
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )*/
-                        },
-                        colors = listColors
+        val spotify = try {
+            ctx.packageManager.getApplicationIcon("com.spotify.music")
+                .toBitmap()
+                .asImageBitmap()
+        } catch (_: PackageManager.NameNotFoundException) {
+            null
+        }
+
+        spotify?.let {
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                headlineText = { Text(text = "Open on Spotify") },
+                leadingContent = {
+                    Image(
+                        bitmap = it,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
                     )
-                }*/
+                },
+                colors = listColors
+            )
+        }
 
         ListItem(
             modifier = Modifier
