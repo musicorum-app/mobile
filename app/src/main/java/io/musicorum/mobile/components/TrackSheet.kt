@@ -1,8 +1,10 @@
 package io.musicorum.mobile.components
 
+import android.app.SearchManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,6 +74,9 @@ fun TrackSheet(
         containerColor = LighterGray
     )
     val sheetState = rememberSheetState(skipHalfExpanded = false)
+    val spotifyIntent = ctx.packageManager.getLaunchIntentForPackage("com.spotify.music")
+        ?.setAction(MediaStore.INTENT_ACTION_MEDIA_SEARCH)
+        ?.putExtra(SearchManager.QUERY, "${track.artist.name} ${track.name}")
 
     ModalBottomSheet(
         onDismissRequest = { show.value = false },
@@ -185,7 +190,8 @@ fun TrackSheet(
         spotify?.let {
             ListItem(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .clickable { ctx.startActivity(spotifyIntent) },
                 headlineText = { Text(text = "Open on Spotify") },
                 leadingContent = {
                     Image(
