@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -255,7 +256,7 @@ fun ScrobbleSettings() {
                                 colors = styledSwitch
                             )
                         }*/
-            SectionTitle(sectionName = stringResource(R.string.media_apps))
+            SectionTitle(sectionName = stringResource(R.string.media_apps), padding = false)
             Text(
                 text = stringResource(R.string.media_apps_description),
                 style = Typography.bodySmall,
@@ -293,6 +294,7 @@ fun Item(
     trail: (@Composable () -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
+    val source = MutableInteractionSource()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -302,9 +304,11 @@ fun Item(
             .padding(vertical = 10.dp)
             .then(
                 if (intent != null) {
-                    Modifier.clickable {
-                        ctx.startActivity(intent)
-                    }
+                    Modifier.clickable(
+                        enabled = true,
+                        indication = null,
+                        interactionSource = source
+                    ) { ctx.startActivity(intent) }
                 } else Modifier
             )
     ) {

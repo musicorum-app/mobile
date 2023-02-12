@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -65,7 +64,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Settings() {
     val user = LocalUser.current
@@ -102,23 +100,27 @@ fun Settings() {
         Column(
             modifier = Modifier
                 .background(KindaBlack)
-                .padding(horizontal = 20.dp)
         ) {
             Spacer(Modifier.height(30.dp))
             Text(
                 text = stringResource(id = R.string.settings),
-                style = Typography.displaySmall
+                style = Typography.displaySmall,
+                modifier = Modifier.padding(start = 20.dp)
             )
             Spacer(Modifier.height(10.dp))
             Box(
                 modifier = Modifier
+                    .padding(horizontal = 20.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(LighterGray)
                     .fillMaxWidth()
                     .padding(15.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth(),
@@ -157,11 +159,15 @@ fun Settings() {
                 Spacer(modifier = Modifier.height(20.dp))
                 SectionTitle(
                     sectionName = stringResource(R.string.device_scrobbling),
-                    badgeName = stringResource(
-                        R.string.beta
-                    )
+                    badgeName = stringResource(R.string.beta)
                 )
-                Text(label, style = Typography.bodySmall, modifier = Modifier.alpha(0.55f))
+                Text(
+                    label,
+                    style = Typography.bodySmall,
+                    modifier = Modifier
+                        .alpha(0.55f)
+                        .padding(start = 20.dp)
+                )
                 if (!enabledApps.isNullOrEmpty()) {
                     Row(horizontalArrangement = Arrangement.spacedBy((-7).dp)) {
                         enabledApps.forEach { pckg ->
@@ -180,6 +186,7 @@ fun Settings() {
                     modifier = Modifier
                         .clickable { nav?.navigate("settings/scrobble") }
                         .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
                 ) {
                     Text(
                         stringResource(R.string.scrobbling_settings),
@@ -225,21 +232,30 @@ fun Settings() {
             Text(
                 text = stringResource(R.string.made_by),
                 style = Typography.bodySmall,
-                modifier = Modifier.alpha(.55f)
+                modifier = Modifier
+                    .alpha(.55f)
+                    .padding(start = 20.dp)
             )
             Text(
                 BuildConfig.VERSION_NAME,
                 style = Typography.bodySmall,
-                modifier = Modifier.alpha(.55f)
+                modifier = Modifier
+                    .alpha(.55f)
+                    .padding(start = 20.dp)
             )
         }
     }
 }
 
 @Composable
-internal fun SectionTitle(sectionName: String, badgeName: String? = null) {
+internal fun SectionTitle(sectionName: String, badgeName: String? = null, padding: Boolean = true) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(sectionName, style = Typography.titleLarge)
+        val padValue = if (padding) 20.dp else 0.dp
+        Text(
+            sectionName,
+            style = Typography.titleLarge,
+            modifier = Modifier.padding(start = padValue)
+        )
         badgeName?.let {
             Spacer(Modifier.width(5.dp))
             Box(
@@ -271,8 +287,8 @@ fun Action(leadIcon: Int, text: String, intent: Intent) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(15.dp),
         modifier = Modifier
-            .padding(vertical = 5.dp)
             .clickable { ctx.startActivity(intent) }
+            .padding(horizontal = 20.dp, vertical = 10.dp)
             .fillMaxWidth()
             .height(35.dp)
     ) {

@@ -39,6 +39,19 @@ import io.musicorum.mobile.ui.theme.Typography
 
 @Composable
 fun Scrobble() {
+    val nav = LocalNavigation.current
+    val ctx = LocalContext.current
+    val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS").apply {
+        val app = "${ctx.packageName}/${NotificationListener::class.java.name}"
+        val fragmentKey = ":settings:fragment_args_key"
+        val showFragmentKey = ":settings:show_fragment_args"
+        putExtra(fragmentKey, app)
+        putExtra(showFragmentKey, Bundle().apply { putString(fragmentKey, app) })
+    }
+    val txtBtnColors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+    val lcOwner = rememberUpdatedState(newValue = LocalLifecycleOwner.current)
+    val granted = rememberSaveable { mutableStateOf(false) }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -46,18 +59,6 @@ fun Scrobble() {
             .padding(20.dp)
             .background(KindaBlack)
     ) {
-        val nav = LocalNavigation.current
-        val ctx = LocalContext.current
-        val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS").apply {
-            val app = "${ctx.packageName}/${NotificationListener::class.java.name}"
-            val fragmentKey = ":settings:fragment_args_key"
-            val showFragmentKey = ":settings:show_fragment_args"
-            putExtra(fragmentKey, app)
-            putExtra(showFragmentKey, Bundle().apply { putString(fragmentKey, app) })
-        }
-        val txtBtnColors = ButtonDefaults.textButtonColors(contentColor = Color.White)
-        val lcOwner = rememberUpdatedState(newValue = LocalLifecycleOwner.current)
-        val granted = rememberSaveable { mutableStateOf(false) }
 
         DisposableEffect(key1 = lcOwner) {
             val lifecycle = lcOwner.value.lifecycle
@@ -94,7 +95,10 @@ fun Scrobble() {
         Button(onClick = { ctx.startActivity(intent) }) {
             Text(text = stringResource(R.string.open_notification_settings))
         }
-        TextButton(onClick = { nav?.navigate("home") }, colors = txtBtnColors) {
+        TextButton(onClick = {
+            nav?.navigate("home")
+            nav?.backQueue?.clear()
+        }, colors = txtBtnColors) {
             Text(text = stringResource(R.string.notification_access_skip))
         }
     }
