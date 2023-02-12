@@ -75,7 +75,7 @@ fun TrackSheet(
     )
     val sheetState = rememberSheetState(skipHalfExpanded = false)
     val spotifyIntent = ctx.packageManager.getLaunchIntentForPackage("com.spotify.music")
-        ?.setAction(MediaStore.INTENT_ACTION_MEDIA_SEARCH)
+        ?.setAction(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)
         ?.putExtra(SearchManager.QUERY, "${track.artist.name} ${track.name}")
 
     ModalBottomSheet(
@@ -192,7 +192,7 @@ fun TrackSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { ctx.startActivity(spotifyIntent) },
-                headlineText = { Text(text = "Open on Spotify") },
+                headlineText = { Text(text = "Play on Spotify") },
                 leadingContent = {
                     Image(
                         bitmap = it,
