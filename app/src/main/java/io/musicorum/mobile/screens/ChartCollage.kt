@@ -42,12 +42,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -65,7 +67,7 @@ import io.musicorum.mobile.utils.downloadFile
 import io.musicorum.mobile.utils.shareFile
 import io.musicorum.mobile.viewmodels.ChartCollageViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val scrollbarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -98,14 +100,14 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val rowCount = remember { mutableStateOf("6") }
     val colCount = remember { mutableStateOf("6") }
 
-    val rowError = rowCount.value.toIntOrNull() == null
-            || rowCount.value.toInt() < 3
-            || rowCount.value.toInt() > 10
-    val colError = colCount.value.toIntOrNull() == null
-            || colCount.value.toInt() < 3
-            || colCount.value.toInt() > 10
+    val rowError = rowCount.value.toIntOrNull() !in 3..10
+    val colError = colCount.value.toIntOrNull() !in 3..10
 
     val isGenerating = remember { mutableStateOf(false) }
+    val generateEnabled = if (isGenerating.value) {
+        false
+    } else if (rowError) false else !colError
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(topBar = {
         MusicorumTopBar(
@@ -189,6 +191,7 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
             )
             Button(
                 onClick = {
+                    keyboardController?.hide()
                     isGenerating.value = true
                     model.generate(
                         user.name,
@@ -200,7 +203,7 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
                     )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isGenerating.value,
+                enabled = generateEnabled,
                 colors = buttonColors
             ) {
                 if (isGenerating.value) {

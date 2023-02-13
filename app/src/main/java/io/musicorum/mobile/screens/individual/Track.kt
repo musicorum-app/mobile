@@ -123,10 +123,7 @@ fun Track(
                         IconButton(
                             onClick = {
                                 analytics.logEvent("topbar_like_pressed", null)
-                                trackViewModel.updateFavoritePreference(
-                                    track,
-                                    ctx
-                                )
+                                trackViewModel.updateFavoritePreference(track, ctx)
                                 loved.value = !loved.value
                             }) {
                             if (loved.value) {
