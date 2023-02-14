@@ -14,7 +14,7 @@ job("Build and release to internal testing") {
     
     container("Build and publish to internal", "musicorum.registry.jetbrains.space/p/main/containers/android-publisher:latest") {
 	    resources {
-		    memory = 16.gb,
+		    memory = 16.gb
 		    cpu = 4.cpu
 		}	    
 	    
