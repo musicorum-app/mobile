@@ -7,10 +7,6 @@ job("Build and release to internal testing") {
             }
         }
     }
-
-	requirements {
-		workerType = WorkerTypes.SPACE_CLOUD_UBUNTU_LTS_LARGE
-    }
     
     container("Build and publish to internal", "musicorum.registry.jetbrains.space/p/main/containers/android-publisher:latest") {
 	    requirements {
