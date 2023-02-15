@@ -13,6 +13,10 @@ job("Build and release to internal testing") {
     }
     
     container("Build and publish to internal", "musicorum.registry.jetbrains.space/p/main/containers/android-publisher:latest") {
+	    requirements {
+		    workerType = WorkerTypes.SPACE_CLOUD_UBUNTU_LTS_LARGE
+	    }
+	    
 	    resources {
 		    memory = 16.gb
 		    cpu = 4.cpu
