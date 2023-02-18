@@ -122,7 +122,7 @@ class NotificationListener : NotificationListenerService() {
 
         val timestamp = Date()
 
-        if (!isPlayerPaused && updateNowPlaying == true) {
+        if (!isPlayerPaused && updateNowPlaying == true && isScrobbleAllowed) {
             CoroutineScope(Dispatchers.IO).launch {
                 val success = UserEndpoint.updateNowPlaying(
                     track = track!!,
@@ -144,6 +144,7 @@ class NotificationListener : NotificationListenerService() {
             null
         } else {
             job?.cancel()
+            if (!isScrobbleAllowed) return
             Log.d(tag, "lauching new job...")
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("listener job", "this job will wait ${timeToScrobble / 1000} seconds.")

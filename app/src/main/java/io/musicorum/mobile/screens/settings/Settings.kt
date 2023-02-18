@@ -169,7 +169,10 @@ fun Settings() {
                         .padding(start = 20.dp)
                 )
                 if (!enabledApps.isNullOrEmpty()) {
-                    Row(horizontalArrangement = Arrangement.spacedBy((-7).dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy((-7).dp),
+                        modifier = Modifier.padding(start = 20.dp)
+                    ) {
                         enabledApps.forEach { pckg ->
                             val icon = ctx.packageManager.getApplicationIcon(pckg)
                             Image(

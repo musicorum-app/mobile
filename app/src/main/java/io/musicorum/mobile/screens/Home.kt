@@ -119,7 +119,7 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
                         it.user.name,
                         "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
                         15,
-                        false
+                        true
                     )
                 }
                 if (weekTracks == null) {

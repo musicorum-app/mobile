@@ -89,12 +89,12 @@ fun TrackCard(track: Track, labelType: LabelType) {
                         .background(color = KindaBlack, shape = CircleShape)
                         .padding(3.dp)
                         .clip(CircleShape)
-                        .background(MostlyRed)
+                        .background(MostlyRed),
+                    contentAlignment = Alignment.Center
                 ) {
                     Rive.AnimationFor(
                         id = R.raw.nowplaying,
                         modifier = Modifier
-                            //.align(Alignment.Center)
                             .size(20.dp)
                     )
                 }

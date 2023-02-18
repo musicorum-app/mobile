@@ -34,8 +34,8 @@ import androidx.compose.material3.rememberSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,7 +67,7 @@ fun TrackSheet(
     additionalSheetItems: (@Composable () -> Unit)? = null
 ) {
     val coroutine = rememberCoroutineScope()
-    val trackLoved = remember { mutableStateOf(track.loved) }
+    val trackLoved = rememberSaveable { mutableStateOf(track.loved) }
     val ctx = LocalContext.current
     val nav = LocalNavigation.current
     val listColors = ListItemDefaults.colors(
