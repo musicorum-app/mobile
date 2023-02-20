@@ -35,6 +35,23 @@
         android:theme="@style/Theme.Musicorum"
         tools:targetApi="31">
 
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="https://beb5b927f8db456d9617960f7fe02e36@o379578.ingest.sentry.io/5204642" />
+        <meta-data
+            android:name="io.sentry.traces.sample-rate"
+            android:value="1.0" />
+        <!-- Enable user interaction tracing to capture transactions for various UI events (such as clicks or scrolls). -->
+        <meta-data
+            android:name="io.sentry.traces.user-interaction.enable"
+            android:value="true" />
+        <meta-data
+            android:name="io.sentry.auto-init"
+            android:value="false" />
+        <meta-data
+            android:name="io.sentry.traces.profiling.sample-rate"
+            android:value="1.0" />
+
         <service
             android:name=".utils.MessagingService"
             android:exported="false">
@@ -73,7 +90,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
         <activity

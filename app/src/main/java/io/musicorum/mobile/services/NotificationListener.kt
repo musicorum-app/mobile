@@ -9,7 +9,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -18,12 +17,12 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.userData
+import io.sentry.Sentry
+import io.sentry.SpanStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -150,6 +149,7 @@ class NotificationListener : NotificationListenerService() {
                 Log.d("listener job", "this job will wait ${timeToScrobble / 1000} seconds.")
                 delay(timeToScrobble.toLong())
                 Log.d("listener job", "time reached - scrobbling.")
+                val transaction = Sentry.startTransaction("device-scrobble", "task")
                 try {
                     val req = UserEndpoint.scrobble(
                         track = track!!,
@@ -163,18 +163,18 @@ class NotificationListener : NotificationListenerService() {
                     val success = req.status.isSuccess()
                     Log.d(tag, "is scrobble success? $success")
                     if (success) {
+                        transaction.status = SpanStatus.OK
                         analytics.logEvent("device_scrobble_success", null)
                     } else {
-                        val bundle = Bundle()
-                        bundle.putInt("status_code", req.status.value)
-                        bundle.putString("body", req.bodyAsText())
-                        bundle.putString("attempted_song", "$track by $artist, on $album")
-                        analytics.logEvent("device_scrobble_failed", bundle)
+                        transaction.status = SpanStatus.ABORTED
+                        transaction.setData("status_code", req.status.value)
+                        transaction.setData("attempted_song", "$track by $artist, on $album")
                     }
                 } catch (e: Exception) {
-                    analytics.logEvent("device_scrobble_exception") {
-                        param("error", e.message ?: e.toString())
-                    }
+                    transaction.throwable = e
+                    transaction.status = SpanStatus.INTERNAL_ERROR
+                } finally {
+                    transaction.finish()
                 }
             }
         }

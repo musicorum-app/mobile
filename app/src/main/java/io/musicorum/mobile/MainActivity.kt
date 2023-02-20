@@ -90,6 +90,8 @@ import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
 import io.musicorum.mobile.utils.MessagingService
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
+import io.sentry.android.core.SentryAndroid
+import io.sentry.compose.withSentryObservableEffect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -110,6 +112,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) {}
 
+
     private fun askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
@@ -127,9 +130,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (BuildConfig.DEBUG) {
-            Crowdin.registerShakeDetector(this)
-        }
+
 
         val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
         val configSettings = remoteConfigSettings {
@@ -195,9 +196,13 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        SentryAndroid.init(this) {
+
+        }
+
         setContent {
             val useDarkIcons = !isSystemInDarkTheme()
-            navController = rememberAnimatedNavController()
+            navController = rememberAnimatedNavController().withSentryObservableEffect()
 
             val mostListenedViewModel: MostListenedViewModel = viewModel()
             val ctx = LocalContext.current
