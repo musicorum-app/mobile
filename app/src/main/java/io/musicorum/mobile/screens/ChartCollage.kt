@@ -28,7 +28,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -78,6 +77,7 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val generatedImageUrl = model.imageUrl.observeAsState().value
     val ready = model.ready.observeAsState().value!!
     val ctx = LocalContext.current
+    val isGenerating = model.isGenerating.observeAsState().value!!
 
     val themeOptions = listOf("Grid" to "Grid")
     val typeOptions =
@@ -103,8 +103,7 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val rowError = rowCount.value.toIntOrNull() !in 3..10
     val colError = colCount.value.toIntOrNull() !in 3..10
 
-    val isGenerating = remember { mutableStateOf(false) }
-    val generateEnabled = if (isGenerating.value) {
+    val generateEnabled = if (isGenerating) {
         false
     } else if (rowError) false else !colError
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -192,7 +191,6 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
             Button(
                 onClick = {
                     keyboardController?.hide()
-                    isGenerating.value = true
                     model.generate(
                         user.name,
                         rowCount.value.toInt(),
@@ -206,7 +204,7 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
                 enabled = generateEnabled,
                 colors = buttonColors
             ) {
-                if (isGenerating.value) {
+                if (isGenerating) {
                     CircularProgressIndicator(modifier = Modifier.size(25.dp), strokeWidth = 3.dp)
                 } else {
                     Text(text = "Generate", textAlign = TextAlign.Center)
@@ -215,7 +213,6 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
 
             /* DISPLAY IMAGE */
             AnimatedVisibility(visible = ready) {
-                isGenerating.value = false
                 val shareText =
                     "Check out my ${colCount.value}x${rowCount.value} collage, made with the Musicorum mobile app"
                 Column(
@@ -281,7 +278,6 @@ fun DropdownMenu(
                 .fillMaxWidth(),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = openState.value) }
         )
-        val menuColors = MenuDefaults.itemColors()
         ExposedDropdownMenu(
             expanded = openState.value,
             modifier = Modifier.background(LighterGray),
