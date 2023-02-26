@@ -13,8 +13,6 @@ job("Build and release to internal testing") {
 	    }
     
     container("Build and publish to internal", "musicorum.registry.jetbrains.space/p/main/containers/android-publisher:latest") {
-	       
-	    
         env["GOOGLE_SA_KEY"] = Secrets("google_sa_key")
         env["KEY_STORE"] = Secrets("upload_key")
         env["KEY_STORE_PASSWORD"] = Secrets("key_store_password")
@@ -24,6 +22,7 @@ job("Build and release to internal testing") {
         env["GOOGLE_SERVICES_JSON"] = Secrets("google_services_json")
         env["CROWDIN_PROPERTIES"] = Secrets("crowdin_properties")
         env["AUTHORIZATION_SECRET"] = Secrets("file_repo_secret")
+        evn["SENTRY_PROPERTIES"] = Secrets("mobile_sentry_properties")
 
         shellScript {
             content = """
@@ -45,6 +44,9 @@ job("Build and release to internal testing") {
                 echo Get crowdin.properties...
                 echo ${'$'}CROWDIN_PROPERTIES > crowdin_properties.hex
                 xxd -plain -revert crowdin_properties.hex crowdin.properties
+                echo Get Sentry properties file...
+                echo ${'$'}SENTRY_PROPERTIES > sentry_properties.hex
+                xxd -plain -revert sentry_properties.hex sentry.properties
                 echo Downloading fonts...
                 CURRENT_PATH=$(pwd)
                 mkdir ./app/src/main/res/font

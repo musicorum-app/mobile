@@ -151,7 +151,7 @@ class NotificationListener : NotificationListenerService() {
                 Log.d("listener job", "time reached - scrobbling.")
                 val transaction = Sentry.startTransaction("device-scrobble", "task")
                 try {
-                    val req = UserEndpoint.scrobble(
+                    val reqStatus = UserEndpoint.scrobble(
                         track = track!!,
                         artist = artist!!,
                         album = album,
@@ -160,14 +160,14 @@ class NotificationListener : NotificationListenerService() {
                         timestamp = timestamp.time / 1000
                     )
 
-                    val success = req.status.isSuccess()
+                    val success = reqStatus.isSuccess()
                     Log.d(tag, "is scrobble success? $success")
                     if (success) {
                         transaction.status = SpanStatus.OK
                         analytics.logEvent("device_scrobble_success", null)
                     } else {
                         transaction.status = SpanStatus.ABORTED
-                        transaction.setData("status_code", req.status.value)
+                        transaction.setData("status_code", reqStatus.value)
                         transaction.setData("attempted_song", "$track by $artist, on $album")
                     }
                 } catch (e: Exception) {

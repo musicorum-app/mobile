@@ -195,9 +195,8 @@ class MainActivity : ComponentActivity() {
                 Log.d("FCM", "fcm token: ${task.result}")
             }
         }
-
-        SentryAndroid.init(this) {
-
+        if (!BuildConfig.DEBUG) {
+            SentryAndroid.init(this)
         }
 
         setContent {

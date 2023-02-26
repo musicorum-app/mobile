@@ -1,6 +1,5 @@
 package io.musicorum.mobile.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +32,7 @@ import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecentScrobbles(
     recentSrcobblesViewModel: RecentSrcobblesViewModel = viewModel(),

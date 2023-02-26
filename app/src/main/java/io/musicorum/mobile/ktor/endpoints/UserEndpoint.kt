@@ -4,7 +4,7 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.FriendsResponse
@@ -78,9 +78,8 @@ object UserEndpoint {
         }
         return if (res.status.isSuccess()) {
             res.body<RecentTracks>()
-        } else {
-            null
-        }
+        } else null
+
     }
 
     suspend fun getFriends(user: String, limit: Int?): FriendsResponse? {
@@ -118,7 +117,7 @@ object UserEndpoint {
         }
 
         return if (res.status.isSuccess()) {
-            return res.body<TopAlbumsResponse>()
+            res.body<TopAlbumsResponse>()
         } else {
             null
         }
@@ -149,7 +148,7 @@ object UserEndpoint {
         albumArtist: String?,
         sessionKey: String,
         timestamp: Long
-    ): HttpResponse {
+    ): HttpStatusCode {
         val req = KtorConfiguration.lastFmClient.post {
             parameter("artist", artist)
             parameter("track", track)
@@ -159,6 +158,6 @@ object UserEndpoint {
             parameter("method", "track.scrobble")
             parameter("timestamp", timestamp)
         }
-        return req
+        return req.status
     }
 }
