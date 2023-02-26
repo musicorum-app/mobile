@@ -22,7 +22,7 @@ job("Build and release to internal testing") {
         env["GOOGLE_SERVICES_JSON"] = Secrets("google_services_json")
         env["CROWDIN_PROPERTIES"] = Secrets("crowdin_properties")
         env["AUTHORIZATION_SECRET"] = Secrets("file_repo_secret")
-        evn["SENTRY_PROPERTIES"] = Secrets("mobile_sentry_properties")
+        env["SENTRY_PROPERTIES"] = Secrets("mobile_sentry_properties")
 
         shellScript {
             content = """
