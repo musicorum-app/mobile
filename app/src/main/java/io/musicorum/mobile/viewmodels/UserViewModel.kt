@@ -41,7 +41,7 @@ class UserViewModel : ViewModel() {
                 val musRes =
                     MusicorumArtistEndpoint.fetchArtist(res.topArtists.artists)
                 musRes?.forEachIndexed { index, trackResponse ->
-                    val trackImageUrl = trackResponse.resources?.getOrNull(0)?.bestImageUrl ?: ""
+                    val trackImageUrl = trackResponse.resources.getOrNull(0)?.bestImageUrl ?: ""
                     res.topArtists.artists[index].bestImageUrl = trackImageUrl
                 }
                 topArtists.value = res
