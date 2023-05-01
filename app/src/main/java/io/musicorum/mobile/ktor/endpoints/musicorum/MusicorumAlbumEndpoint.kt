@@ -9,12 +9,12 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.Album
-import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.nullable
 
 object MusicorumAlbumEndpoint {
-    suspend fun fetchAlbums(albums: List<Album?>): List<TrackResponse>? {
+    suspend fun fetchAlbums(albums: List<Album?>): List<TrackResponse?>? {
         if (albums.isEmpty()) return null
         val albumList: MutableList<RequestAlbum> = mutableListOf()
         albums.forEach { album ->
@@ -28,7 +28,10 @@ object MusicorumAlbumEndpoint {
             setBody(Body(albumList))
         }
         return if (res.status.isSuccess()) {
-            json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+            json.decodeFromString(
+                ListSerializer(TrackResponse.serializer().nullable),
+                res.bodyAsText()
+            )
         } else null
     }
 

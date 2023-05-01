@@ -127,11 +127,14 @@ fun TrackCard(track: Track, labelType: LabelType) {
         } else if (labelType == LabelType.ARTIST_NAME) {
             Text(
                 track.artist.name,
-                modifier = Modifier.alpha(0.55f),
+                modifier = Modifier
+                    .alpha(0.55f)
+                    .width(120.dp),
                 style = Typography.bodyMedium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                overflow = TextOverflow.Ellipsis,
+
+                )
         }
     }
 }

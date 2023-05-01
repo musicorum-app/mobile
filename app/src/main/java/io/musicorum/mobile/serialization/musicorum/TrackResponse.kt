@@ -4,10 +4,10 @@ import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable
 data class TrackResponse(
-    val resources: List<Resources>? = null,
-    val album: String? = null,
+    val resources: List<Resources> = emptyList(),
+    val album: String = "Desconhecido",
     @SerialName("preferred_resource")
-    val preferredResource: String? = null
+    val preferredResource: String = ""
 ) {
-    val bestResource = resources?.find { it.hash == preferredResource }
+    val bestResource = resources.find { it.hash == preferredResource }
 }

@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(private val scrobbleRepository: Scrobble
             val musicorumTrRes =
                 MusicorumTrackEndpoint.fetchTracks(topTracksRes.topTracks.tracks)
             musicorumTrRes?.forEachIndexed { i, track ->
-                val url = track.resources?.getOrNull(0)?.bestImageUrl
+                val url = track?.resources?.getOrNull(0)?.bestImageUrl
                 topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
                 topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
             }

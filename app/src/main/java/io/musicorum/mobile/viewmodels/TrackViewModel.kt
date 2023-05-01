@@ -8,7 +8,11 @@ import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
-import io.musicorum.mobile.serialization.*
+import io.musicorum.mobile.serialization.Album
+import io.musicorum.mobile.serialization.Artist
+import io.musicorum.mobile.serialization.Image
+import io.musicorum.mobile.serialization.SimilarTrack
+import io.musicorum.mobile.serialization.Track
 import kotlinx.coroutines.launch
 
 class TrackViewModel : ViewModel() {
@@ -68,7 +72,7 @@ class TrackViewModel : ViewModel() {
             if (res.similarTracks.tracks.isNotEmpty()) {
                 val resourceRes = MusicorumTrackEndpoint.fetchTracks(res.similarTracks.tracks)
                 resourceRes?.forEachIndexed { index, trackResponse ->
-                    val imageUrl = trackResponse.resources?.getOrNull(0)?.bestImageUrl
+                    val imageUrl = trackResponse?.resources?.getOrNull(0)?.bestImageUrl
                     res.similarTracks.tracks[index].bestImageUrl = imageUrl ?: ""
                 }
                 similar.value = res
@@ -79,7 +83,7 @@ class TrackViewModel : ViewModel() {
     suspend fun fetchArtistCover(artist: Artist) {
         val list = listOf(artist)
         val res = MusicorumArtistEndpoint.fetchArtist(list)
-        artistCover.value = res[0].resources?.getOrNull(0)?.bestImageUrl
+        artistCover.value = res[0].resources.getOrNull(0)?.bestImageUrl
     }
 
     fun updateFavoritePreference(track: Track, ctx: Context) {
