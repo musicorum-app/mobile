@@ -52,7 +52,7 @@ fun TrackItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { nav.navigate("track/$dest") },
-        headlineText = {
+        headlineContent = {
             Text(
                 text = track.name,
                 style = Typography.bodyLarge,
@@ -61,7 +61,7 @@ fun TrackItem(
             )
         },
         colors = listColors,
-        supportingText = {
+        supportingContent = {
             Text(
                 text = track.artist.name,
                 style = Typography.bodyMedium
