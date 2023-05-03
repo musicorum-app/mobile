@@ -20,7 +20,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -127,7 +126,7 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(Crowdin.wrapContext(newBase))
     }
 
-    @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -215,7 +214,11 @@ class MainActivity : ComponentActivity() {
                             prefs[stringPreferencesKey("session_key")]
                         }.firstOrNull()
                         if (sessionKey == null) {
-                            navController.navigate("login")
+                            navController.navigate("login") {
+                                popUpTo("home") {
+                                    inclusive = true
+                                }
+                            }
                         } else {
                             MutableUserState.value = UserEndpoint.getSessionUser(sessionKey)
                         }

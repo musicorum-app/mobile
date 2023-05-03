@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -56,8 +57,9 @@ fun Scrobble() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .padding(20.dp)
+            .fillMaxSize()
             .background(KindaBlack)
+            .padding(20.dp)
     ) {
 
         DisposableEffect(key1 = lcOwner) {
@@ -75,7 +77,11 @@ fun Scrobble() {
         }
 
         if (granted.value) {
-            nav?.navigate("home")
+            nav?.navigate("home") {
+                popUpTo("login") {
+                    inclusive = true
+                }
+            }
         }
 
         Image(painter = painterResource(id = R.drawable.device_with_player), null)
@@ -96,8 +102,11 @@ fun Scrobble() {
             Text(text = stringResource(R.string.open_notification_settings))
         }
         TextButton(onClick = {
-            nav?.navigate("home")
-            nav?.backQueue?.clear()
+            nav?.navigate("home") {
+                popUpTo("login") {
+                    inclusive = true
+                }
+            }
         }, colors = txtBtnColors) {
             Text(text = stringResource(R.string.notification_access_skip))
         }
