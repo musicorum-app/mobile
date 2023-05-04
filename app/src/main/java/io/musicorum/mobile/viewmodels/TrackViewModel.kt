@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.ktor.client.plugins.ServerResponseException
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
@@ -54,9 +55,12 @@ class TrackViewModel : ViewModel() {
             val musicorumReqAlbum =
                 musRes?.getOrNull(0)?.album?.let { Album(name = it, artist = artist) }
 
-            val musARes = MusicorumAlbumEndpoint.fetchAlbums(listOf(musicorumReqAlbum))
-            res.track.album?.bestImageUrl =
-                musARes?.get(0)?.resources?.getOrNull(0)?.bestImageUrl.toString()
+            try {
+                val musARes = MusicorumAlbumEndpoint.fetchAlbums(listOf(musicorumReqAlbum))
+                res.track.album?.bestImageUrl =
+                    musARes?.get(0)?.resources?.getOrNull(0)?.bestImageUrl.toString()
+            } catch (_: ServerResponseException) {
+            }
 
             track.value = res.track
         }

@@ -3,7 +3,12 @@ package io.musicorum.mobile.components
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -16,11 +21,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import io.ktor.http.*
+import io.ktor.http.encodeURLPathPart
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.screens.individual.PartialAlbum
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.Typography
@@ -38,15 +44,27 @@ fun ContextRow(
     from: Pair<String?, String?>?,
 ) {
     val nav = LocalNavigation.current
+    var appearsOnMod = Modifier
+        .fillMaxWidth(0.5f)
+        .padding(end = 5.dp)
+        .clip(RoundedCornerShape(8.dp))
 
     Row(modifier = Modifier.padding(start = 20.dp)) {
         if (appearsOn != null) {
             val partialAlbum = PartialAlbum(
                 appearsOn.first?.encodeURLPathPart() ?: "Unknown",
-                from!!.first ?: "Unknown"
+                from?.first ?: "Unknown"
             )
             val partialAlbumArgument = Json.encodeToString(partialAlbum)
             val interactionSource = MutableInteractionSource()
+            if (appearsOn.first != null) {
+                appearsOnMod = appearsOnMod.clickable(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current
+                ) {
+                    nav?.navigate(Routes.album(partialAlbumArgument))
+                }
+            }
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(id = R.string.appears_on),
@@ -54,14 +72,7 @@ fun ContextRow(
                     color = ContentSecondary
                 )
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .padding(end = 5.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(
-                            interactionSource = interactionSource,
-                            indication = LocalIndication.current,
-                        ) { nav?.navigate("album/$partialAlbumArgument") },
+                    modifier = appearsOnMod,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
@@ -97,7 +108,7 @@ fun ContextRow(
                         .padding(end = 5.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
-                            nav?.navigate("artist/${from.first}")
+                            nav?.navigate(Routes.artist(from.first ?: "unknown"))
                         },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
