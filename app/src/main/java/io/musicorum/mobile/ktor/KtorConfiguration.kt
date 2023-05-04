@@ -43,10 +43,12 @@ object KtorConfiguration {
         val lastFmClient = HttpClient {
             HttpResponseValidator {
                 validateResponse { res ->
-                    if (res.status.value >= 500) {
-                        Sentry.captureException(ServerResponseException(res, res.bodyAsText()))
-                    } else {
-                        Sentry.captureException(ClientRequestException(res, res.bodyAsText()))
+                    if (!res.status.isSuccess()) {
+                        if (res.status.value >= 500) {
+                            Sentry.captureException(ServerResponseException(res, res.bodyAsText()))
+                        } else {
+                            Sentry.captureException(ClientRequestException(res, res.bodyAsText()))
+                        }
                     }
                 }
             }

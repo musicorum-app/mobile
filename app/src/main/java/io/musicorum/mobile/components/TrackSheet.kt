@@ -30,7 +30,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -73,7 +73,7 @@ fun TrackSheet(
     val listColors = ListItemDefaults.colors(
         containerColor = LighterGray
     )
-    val sheetState = rememberSheetState(skipHalfExpanded = false)
+    val sheetState = rememberModalBottomSheetState()
     val spotifyIntent = ctx.packageManager.getLaunchIntentForPackage("com.spotify.music")
         ?.setAction(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)
         ?.putExtra(SearchManager.QUERY, "${track.artist.name} ${track.name}")
@@ -159,7 +159,7 @@ fun TrackSheet(
                     show.value = false
                     nav?.navigate(Routes.artist(track.artist.name))
                 },
-            headlineText = { Text(text = "Go to artist") },
+            headlineContent = { Text(text = "Go to artist") },
             leadingContent = { Icon(Icons.Rounded.Star, null) },
             colors = listColors
         )
@@ -174,7 +174,7 @@ fun TrackSheet(
                         nav?.navigate(Routes.album(Json.encodeToString(partialAlbum)))
                     }
                 },
-            headlineText = { Text(text = "Go to album") },
+            headlineContent = { Text(text = "Go to album") },
             colors = listColors,
             leadingContent = { Icon(Icons.Rounded.Album, null) }
         )
@@ -192,7 +192,7 @@ fun TrackSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { ctx.startActivity(spotifyIntent) },
-                headlineText = { Text(text = "Play on Spotify") },
+                headlineContent = { Text(text = "Play on Spotify") },
                 leadingContent = {
                     Image(
                         bitmap = it,
@@ -211,7 +211,7 @@ fun TrackSheet(
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(track.url))
                     ctx.startActivity(intent)
                 },
-            headlineText = { Text(text = "Open on Last.fm") },
+            headlineContent = { Text(text = "Open on Last.fm") },
             leadingContent = { Icon(Icons.Rounded.OpenInNew, null) },
             colors = listColors
         )
@@ -219,7 +219,7 @@ fun TrackSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {},
-            headlineText = { Text(text = "Share") },
+            headlineContent = { Text(text = "Share") },
             leadingContent = { Icon(Icons.Rounded.Share, null) },
             colors = listColors
         )

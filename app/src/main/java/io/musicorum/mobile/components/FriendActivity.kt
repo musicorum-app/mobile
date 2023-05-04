@@ -57,7 +57,7 @@ fun FriendActivity(
         )
         TrackSheet(track = track, show = showSheet) {
             ListItem(
-                headlineText = { Text("View ${friendUsername}'s profile") },
+                headlineContent = { Text("View ${friendUsername}'s profile") },
                 leadingContent = {
                     AsyncImage(
                         model = defaultImageRequestBuilder(

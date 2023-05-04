@@ -3,7 +3,6 @@ package io.musicorum.mobile.components.skeletons
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,11 +16,10 @@ import com.google.accompanist.placeholder.material.placeholder
 import io.musicorum.mobile.R
 import io.musicorum.mobile.ui.theme.SkeletonPrimaryColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenericListItemSkeleton(visible: Boolean) {
     ListItem(
-        headlineText = {
+        headlineContent = {
             Text(
                 "headline long text",
                 modifier = Modifier.placeholder(
