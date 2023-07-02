@@ -50,7 +50,7 @@ val LabelMedium2 = TextStyle(
     color = Color(255, 255, 255, 140)
 )
 
-private const val features = "'pnum' on, 'lnum' on, 'salt' on"
+private const val FEATURES = "'pnum' on, 'lnum' on, 'salt' on"
 
 
 val Typography = Typography(
@@ -58,72 +58,72 @@ val Typography = Typography(
         fontFamily = Author,
         fontWeight = FontWeight.Medium,
         fontSize = 17.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     bodyMedium = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     titleLarge = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.SemiBold,
         fontSize = 22.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     titleMedium = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     titleSmall = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     labelMedium = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     headlineLarge = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.SemiBold,
         fontSize = 32.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     headlineMedium = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.SemiBold,
         fontSize = 28.sp,
-        fontFeatureSettings = features,
+        fontFeatureSettings = FEATURES,
     ),
     headlineSmall = TextStyle(
         fontFamily = Author,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     displayLarge = TextStyle(
         fontFamily = Author,
         fontSize = 57.sp,
         fontWeight = FontWeight.SemiBold,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     displayMedium = TextStyle(
         fontFamily = Author,
         fontSize = 45.sp,
         fontWeight = FontWeight.SemiBold,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
     displaySmall = TextStyle(
         fontFamily = Author,
         fontSize = 36.sp,
         fontWeight = FontWeight.SemiBold,
-        fontFeatureSettings = features
+        fontFeatureSettings = FEATURES
     ),
 )

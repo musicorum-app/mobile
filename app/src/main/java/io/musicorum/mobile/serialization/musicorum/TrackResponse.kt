@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 @kotlinx.serialization.Serializable
 data class TrackResponse(
     val resources: List<Resources> = emptyList(),
-    val album: String = "Desconhecido",
+    val album: String = "Unknown",
     @SerialName("preferred_resource")
     val preferredResource: String = ""
 ) {
