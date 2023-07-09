@@ -42,12 +42,12 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.crowdin.platform.Crowdin
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.common.ConnectionResult.SERVICE_MISSING
 import com.google.android.gms.common.GoogleApiAvailability
@@ -64,6 +64,8 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
+import io.musicorum.mobile.models.PartialUser
+import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
@@ -73,12 +75,13 @@ import io.musicorum.mobile.utils.LocalSnackbarContext
 import io.musicorum.mobile.utils.MessagingService
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 import io.musicorum.mobile.views.Account
-import io.musicorum.mobile.views.ChartCollage
-import io.musicorum.mobile.views.Charts
+import io.musicorum.mobile.views.Collage
 import io.musicorum.mobile.views.Discover
 import io.musicorum.mobile.views.Home
 import io.musicorum.mobile.views.RecentScrobbles
 import io.musicorum.mobile.views.Scrobbling
+import io.musicorum.mobile.views.charts.BaseChartDetail
+import io.musicorum.mobile.views.charts.Charts
 import io.musicorum.mobile.views.individual.Album
 import io.musicorum.mobile.views.individual.AlbumTracklist
 import io.musicorum.mobile.views.individual.Artist
@@ -91,6 +94,7 @@ import io.musicorum.mobile.views.settings.ScrobbleSettings
 import io.musicorum.mobile.views.settings.Settings
 import io.sentry.android.core.SentryAndroid
 import io.sentry.compose.withSentryObservableEffect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -203,7 +207,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val useDarkIcons = !isSystemInDarkTheme()
-            navController = rememberAnimatedNavController().withSentryObservableEffect()
+            navController = rememberNavController().withSentryObservableEffect()
 
             val mostListenedViewModel: MostListenedViewModel = viewModel()
             val ctx = LocalContext.current
@@ -223,7 +227,18 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         } else {
-                            MutableUserState.value = UserEndpoint.getSessionUser(sessionKey)
+                            val userReq = UserEndpoint.getSessionUser(sessionKey)
+                            val localUser = LocalUserRepository(applicationContext)
+                            if (localUser.partialUser.first().username.isEmpty()) {
+                                localUser.updateUser(
+                                    PartialUser(
+                                        userReq?.user?.name ?: "",
+                                        userReq?.user?.bestImageUrl ?: ""
+                                    )
+                                )
+                            }
+                            MutableUserState.value = userReq
+
                         }
                     }
                 }
@@ -269,7 +284,7 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .padding(paddingValues)
                         ) {
-                            AnimatedNavHost(
+                            NavHost(
                                 navController = navController,
                                 startDestination = "home",
                                 enterTransition = { slideInHorizontally(tween(350)) { fullWidth -> fullWidth } },
@@ -283,7 +298,31 @@ class MainActivity : ComponentActivity() {
 
                                 composable("recentScrobbles") { RecentScrobbles() }
 
-                                composable("chartCollage") { ChartCollage() }
+                                composable(
+                                    route = "collage?entity={entity}&period={period}",
+                                    arguments = listOf(
+                                        navArgument("entity") {
+                                            type = NavType.StringType
+                                            defaultValue = "artist"
+                                        },
+                                        navArgument("period") {
+                                            type = NavType.StringType
+                                            defaultValue = "7day"
+                                        }
+                                    )
+                                ) {
+                                    Collage(args = it.arguments!!)
+                                }
+
+                                composable(
+                                    "charts/detail?index={index}",
+                                    arguments = listOf(navArgument("index") {
+                                        type = NavType.IntType
+                                        defaultValue = 1
+                                    })
+                                ) { backStack ->
+                                    BaseChartDetail(backStack.arguments?.getInt("index")!!)
+                                }
 
                                 composable("mostListened") {
                                     MostListened(mostListenedViewModel = mostListenedViewModel)

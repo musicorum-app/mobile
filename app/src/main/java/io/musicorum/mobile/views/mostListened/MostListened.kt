@@ -29,7 +29,7 @@ import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.components.TrackItem
-import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.viewmodels.MostListenedViewModel

@@ -1,4 +1,4 @@
-package io.musicorum.mobile.views
+package io.musicorum.mobile.views.charts
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
@@ -27,17 +27,14 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,7 +67,8 @@ import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
-import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+import io.musicorum.mobile.models.ResourceEntity
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.LighterGray
@@ -84,31 +82,29 @@ import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.utils.getDarkenGradient
 import io.musicorum.mobile.viewmodels.ChartsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Charts(model: ChartsViewModel = viewModel()) {
-    val period = remember { mutableStateOf(FetchPeriod.WEEK) }
+fun Charts() {
+    val model: ChartsViewModel = viewModel()
+    val period = model.period.observeAsState()
     val user = LocalUser.current ?: return
     val ctx = LocalContext.current
-    val userColor = model.preferredColor.observeAsState().value
+    val userColor = model.preferredColor.observeAsState(Color.Gray).value
     val topArtists = model.topArtists.observeAsState().value
     val topAlbums = model.topAlbums.observeAsState().value
     val topTracks = model.topTracks.observeAsState().value
     val showBottomSheet = remember { mutableStateOf(false) }
+    val busy = model.busy.observeAsState().value!!
 
-    LaunchedEffect(key1 = period.value) {
-        model.invalidate()
+    LaunchedEffect(Unit) {
         model.getColor(user.user.bestImageUrl, ctx)
-        model.getTopArtists(user.user.name, period.value)
-        model.getTopAlbums(user.user.name, period.value)
-        model.getTopTracks(user.user.name, period.value)
     }
 
     if (showBottomSheet.value) {
-        PeriodBottomSheet(state = showBottomSheet, period = period)
+        PeriodBottomSheet(state = showBottomSheet) {
+            model.updatePeriod(it)
+        }
     }
 
-    if (userColor == null) return CenteredLoadingSpinner()
     val userGradient = getDarkenGradient(userColor)
 
     Scaffold(floatingActionButton = { CollageFab() }) { paddingValues ->
@@ -132,7 +128,7 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                             .clickable { showBottomSheet.value = true }
                     ) {
                         Text(
-                            text = PeriodResolver.resolve(period.value),
+                            text = PeriodResolver.resolve(period.value!!),
                             modifier = Modifier.padding(vertical = 3.dp, horizontal = 7.dp)
                         )
                     }
@@ -159,7 +155,7 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                             text = topTracks?.attributes?.total ?: ".......",
                             style = Typography.headlineLarge,
                             modifier = Modifier.placeholder(
-                                topTracks == null,
+                                visible = busy,
                                 color = SkeletonSecondaryColor,
                                 highlight = PlaceholderHighlight.shimmer(),
                                 shape = RoundedCornerShape(5.dp)
@@ -177,33 +173,35 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                 }
             }
 
-            if (topArtists == null || topAlbums == null || topTracks == null) {
+            if (busy) {
                 CenteredLoadingSpinner()
             } else {
-                val topArtist = topArtists[0]
+                val topArtist = topArtists?.get(0)
+                val topAlbum = topAlbums?.get(0)
+                val topTrack = topTracks?.tracks?.get(0)
                 ChartComponentBox(
-                    leadImage = topArtist.bestImageUrl,
+                    leadImage = topArtist?.bestImageUrl,
                     trailDetail = Icons.Rounded.Star,
                     shape = CircleShape,
-                    artist = topArtist.name,
-                    scrobbleCount = topArtist.playCount,
-                    top = "artists",
+                    artist = topArtist?.name,
+                    scrobbleCount = topArtist?.playCount,
+                    top = ResourceEntity.Artist,
                     album = null,
-                    innerData = topArtists.drop(1).fold(mutableListOf()) { list, artist ->
+                    innerData = topArtists?.drop(1)?.fold(mutableListOf()) { list, artist ->
                         list.add(ChartData(artist.name, artist.bestImageUrl, artist.playCount))
                         list
                     }
                 )
                 Spacer(modifier = Modifier.height(70.dp))
                 ChartComponentBox(
-                    leadImage = topAlbums[0].bestImageUrl,
+                    leadImage = topAlbums?.get(0)?.bestImageUrl,
                     trailDetail = Icons.Outlined.Album,
                     shape = RoundedCornerShape(6.dp),
-                    artist = topAlbums[0].name,
-                    scrobbleCount = topAlbums[0].playCount?.toInt() ?: 0,
+                    artist = topAlbum?.name,
+                    scrobbleCount = topAlbum?.playCount?.toInt() ?: 0,
                     album = null,
-                    top = "albums",
-                    innerData = topAlbums.drop(1).fold(mutableListOf()) { list, album ->
+                    top = ResourceEntity.Album,
+                    innerData = topAlbums?.drop(1)?.fold(mutableListOf()) { list, album ->
                         list.add(
                             ChartData(
                                 album.name,
@@ -216,14 +214,14 @@ fun Charts(model: ChartsViewModel = viewModel()) {
                 )
                 Spacer(modifier = Modifier.height(70.dp))
                 ChartComponentBox(
-                    leadImage = topTracks.tracks[0].bestImageUrl,
+                    leadImage = topTracks?.tracks?.get(0)?.bestImageUrl,
                     trailDetail = Icons.Rounded.MusicNote,
                     shape = RoundedCornerShape(6.dp),
-                    artist = topTracks.tracks[0].name,
-                    scrobbleCount = topTracks.tracks[0].playCount?.toInt() ?: 0,
+                    artist = topTrack?.name,
+                    scrobbleCount = topTrack?.playCount?.toInt() ?: 0,
                     album = null,
-                    top = "tracks",
-                    innerData = topTracks.tracks.drop(1).fold(mutableListOf()) { list, track ->
+                    top = ResourceEntity.Track,
+                    innerData = topTracks?.tracks?.drop(1)?.fold(mutableListOf()) { list, track ->
                         list.add(
                             ChartData(
                                 track.name,
@@ -241,27 +239,32 @@ fun Charts(model: ChartsViewModel = viewModel()) {
 }
 
 @Composable
-fun CollageFab() {
+private fun CollageFab() {
     val nav = LocalNavigation.current
-    FloatingActionButton(onClick = { nav?.navigate("chartCollage") }, containerColor = MostlyRed) {
+    FloatingActionButton(
+        onClick = { nav?.navigate(Routes.collage()) },
+        containerColor = MostlyRed
+    ) {
         Icon(Icons.Filled.AutoAwesomeMosaic, null)
     }
 }
 
+
 @Composable
 fun ChartComponentBox(
-    leadImage: String,
+    leadImage: String?,
     trailDetail: ImageVector,
     shape: Shape,
-    artist: String,
-    scrobbleCount: Int,
+    artist: String?,
+    scrobbleCount: Int?,
     album: String?,
     innerData: List<ChartData>?,
-    top: String
+    top: ResourceEntity
 ) {
     val vibrant = remember { mutableStateOf(Color.Gray) }
     val vibrantState = animateColorAsState(targetValue = vibrant.value, label = "vibrant")
     val ctx = LocalContext.current
+    val nav = LocalNavigation.current
 
     LaunchedEffect(key1 = Unit) {
         val bmp = getBitmap(leadImage, ctx)
@@ -271,6 +274,11 @@ fun ChartComponentBox(
     }
 
     val gradient = getDarkenGradient(vibrantState.value).asReversed()
+    val navRoute = when (top) {
+        ResourceEntity.Track -> Routes.chartsDetail(2)
+        ResourceEntity.Album -> Routes.chartsDetail(1)
+        ResourceEntity.Artist -> Routes.chartsDetail(0)
+    }
 
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 3.dp),
@@ -280,7 +288,7 @@ fun ChartComponentBox(
         Spacer(modifier = Modifier.width(10.dp))
         Text(text = "Top $top", style = Typography.headlineSmall)
         Spacer(modifier = Modifier.weight(1f, true))
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { nav?.navigate(navRoute) }) {
             Icon(Icons.Rounded.ChevronRight, null)
         }
     }
@@ -312,7 +320,7 @@ fun ChartComponentBox(
                     .shadow(50.dp)
             )
             Column {
-                Text(text = artist, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = artist ?: "unknown", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 album?.let {
                     Text(text = it, style = Typography.labelMedium)
                 }
@@ -363,27 +371,6 @@ fun ChartComponentBox(
                         )
                     }
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PeriodBottomSheet(state: MutableState<Boolean>, period: MutableState<FetchPeriod>) {
-    ModalBottomSheet(onDismissRequest = { state.value = false }, containerColor = LighterGray) {
-        FetchPeriod.values().forEach {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    state.value = false
-                    period.value = it
-                }
-            ) {
-                Text(
-                    text = PeriodResolver.resolve(it).replaceFirstChar { it.uppercaseChar() },
-                    modifier = Modifier.padding(15.dp)
-                )
             }
         }
     }

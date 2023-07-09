@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import io.musicorum.mobile.repositories.RecentTracksRepository
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.flow.Flow
 
 class RecentSrcobblesViewModel : ViewModel() {

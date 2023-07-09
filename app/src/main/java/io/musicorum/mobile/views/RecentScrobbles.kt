@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
@@ -71,20 +70,20 @@ fun RecentScrobbles(
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) {
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValues)
         ) {
             if (recentTracks.loadState.refresh == LoadState.Loading) {
                 CenteredLoadingSpinner()
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp), state = state) {
-                    items(recentTracks) { track ->
-                        TrackItem(track = track)
+                    items(
+                        count = recentTracks.itemCount
+                    ) { index ->
+                        TrackItem(track = recentTracks[index])
                     }
-
-
                     item {
                         when (recentTracks.loadState.append) {
                             LoadState.Loading -> {

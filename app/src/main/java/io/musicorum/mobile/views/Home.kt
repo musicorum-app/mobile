@@ -66,7 +66,7 @@ import io.musicorum.mobile.components.FriendActivity
 import io.musicorum.mobile.components.HorizontalTracksRow
 import io.musicorum.mobile.components.LabelType
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
-import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.ui.theme.KindaBlack

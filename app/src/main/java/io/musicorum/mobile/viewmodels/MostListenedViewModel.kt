@@ -3,10 +3,10 @@ package io.musicorum.mobile.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
-import io.musicorum.mobile.serialization.TopTracks
+import io.musicorum.mobile.models.FetchPeriod
+import io.musicorum.mobile.serialization.entities.TopTracks
 import kotlinx.coroutines.launch
 
 class MostListenedViewModel : ViewModel() {

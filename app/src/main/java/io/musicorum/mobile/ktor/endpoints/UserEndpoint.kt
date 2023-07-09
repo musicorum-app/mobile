@@ -7,12 +7,13 @@ import io.ktor.client.request.post
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
+import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.serialization.FriendsResponse
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.TopAlbumsResponse
 import io.musicorum.mobile.serialization.TopArtistsResponse
-import io.musicorum.mobile.serialization.TopTracks
 import io.musicorum.mobile.serialization.User
+import io.musicorum.mobile.serialization.entities.TopTracks
 
 object UserEndpoint {
     suspend fun getUser(username: String): User? {

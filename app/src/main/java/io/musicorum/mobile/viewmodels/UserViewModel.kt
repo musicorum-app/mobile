@@ -3,9 +3,9 @@ package io.musicorum.mobile.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.musicorum.mobile.ktor.endpoints.FetchPeriod
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
+import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.TopAlbumsResponse
 import io.musicorum.mobile.serialization.TopArtistsResponse

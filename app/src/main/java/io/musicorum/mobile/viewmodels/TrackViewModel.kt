@@ -9,11 +9,11 @@ import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
-import io.musicorum.mobile.serialization.Album
-import io.musicorum.mobile.serialization.Artist
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.SimilarTrack
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Album
+import io.musicorum.mobile.serialization.entities.Artist
+import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.launch
 
 class TrackViewModel : ViewModel() {

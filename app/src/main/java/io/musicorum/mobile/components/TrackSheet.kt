@@ -49,7 +49,7 @@ import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.router.Routes
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.LighterGray

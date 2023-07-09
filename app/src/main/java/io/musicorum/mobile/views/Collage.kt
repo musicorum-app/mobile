@@ -1,6 +1,7 @@
 package io.musicorum.mobile.views
 
 import android.net.Uri
+import android.os.Bundle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Button
@@ -28,6 +31,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -54,21 +59,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
-import io.musicorum.mobile.components.MusicorumTopBar
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
+import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
+import io.musicorum.mobile.utils.PeriodResolver
 import io.musicorum.mobile.utils.downloadFile
 import io.musicorum.mobile.utils.shareFile
 import io.musicorum.mobile.viewmodels.ChartCollageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
+fun Collage(model: ChartCollageViewModel = viewModel(), args: Bundle) {
     val scrollbarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val themeDropdown = remember { mutableStateOf(false) }
     val typeDropdown = remember { mutableStateOf(false) }
@@ -78,10 +85,11 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val ready = model.ready.observeAsState().value!!
     val ctx = LocalContext.current
     val isGenerating = model.isGenerating.observeAsState().value!!
+    val nav = LocalNavigation.current
 
     val themeOptions = listOf("Grid" to "Grid")
     val typeOptions =
-        listOf("Top albums" to "ALBUM", "Top artists" to "ARTIST", "Top tracks" to "ALBUM")
+        listOf("Top albums" to "ALBUM", "Top artists" to "ARTIST", "Top tracks" to "TRACK")
     val periodOptions =
         listOf(
             "Last 7 days" to "7DAY",
@@ -95,6 +103,9 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val selectedTheme = remember { mutableStateOf("Grid" to "grid") }
     val selectedType = remember { mutableStateOf("Top artists" to "ARTIST") }
     val selectedPeriod = remember { mutableStateOf("Last week" to "7DAY") }
+    args.getString("period")?.let {
+        selectedPeriod.value = PeriodResolver.resolve(it)
+    }
     val showNames = remember { mutableStateOf(true) }
 
     val rowCount = remember { mutableStateOf("6") }
@@ -109,18 +120,22 @@ fun ChartCollage(model: ChartCollageViewModel = viewModel()) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(topBar = {
-        MusicorumTopBar(
-            text = "Generate Collage",
+        MediumTopAppBar(
+            title = { Text("Generate Collage") },
             scrollBehavior = scrollbarBehavior,
-            fadeable = true
-        ) {
-
-        }
+            navigationIcon = {
+                IconButton(onClick = { nav?.popBackStack() }) {
+                    Icon(Icons.Rounded.ArrowBack, null)
+                }
+            }
+        )
     }) { paddingValues ->
         if (user == null) return@Scaffold CenteredLoadingSpinner()
 
         Column(
             modifier = Modifier
+                .background(KindaBlack)
+                .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 20.dp)
                 .verticalScroll(rememberScrollState()),

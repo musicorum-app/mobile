@@ -1,10 +1,11 @@
 package io.musicorum.mobile.ktor.endpoints
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
-import io.musicorum.mobile.serialization.Album
+import io.musicorum.mobile.serialization.entities.Album
 import kotlinx.serialization.Serializable
 
 object AlbumEndpoint {

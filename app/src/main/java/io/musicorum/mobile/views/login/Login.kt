@@ -48,7 +48,7 @@ fun Login(nav: NavController, deepLinkToken: String?) {
         if (deepLinkToken != null) {
             Log.d("Login", "Received session token $deepLinkToken")
             loading.value = true
-            handleAuth(deepLinkToken) { user, sk ->
+            handleAuth(deepLinkToken, ctx = ctx) { user, sk ->
                 if (user != null) {
                     MutableUserState.value = user
                     nav.navigate("user_confirmation/${sk}")

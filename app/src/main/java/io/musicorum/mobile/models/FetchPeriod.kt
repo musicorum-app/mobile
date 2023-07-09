@@ -1,4 +1,4 @@
-package io.musicorum.mobile.ktor.endpoints
+package io.musicorum.mobile.models
 
 enum class FetchPeriod(period: String) {
     WEEK("7day"),

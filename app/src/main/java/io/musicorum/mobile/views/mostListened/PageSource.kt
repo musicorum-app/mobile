@@ -3,7 +3,7 @@ package io.musicorum.mobile.views.mostListened
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import java.time.Instant
 
 class RecentTracksPageSource(val user: String) : PagingSource<Int, Track>() {

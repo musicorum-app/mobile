@@ -61,7 +61,7 @@ import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LabelMedium2
@@ -79,7 +79,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
-    val user = LocalUser.current!!
+    val user = LocalUser.current
     val analytics = LocalAnalytics.current!!
     LaunchedEffect(Unit) {
         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
@@ -95,7 +95,7 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f, label = "")
 
     LaunchedEffect(key1 = scrobblingViewModel.recentScrobbles.value) {
-        if (scrobblingViewModel.recentScrobbles.value == null) {
+        if (scrobblingViewModel.recentScrobbles.value == null && user != null) {
             scrobblingViewModel.updateScrobbles(user.user.name)
         }
     }

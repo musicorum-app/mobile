@@ -13,7 +13,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable

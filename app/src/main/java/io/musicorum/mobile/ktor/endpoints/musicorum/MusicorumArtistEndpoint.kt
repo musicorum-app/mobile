@@ -4,8 +4,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.musicorum.mobile.ktor.KtorConfiguration
-import io.musicorum.mobile.serialization.Artist
-import io.musicorum.mobile.serialization.TopArtist
+import io.musicorum.mobile.serialization.entities.Artist
+import io.musicorum.mobile.serialization.entities.TopArtist
 import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json

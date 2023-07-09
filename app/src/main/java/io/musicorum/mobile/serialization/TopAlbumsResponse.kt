@@ -1,5 +1,6 @@
 package io.musicorum.mobile.serialization
 
+import io.musicorum.mobile.serialization.entities.Artist
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.launch
 
 class TrackRowViewModel : ViewModel() {

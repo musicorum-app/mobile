@@ -35,7 +35,7 @@ import io.musicorum.mobile.components.TopAlbumsRow
 import io.musicorum.mobile.components.TopArtistsRow
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.components.skeletons.GenericListItemSkeleton
-import io.musicorum.mobile.ktor.endpoints.FetchPeriod
+import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.Heading4
 import io.musicorum.mobile.ui.theme.KindaBlack

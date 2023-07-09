@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.AlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.InnerAlbum
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
-import io.musicorum.mobile.serialization.Artist
 import io.musicorum.mobile.serialization.User
+import io.musicorum.mobile.serialization.entities.Artist
 import kotlinx.coroutines.launch
 
 class AlbumViewModel : ViewModel() {

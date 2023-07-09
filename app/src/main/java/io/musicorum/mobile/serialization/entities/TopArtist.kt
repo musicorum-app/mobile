@@ -1,5 +1,6 @@
-package io.musicorum.mobile.serialization
+package io.musicorum.mobile.serialization.entities
 
+import io.musicorum.mobile.serialization.Image
 import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable

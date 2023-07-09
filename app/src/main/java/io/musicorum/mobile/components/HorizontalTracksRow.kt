@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.ui.theme.Subtitle1
 
 enum class LabelType {

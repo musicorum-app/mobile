@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
 import io.musicorum.mobile.ktor.endpoints.ArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
-import io.musicorum.mobile.serialization.Artist
 import io.musicorum.mobile.serialization.TopAlbum
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Artist
+import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.launch
 
 class ArtistViewModel : ViewModel() {

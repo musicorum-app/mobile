@@ -5,14 +5,23 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import io.musicorum.mobile.ktor.endpoints.AuthEndpoint
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
+import io.musicorum.mobile.models.PartialUser
+import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.userData
 
-suspend fun handleAuth(token: String, userBlock: (user: User?, sessionKey: String) -> Unit) {
+suspend fun handleAuth(
+    token: String,
+    ctx: Context,
+    userBlock: (user: User?, sessionKey: String) -> Unit
+) {
     val sessionKey = AuthEndpoint.getSession(token)?.session?.key
-    sessionKey?.let {
-        val user = UserEndpoint.getSessionUser(it)
-        return userBlock(user, it)
+    sessionKey?.let { s ->
+        val user = UserEndpoint.getSessionUser(s)
+        user?.let {
+            LocalUserRepository(ctx).updateUser(PartialUser(it.user.name, it.user.bestImageUrl))
+        }
+        return userBlock(user, s)
     }
 }
 

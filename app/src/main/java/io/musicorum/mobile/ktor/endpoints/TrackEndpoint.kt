@@ -10,7 +10,7 @@ import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.BaseIndividualTrack
 import io.musicorum.mobile.serialization.SimilarTrack
-import io.musicorum.mobile.serialization.Track
+import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.userData
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

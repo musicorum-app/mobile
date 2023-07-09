@@ -1,16 +1,20 @@
 package io.musicorum.mobile.router
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import io.musicorum.mobile.views.*
+import io.musicorum.mobile.views.Account
+import io.musicorum.mobile.views.Discover
+import io.musicorum.mobile.views.Home
+import io.musicorum.mobile.views.RecentScrobbles
+import io.musicorum.mobile.views.Scrobbling
+import io.musicorum.mobile.views.charts.Charts
 import io.musicorum.mobile.views.individual.Album
 import io.musicorum.mobile.views.individual.Track
 import io.musicorum.mobile.views.individual.User
@@ -21,10 +25,9 @@ private val exitTransition = slideOutHorizontally(tween(800)) { fullWidth -> -fu
 private val popExitTransition = slideOutHorizontally(tween(800)) { fullWidth -> fullWidth / 2 }
 private val popEnterTransition = slideInHorizontally(tween(800)) { fullWidth -> -fullWidth }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavigationRouter(controller: NavHostController) {
-    AnimatedNavHost(
+    NavHost(
         navController = controller,
         startDestination = "home",
         enterTransition = { startTransition },
