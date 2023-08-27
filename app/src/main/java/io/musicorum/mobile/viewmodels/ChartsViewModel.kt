@@ -27,7 +27,7 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
     val topTracks: MutableLiveData<TopTracksData> = MutableLiveData()
     val period = MutableLiveData(FetchPeriod.WEEK)
     val busy = MutableLiveData(false)
-    val _application = application
+    private val _application = application
 
     init {
         viewModelScope.launch {
@@ -40,7 +40,11 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             val bmp = getBitmap(image, ctx)
             val palette = createPalette(bmp)
-            preferredColor.value = Color(palette.getVibrantColor(Color.Gray.toArgb()))
+            if (palette.vibrantSwatch == null) {
+                preferredColor.value = Color(palette.getDominantColor(Color.Gray.toArgb()))
+            } else {
+                preferredColor.value = Color(palette.getVibrantColor(Color.Gray.toArgb()))
+            }
         }
     }
 
@@ -49,7 +53,7 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         res?.let {
             val musRes = MusicorumArtistEndpoint.fetchArtist(res.topArtists.artists)
             it.topArtists.artists.onEachIndexed { i, artist ->
-                artist.bestImageUrl = musRes?.getOrNull(i)?.bestResource?.bestImageUrl ?: ""
+                artist.bestImageUrl = musRes.getOrNull(i)?.bestResource?.bestImageUrl ?: ""
             }
             topArtists.value = it.topArtists.artists
         }
@@ -67,7 +71,7 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         res?.let {
             val musRes = MusicorumTrackEndpoint.fetchTracks(res.topTracks.tracks)
             res.topTracks.tracks.onEachIndexed { i, t ->
-                t.bestImageUrl = musRes?.getOrNull(i)?.bestResource?.bestImageUrl ?: ""
+                t.bestImageUrl = musRes.getOrNull(i)?.bestResource?.bestImageUrl ?: ""
             }
             topTracks.value = res.topTracks
         }

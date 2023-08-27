@@ -7,7 +7,7 @@ data class TrackResponse(
     val resources: List<Resources> = emptyList(),
     val album: String = "Unknown",
     @SerialName("preferred_resource")
-    val preferredResource: String = ""
+    val preferredResource: String? = ""
 ) {
     val bestResource = resources.find { it.hash == preferredResource }
 }

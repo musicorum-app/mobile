@@ -27,7 +27,8 @@ object MusicorumTrackEndpoint {
         coerceInputValues = true
     }
 
-    suspend fun fetchTracks(tracks: List<Track>): List<TrackResponse?>? {
+    suspend fun fetchTracks(tracks: List<Track>): List<TrackResponse?> {
+        if (tracks.isEmpty()) return emptyList()
         val trackList: MutableList<BodyTrack> = mutableListOf()
         tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist.name)) }
         val res: HttpResponse = KtorConfiguration.musicorumClient.post {
@@ -45,12 +46,12 @@ object MusicorumTrackEndpoint {
                     ListSerializer(TrackResponse.serializer().nullable),
                     newRes.bodyAsText()
                 )
-            } else null
+            } else emptyList()
         }
 
         return if (res.status.isSuccess()) {
             json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
-        } else null
+        } else emptyList()
 
     }
 

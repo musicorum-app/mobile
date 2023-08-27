@@ -1,6 +1,5 @@
 package io.musicorum.mobile.views
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -26,11 +25,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -38,7 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -51,14 +46,7 @@ import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.skydoves.balloon.ArrowOrientation
-import com.skydoves.balloon.ArrowPositionRules
-import com.skydoves.balloon.compose.Balloon
-import com.skydoves.balloon.compose.rememberBalloonBuilder
-import com.skydoves.balloon.compose.setBackgroundColor
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -66,7 +54,6 @@ import io.musicorum.mobile.components.FriendActivity
 import io.musicorum.mobile.components.HorizontalTracksRow
 import io.musicorum.mobile.components.LabelType
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
-import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -76,75 +63,22 @@ import io.musicorum.mobile.ui.theme.Subtitle1
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.getDarkenGradient
 import io.musicorum.mobile.viewmodels.HomeViewModel
-import kotlinx.coroutines.launch
-import java.time.Instant
 
 @Composable
-fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
-    val user = LocalUser.current
-    val recentTracks = homeViewModel.recentTracks.observeAsState().value
-    val palette = homeViewModel.userPalette.observeAsState().value
-    val weekTracks = homeViewModel.weekTracks.observeAsState().value
-    val friends = homeViewModel.friends.observeAsState().value
-    val friendsActivity = homeViewModel.friendsActivity.observeAsState().value
-    val ctx = LocalContext.current
-    val errored = homeViewModel.errored.observeAsState().value
+fun Home(vm: HomeViewModel = hiltViewModel()) {
+    val user = vm.user.observeAsState().value
+    val recentTracks = vm.recentTracks.observeAsState().value
+    val palette = vm.userPalette.observeAsState().value
+    val weekTracks = vm.weekTracks.observeAsState().value
+    val friends = vm.friends.observeAsState().value
+    val friendsActivity = vm.friendsActivity.observeAsState().value
+    val errored = vm.errored.observeAsState().value
     val nav = LocalNavigation.current!!
-    val experiment = FirebaseRemoteConfig.getInstance().getBoolean("device_scrobbling")
-    val prefs = ctx.getSharedPreferences("settings", Context.MODE_PRIVATE)
-    val scrobbleConsent = prefs.getBoolean("balloon_seen", false)
-
-    val showBalloon = remember { mutableStateOf(false) }
-    val builder = rememberBalloonBuilder {
-        setArrowSize(15)
-        setArrowPositionRules(ArrowPositionRules.ALIGN_BALLOON)
-        setArrowOrientation(ArrowOrientation.TOP)
-        setArrowPosition(0.91f)
-        setWidth(70)
-        setHeight(20)
-        setPadding(12)
-        setCornerRadius(4f)
-        setAutoDismissDuration(3000L)
-        setBackgroundColor(Color(0xFF3B72EB))
-    }
-
-    LaunchedEffect(user, recentTracks, errored) {
-        launch {
-            user?.let {
-                if (homeViewModel.userPalette.value == null) {
-                    homeViewModel.getPalette(it.user.bestImageUrl, ctx)
-                }
-                if (recentTracks == null) {
-                    homeViewModel.fetchRecentTracks(
-                        it.user.name,
-                        "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}",
-                        15,
-                        true
-                    )
-                }
-                if (weekTracks == null) {
-                    homeViewModel.fetchTopTracks(it.user.name, FetchPeriod.WEEK)
-                }
-                if (friends == null) {
-                    homeViewModel.fetchFriends(it.user.name, 3)
-                }
-            }
-        }
-    }
-
-    val isRefreshing = homeViewModel.isRefreshing.collectAsState()
-
-    if (experiment && !scrobbleConsent) {
-        prefs.edit().apply {
-            putBoolean("balloon_seen", true)
-            apply()
-        }
-        showBalloon.value = true
-    }
+    val isRefreshing = vm.isRefreshing.collectAsState()
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing.value),
-        onRefresh = { homeViewModel.refresh() }) {
+        onRefresh = { vm.refresh() }) {
         Column(
             Modifier
                 .verticalScroll(rememberScrollState())
@@ -161,16 +95,9 @@ fun Home(homeViewModel: HomeViewModel = hiltViewModel()) {
                     style = Typography.displaySmall,
                     modifier = Modifier.padding(start = 20.dp)
                 )
-                Balloon(
-                    builder = builder,
-                    balloonContent = { Text(text = "You can now scrobble from this device") }) { window ->
-                    LaunchedEffect(key1 = showBalloon.value) {
-                        if (showBalloon.value) window.showAlignBottom()
-                    }
 
-                    IconButton(onClick = { nav.navigate("settings") }) {
-                        Icon(Icons.Rounded.Settings, contentDescription = null)
-                    }
+                IconButton(onClick = { nav.navigate("settings") }) {
+                    Icon(Icons.Rounded.Settings, contentDescription = null)
                 }
             }
 
@@ -289,7 +216,10 @@ private fun UserCard(
     recentTracks: RecentTracks?,
     nav: NavHostController
 ) {
-    val vibrant = Color(palette.getVibrantColor(0))
+    var vibrant = Color(palette.getVibrantColor(0))
+    if (palette.vibrantSwatch == null) {
+        vibrant = Color(palette.getDominantColor(0))
+    }
     val gradient = getDarkenGradient(vibrant)
 
     Box(

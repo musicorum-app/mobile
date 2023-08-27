@@ -1,7 +1,5 @@
 package io.musicorum.mobile.views.settings
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,13 +17,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Logout
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,49 +44,32 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
 import io.musicorum.mobile.BuildConfig
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
-import io.musicorum.mobile.scrobblePrefs
-import io.musicorum.mobile.ui.theme.KindaBlack
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.Typography
-import io.musicorum.mobile.userData
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import io.musicorum.mobile.viewmodels.SettingsVm
 
 @Composable
-fun Settings() {
+fun Settings(viewModel: SettingsVm = viewModel()) {
     val user = LocalUser.current
     val ctx = LocalContext.current
     val nav = LocalNavigation.current
-    val coroutineScope = rememberCoroutineScope()
-    val experiment = Firebase.remoteConfig.getBoolean("device_scrobbling") || BuildConfig.DEBUG
+    val enabledApps = viewModel.enabledApps.observeAsState().value
+    val enabled = viewModel.deviceScrobble.observeAsState().value
 
-    val enabledApps = runBlocking {
-        ctx.scrobblePrefs.data.map { p ->
-            p[stringSetPreferencesKey("enabledApps")]
-        }.first()
-    }
-
-    val enabled = runBlocking {
-        ctx.scrobblePrefs.data.map { p ->
-            p[booleanPreferencesKey("enabled")]
-        }.first()
-    }
+    val patreonUrl = "https://www.patreon.com/musicorumapp"
+    val discordInvite = "https://discord.gg/7shqxp9Mg4"
+    val githubUrl = "https://github.com/musicorum-app/"
+    val lastFmUrl = "https://last.fm"
 
     val label = if (enabled == true && enabledApps.isNullOrEmpty()) {
         stringResource(R.string.scrobbling_enabled_no_apps)
@@ -96,21 +83,15 @@ fun Settings() {
         )
     }
 
-    user?.let {
-        Column(
-            modifier = Modifier
-                .background(KindaBlack)
-        ) {
-            Spacer(Modifier.height(30.dp))
-            Text(
-                text = stringResource(id = R.string.settings),
-                style = Typography.displaySmall,
-                modifier = Modifier.padding(start = 20.dp)
-            )
-            Spacer(Modifier.height(10.dp))
+    LaunchedEffect(Unit) {
+        viewModel.getScrobbleInfo()
+    }
+
+    Scaffold(topBar = { TopAppBar() }) {
+        Column(modifier = Modifier.padding(it)) {
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(LighterGray)
                     .fillMaxWidth()
@@ -129,7 +110,7 @@ fun Settings() {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(
                                 model = defaultImageRequestBuilder(
-                                    url = it.user.bestImageUrl,
+                                    url = user?.user?.bestImageUrl,
                                     placeholderType = PlaceholderType.USER
                                 ),
                                 contentDescription = null,
@@ -138,125 +119,114 @@ fun Settings() {
                                     .size(43.dp)
                             )
                             Spacer(Modifier.width(10.dp))
-                            Text(text = user.user.name, style = Typography.titleMedium)
+                            Text(text = user?.user?.name ?: "", style = Typography.titleMedium)
                         }
-                        IconButton(onClick = {
-                            coroutineScope.launch {
-                                ctx.applicationContext.userData.edit {
-                                    it.remove(stringPreferencesKey("session_key"))
-                                }
-                                nav?.navigate("login")
-                            }
-                        }) {
+                        IconButton(onClick = { viewModel.logout {} }) {
                             Icon(Icons.Rounded.Logout, null, tint = MostlyRed)
                         }
                     }
                 }
             }
 
-            if (experiment) {
-                /* Device Scrobbling */
-                Spacer(modifier = Modifier.height(20.dp))
-                SectionTitle(
-                    sectionName = stringResource(R.string.device_scrobbling),
-                    badgeName = stringResource(R.string.beta)
-                )
-                Text(
-                    label,
-                    style = Typography.bodySmall,
-                    modifier = Modifier
-                        .alpha(0.55f)
-                        .padding(start = 20.dp)
-                )
-                if (!enabledApps.isNullOrEmpty()) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy((-7).dp),
-                        modifier = Modifier.padding(start = 20.dp)
-                    ) {
-                        enabledApps.forEach { pckg ->
-                            val icon = ctx.packageManager.getApplicationIcon(pckg)
-                            Image(
-                                icon.toBitmap().asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier.size(25.dp)
-                            )
-                        }
+            Spacer(modifier = Modifier.height(10.dp))
+
+            SectionTitle(
+                sectionName = stringResource(R.string.device_scrobbling),
+                badgeName = stringResource(R.string.beta)
+            )
+            Text(
+                label,
+                style = Typography.bodySmall,
+                modifier = Modifier
+                    .alpha(0.55f)
+                    .padding(start = 16.dp)
+            )
+
+            if (!enabledApps.isNullOrEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy((-7).dp),
+                    modifier = Modifier.padding(start = 16.dp)
+                ) {
+                    enabledApps.forEach { pkg ->
+                        val icon = ctx.packageManager.getApplicationIcon(pkg)
+                        Image(
+                            icon.toBitmap().asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.size(25.dp)
+                        )
                     }
                 }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable { nav?.navigate("settings/scrobble") }
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Text(
-                        stringResource(R.string.scrobbling_settings),
-                        modifier = Modifier.padding(vertical = 15.dp),
-                        style = Typography.bodyLarge
-                    )
-                    Icon(Icons.Rounded.ChevronRight, null)
-                }
-                Spacer(Modifier.height(20.dp))
             }
 
-            /* About */
-            val patreonIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.patreon.com/musicorumapp"))
-            val discordIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/7shqxp9Mg4"))
-            val githubIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/musicorum-app/"))
-            val lastFmIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://last.fm"))
-            SectionTitle(sectionName = stringResource(R.string.about))
-            Action(
-                leadIcon = R.drawable.patreon_logo,
-                text = stringResource(R.string.donate_on_patreon),
-                patreonIntent
-            )
-            Action(
-                leadIcon = R.drawable.discord_logo,
-                text = stringResource(R.string.join_our_discord_server),
-                discordIntent
-            )
-            Action(
-                leadIcon = R.drawable.github_logo,
-                text = stringResource(R.string.view_source_code_on_github),
-                githubIntent
-            )
-            Action(
-                leadIcon = R.drawable.last_fm_logo,
-                text = stringResource(R.string.last_fm_website),
-                intent = lastFmIntent
+            ListItem(
+                headlineContent = { Text(stringResource(id = R.string.scrobbling_settings)) },
+                trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
+                modifier = Modifier.clickable {
+                    nav?.navigate(Routes.scrobbleSettings)
+                }
             )
 
-            /* App */
+            Spacer(Modifier.height(20.dp))
+            SectionTitle(sectionName = stringResource(R.string.about))
+            ListItem(
+                headlineContent = { Text(text = stringResource(R.string.donate_on_patreon)) },
+                leadingContent = {
+                    Image(painterResource(id = R.drawable.patreon_logo), null)
+                },
+                modifier = Modifier.clickable { viewModel.launchUrl(patreonUrl) }
+            )
+
+            ListItem(
+                headlineContent = { Text(text = stringResource(R.string.join_our_discord_server)) },
+                leadingContent = {
+                    Image(painterResource(id = R.drawable.discord_logo), null)
+                },
+                modifier = Modifier.clickable { viewModel.launchUrl(discordInvite) }
+            )
+
+            ListItem(
+                headlineContent = { Text(text = stringResource(R.string.view_source_code_on_github)) },
+                leadingContent = {
+                    Image(painterResource(id = R.drawable.github_logo), null)
+                },
+                modifier = Modifier.clickable { viewModel.launchUrl(githubUrl) }
+            )
+
+            ListItem(
+                headlineContent = { Text(text = stringResource(R.string.last_fm_website)) },
+                leadingContent = {
+                    Image(painterResource(id = R.drawable.last_fm_logo), null)
+                },
+                modifier = Modifier.clickable { viewModel.launchUrl(lastFmUrl) }
+            )
+
+            //* App *//*
             Text(
                 text = stringResource(R.string.made_by),
                 style = Typography.bodySmall,
                 modifier = Modifier
                     .alpha(.55f)
-                    .padding(start = 20.dp)
+                    .padding(start = 16.dp)
             )
             Text(
                 BuildConfig.VERSION_NAME,
                 style = Typography.bodySmall,
                 modifier = Modifier
                     .alpha(.55f)
-                    .padding(start = 20.dp)
+                    .padding(start = 16.dp)
             )
         }
     }
 }
 
+
 @Composable
 internal fun SectionTitle(sectionName: String, badgeName: String? = null, padding: Boolean = true) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        val padValue = if (padding) 20.dp else 0.dp
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 16.dp)) {
+        val padValue = if (padding) 16.dp else 0.dp
         Text(
             sectionName,
-            style = Typography.titleLarge,
+            style = Typography.titleMedium,
             modifier = Modifier.padding(start = padValue)
         )
         badgeName?.let {
@@ -272,34 +242,28 @@ internal fun SectionTitle(sectionName: String, badgeName: String? = null, paddin
         }
         Canvas(modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp), onDraw = {
-            drawLine(
-                Color.White,
-                Offset.Zero,
-                Offset(size.maxDimension, 0f),
-                strokeWidth = 1.5f
-            )
-        })
+            .padding(start = 10.dp),
+            onDraw = {
+                drawLine(
+                    Color.White,
+                    Offset.Zero,
+                    Offset(size.maxDimension, 0f),
+                    strokeWidth = 1.5f
+                )
+            })
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Action(leadIcon: Int, text: String, intent: Intent) {
-    val ctx = LocalContext.current
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(15.dp),
-        modifier = Modifier
-            .clickable { ctx.startActivity(intent) }
-            .padding(horizontal = 20.dp, vertical = 10.dp)
-            .fillMaxWidth()
-            .height(35.dp)
-    ) {
-        Image(
-            painter = painterResource(id = leadIcon),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp)
-        )
-        Text(text, style = Typography.bodyLarge)
-    }
+private fun TopAppBar() {
+    val nav = LocalNavigation.current
+    MediumTopAppBar(
+        title = { Text(stringResource(id = R.string.settings)) },
+        navigationIcon = {
+            IconButton(onClick = { nav?.popBackStack() }) {
+                Icon(Icons.Rounded.ArrowBack, null)
+            }
+        }
+    )
 }

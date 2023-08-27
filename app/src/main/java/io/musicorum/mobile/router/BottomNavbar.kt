@@ -1,8 +1,7 @@
-package io.musicorum.mobile.components
+package io.musicorum.mobile.router
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.Home
@@ -17,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -36,7 +34,7 @@ fun BottomNavBar(nav: NavHostController) {
         Icons.Rounded.Person
     )
     val navItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = MostlyRed,
+        indicatorColor = MostlyRed.copy(alpha = 0.5f),
         selectedIconColor = Color.White,
         selectedTextColor = Color.White
     )
@@ -53,7 +51,7 @@ fun BottomNavBar(nav: NavHostController) {
             items.forEachIndexed { index, s ->
                 NavigationBarItem(
                     selected = currentDestination?.hierarchy?.any { it.route?.lowercase() == s.lowercase() } == true,
-                    label = { Text(text = s, modifier = Modifier.padding(top = 60.dp)) },
+                    label = { Text(text = s) },
                     onClick = {
                         nav.navigate(s.lowercase(Locale.ROOT))
                         {
@@ -63,7 +61,6 @@ fun BottomNavBar(nav: NavHostController) {
                                 saveState = true
                             }
                         }
-
                     },
                     icon = { Icon(icons[index], contentDescription = "nav icon") },
                     alwaysShowLabel = false,

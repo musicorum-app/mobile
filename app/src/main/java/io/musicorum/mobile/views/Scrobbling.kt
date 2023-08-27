@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,15 +53,10 @@ import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
-import io.musicorum.mobile.LocalAnalytics
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackItem
-import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -73,19 +69,10 @@ import io.musicorum.mobile.utils.darkenColor
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.utils.getDarkenGradient
 import io.musicorum.mobile.viewmodels.ScrobblingViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
-    val user = LocalUser.current
-    val analytics = LocalAnalytics.current!!
-    LaunchedEffect(Unit) {
-        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "scrobbling")
-        }
-    }
+fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
     val state = rememberLazyListState()
     val firstItemOffset = remember { derivedStateOf { state.firstVisibleItemScrollOffset } }
     val firstItemIndex = remember { derivedStateOf { state.firstVisibleItemIndex } }
@@ -94,13 +81,8 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
     val clamped = interpolated.coerceIn(0f..1f)
     val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f, label = "")
 
-    LaunchedEffect(key1 = scrobblingViewModel.recentScrobbles.value) {
-        if (scrobblingViewModel.recentScrobbles.value == null && user != null) {
-            scrobblingViewModel.updateScrobbles(user.user.name)
-        }
-    }
 
-    if (scrobblingViewModel.recentScrobbles.value == null) {
+    if (vm.recentScrobbles.value == null) {
         CenteredLoadingSpinner()
     } else {
         Column(
@@ -116,19 +98,19 @@ fun Scrobbling(scrobblingViewModel: ScrobblingViewModel = hiltViewModel()) {
             )
             Column {
                 NowPlayingCard(
-                    track = scrobblingViewModel.recentScrobbles.value!!.recentTracks.tracks.getOrNull(
-                        0
-                    ),
-                    value.value,
+                    track = vm.recentScrobbles.value!!
+                        .recentTracks.tracks.getOrNull(0),
+                    fraction = value.value,
+                    vm = vm
                 )
             }
-            TrackList(vm = scrobblingViewModel, state = state)
+            TrackList(vm = vm, state = state)
         }
     }
 }
 
 @Composable
-fun NowPlayingCard(track: Track?, fraction: Float) {
+fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
     val isPlaying = track?.attributes?.nowPlaying == "true"
     val iconAlignment = BiasAlignment(1f, fraction)
     val textAlignment = BiasAlignment.Vertical(fraction * -1)
@@ -136,7 +118,7 @@ fun NowPlayingCard(track: Track?, fraction: Float) {
     val nowPlayingHeight = (fraction * 20f).dp
     val nowPlayingAlpha = fraction * 0.65f
     val padding = (10f + fraction * 4f).dp
-    val loved = remember { mutableStateOf(track?.loved == true) }
+    val loved = vm.isTrackLoved.observeAsState(false).value
     val ctx = LocalContext.current
     var palette by remember { mutableStateOf<Palette?>(null) }
 
@@ -179,17 +161,12 @@ fun NowPlayingCard(track: Track?, fraction: Float) {
     ) {
         if (isPlaying) {
             IconButton(
-                onClick = {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        TrackEndpoint.updateFavoritePreference(track!!, loved.value, ctx)
-                        loved.value = !loved.value
-                    }
-                },
+                onClick = { vm.updateFavorite(track, loved) },
                 modifier = Modifier
                     .align(iconAlignment)
                     .animateContentSize()
             ) {
-                if (loved.value) {
+                if (loved) {
                     Icon(Icons.Rounded.Favorite, null)
                 } else {
                     Icon(Icons.Rounded.FavoriteBorder, null)
@@ -237,8 +214,7 @@ fun NowPlayingCard(track: Track?, fraction: Float) {
         ) {
             if (isPlaying) {
                 Row(
-                    modifier = Modifier
-                        .padding(bottom = 10.dp),
+                    modifier = Modifier.padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Rive.AnimationFor(
@@ -256,10 +232,9 @@ fun NowPlayingCard(track: Track?, fraction: Float) {
 
 @Composable
 private fun TrackList(vm: ScrobblingViewModel, state: LazyListState) {
-    val user = LocalUser.current
-    val refreshing = rememberSwipeRefreshState(isRefreshing = vm.refreshing.value)
-
-    SwipeRefresh(state = refreshing, onRefresh = { vm.updateScrobbles(user!!.user.name) }) {
+    val refreshValue = vm.refreshing.observeAsState(false).value
+    val refreshing = rememberSwipeRefreshState(isRefreshing = refreshValue)
+    SwipeRefresh(state = refreshing, onRefresh = { vm.updateScrobbles() }) {
         Column(modifier = Modifier.fillMaxHeight()) {
             val list =
                 if (vm.recentScrobbles.value!!.recentTracks.tracks.firstOrNull()?.attributes?.nowPlaying == "true") {

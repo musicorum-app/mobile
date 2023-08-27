@@ -16,6 +16,7 @@ internal val json = Json {
 
 object MusicorumArtistEndpoint {
     suspend fun fetchArtist(artists: List<Artist>): List<TrackResponse> {
+        if (artists.isEmpty()) return emptyList()
         val artistsList = mutableListOf<String>()
         artists.forEach { artist -> artistsList.add(artist.name) }
         val body = Body(artistsList)
@@ -32,7 +33,8 @@ object MusicorumArtistEndpoint {
     }
 
     @JvmName("fetchArtist1")
-    suspend fun fetchArtist(artists: List<TopArtist>): List<TrackResponse>? {
+    suspend fun fetchArtist(artists: List<TopArtist>): List<TrackResponse> {
+        if (artists.isEmpty()) return emptyList()
         val artistsList = mutableListOf<String>()
         artists.forEach { artist -> artistsList.add(artist.name) }
         val body = Body(artistsList)
@@ -43,9 +45,8 @@ object MusicorumArtistEndpoint {
         }
         return if (res.status.isSuccess()) {
             json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
-        } else {
-            null
-        }
+        } else emptyList()
+
     }
 
     @kotlinx.serialization.Serializable

@@ -11,7 +11,7 @@ object Routes {
     const val mostListened = "mostListened"
     fun album(data: String) = "album/$data"
     const val settings = "settings"
-    const val settingsScrobble = "settings/scrobble"
+    const val scrobbleSettings = "settings/scrobble"
     fun albumTracklist(data: String) = "album/$data"
     const val scrobbling = "scrobbling"
     const val profile = "profile"

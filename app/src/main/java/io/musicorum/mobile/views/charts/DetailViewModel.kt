@@ -49,7 +49,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    suspend fun fetch() {
+    private suspend fun fetch() {
         if (entity.value == null) return
         val user = LocalUserRepository(application_.applicationContext).partialUser.first()
         val entity = entity.value
@@ -65,7 +65,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
             }
             val musRes = MusicorumArtistEndpoint.fetchArtist(artistsRes)
             artistsRes.onEachIndexed { i, a ->
-                a.bestImageUrl = musRes?.get(i)?.bestResource?.bestImageUrl!!
+                a.bestImageUrl = musRes[i].bestResource?.bestImageUrl!!
             }
             artists.value = artistsRes
             busy.value = false

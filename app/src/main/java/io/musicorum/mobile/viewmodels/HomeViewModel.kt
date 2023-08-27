@@ -1,14 +1,17 @@
 package io.musicorum.mobile.viewmodels
 
+import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.models.FetchPeriod
+import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.RecentTracks
@@ -18,31 +21,39 @@ import io.musicorum.mobile.serialization.entities.TopTracks
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val scrobbleRepository: ScrobbleRepository) :
-    ViewModel() {
-    val user by lazy { MutableLiveData<User>() }
-    val userPalette by lazy { MutableLiveData<Palette>() }
-    val recentTracks by lazy { MutableLiveData<RecentTracks>() }
-    val weekTracks by lazy { MutableLiveData<TopTracks>() }
-    val friends by lazy { MutableLiveData<List<UserData>>() }
-    val friendsActivity by lazy { MutableLiveData<List<RecentTracks>>() }
-    val errored by lazy { MutableLiveData(false) }
-    val isRefreshing by lazy { MutableStateFlow(false) }
+class HomeViewModel @Inject constructor(
+    private val scrobbleRepository: ScrobbleRepository,
+    application: Application
+) :
+    AndroidViewModel(application) {
+    @SuppressLint("StaticFieldLeak")
+    val ctx = application as Context
+    val user = MutableLiveData<User>()
+    val userPalette = MutableLiveData<Palette>()
+    val recentTracks = MutableLiveData<RecentTracks>()
+    val weekTracks = MutableLiveData<TopTracks>()
+    val friends = MutableLiveData<List<UserData>>()
+    val friendsActivity = MutableLiveData<List<RecentTracks>>()
+    val errored = MutableLiveData(false)
+    val isRefreshing = MutableStateFlow(false)
 
     fun refresh() {
         isRefreshing.value = true
         recentTracks.value = null
         friends.value = null
         friendsActivity.value = null
+        init()
     }
 
-    fun fetchRecentTracks(username: String, from: String?, limit: Int?, extended: Boolean?) {
+    private fun fetchRecentTracks(username: String, from: String?) {
         viewModelScope.launch {
-            val res = UserEndpoint.getRecentTracks(username, from, limit, extended)
+            val res = UserEndpoint.getRecentTracks(username, from, 15, true)
             if (res != null) {
                 scrobbleRepository.recentScrobbles.value = res
                 recentTracks.value = scrobbleRepository.recentScrobbles.value
@@ -51,7 +62,7 @@ class HomeViewModel @Inject constructor(private val scrobbleRepository: Scrobble
         }
     }
 
-    fun getPalette(imageUrl: String, context: Context) {
+    private fun getPalette(imageUrl: String, context: Context) {
         viewModelScope.launch {
             val bmp = getBitmap(imageUrl, context)
             val p = createPalette(bmp)
@@ -59,16 +70,16 @@ class HomeViewModel @Inject constructor(private val scrobbleRepository: Scrobble
         }
     }
 
-    fun fetchTopTracks(username: String, period: FetchPeriod) {
+    private fun fetchTopTracks(username: String) {
         viewModelScope.launch {
-            val topTracksRes = UserEndpoint.getTopTracks(username, period, 10)
+            val topTracksRes = UserEndpoint.getTopTracks(username, FetchPeriod.WEEK, 10)
             if (topTracksRes == null) {
                 errored.value = true
                 return@launch
             }
             val musicorumTrRes =
                 MusicorumTrackEndpoint.fetchTracks(topTracksRes.topTracks.tracks)
-            musicorumTrRes?.forEachIndexed { i, track ->
+            musicorumTrRes.forEachIndexed { i, track ->
                 val url = track?.resources?.getOrNull(0)?.bestImageUrl
                 topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
                 topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
@@ -77,9 +88,9 @@ class HomeViewModel @Inject constructor(private val scrobbleRepository: Scrobble
         }
     }
 
-    fun fetchFriends(username: String, limit: Int?) {
+    private fun fetchFriends(username: String) {
         viewModelScope.launch {
-            val friendsRes = UserEndpoint.getFriends(username, limit)
+            val friendsRes = UserEndpoint.getFriends(username, 3)
             if (friendsRes == null) {
                 errored.value = true
                 return@launch
@@ -93,5 +104,22 @@ class HomeViewModel @Inject constructor(private val scrobbleRepository: Scrobble
             }
             friendsActivity.value = mutableList.toList()
         }
+    }
+
+    private fun init() {
+
+        val fromTimestamp = "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}"
+        viewModelScope.launch {
+            val user = LocalUserRepository(ctx).partialUser.first()
+            getPalette(user.imageUrl, ctx)
+
+            fetchRecentTracks(user.username, fromTimestamp)
+            fetchTopTracks(user.username)
+            fetchFriends(user.username)
+        }
+    }
+
+    init {
+        init()
     }
 }

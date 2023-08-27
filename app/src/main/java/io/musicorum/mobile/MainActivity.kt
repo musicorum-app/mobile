@@ -11,7 +11,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -62,10 +61,10 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
-import io.musicorum.mobile.components.BottomNavBar
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.repositories.LocalUserRepository
+import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
@@ -130,7 +129,6 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(Crowdin.wrapContext(newBase))
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -278,11 +276,11 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         snackbarHost = { SnackbarHost(hostState = snackHostState) }
-                    ) { paddingValues ->
+                    ) { pv ->
                         Surface(
                             Modifier
                                 .fillMaxSize()
-                                .padding(paddingValues)
+                                .padding(pv)
                         ) {
                             NavHost(
                                 navController = navController,
@@ -389,6 +387,7 @@ class MainActivity : ComponentActivity() {
                                 composable("settings/scrobble") { ScrobbleSettings() }
                             }
                         }
+
                     }
                 }
             }

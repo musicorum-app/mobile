@@ -176,9 +176,9 @@ fun Charts() {
             if (busy) {
                 CenteredLoadingSpinner()
             } else {
-                val topArtist = topArtists?.get(0)
-                val topAlbum = topAlbums?.get(0)
-                val topTrack = topTracks?.tracks?.get(0)
+                val topArtist = topArtists?.getOrNull(0)
+                val topAlbum = topAlbums?.getOrNull(0)
+                val topTrack = topTracks?.tracks?.getOrNull(0)
                 ChartComponentBox(
                     leadImage = topArtist?.bestImageUrl,
                     trailDetail = Icons.Rounded.Star,
@@ -194,7 +194,7 @@ fun Charts() {
                 )
                 Spacer(modifier = Modifier.height(70.dp))
                 ChartComponentBox(
-                    leadImage = topAlbums?.get(0)?.bestImageUrl,
+                    leadImage = topAlbums?.getOrNull(0)?.bestImageUrl,
                     trailDetail = Icons.Outlined.Album,
                     shape = RoundedCornerShape(6.dp),
                     artist = topAlbum?.name,
@@ -214,7 +214,7 @@ fun Charts() {
                 )
                 Spacer(modifier = Modifier.height(70.dp))
                 ChartComponentBox(
-                    leadImage = topTracks?.tracks?.get(0)?.bestImageUrl,
+                    leadImage = topTracks?.tracks?.getOrNull(0)?.bestImageUrl,
                     trailDetail = Icons.Rounded.MusicNote,
                     shape = RoundedCornerShape(6.dp),
                     artist = topTrack?.name,
@@ -269,8 +269,11 @@ fun ChartComponentBox(
     LaunchedEffect(key1 = Unit) {
         val bmp = getBitmap(leadImage, ctx)
         val palette = createPalette(bmp)
-        palette.getVibrantColor(Color.Gray.toArgb())
-        vibrant.value = Color(palette.getVibrantColor(Color.Gray.toArgb()))
+        if (palette.vibrantSwatch == null) {
+            vibrant.value = Color(palette.getDominantColor(Color.Gray.toArgb()))
+        } else {
+            vibrant.value = Color(palette.getVibrantColor(Color.Gray.toArgb()))
+        }
     }
 
     val gradient = getDarkenGradient(vibrantState.value).asReversed()

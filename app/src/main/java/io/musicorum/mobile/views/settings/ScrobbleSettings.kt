@@ -1,10 +1,7 @@
 package io.musicorum.mobile.views.settings
 
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,6 +20,7 @@ import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -32,33 +30,26 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.MusicorumTopBar
-import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.services.NotificationListener
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
@@ -66,17 +57,13 @@ import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.Success
 import io.musicorum.mobile.ui.theme.Typography
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import io.musicorum.mobile.viewmodels.ScrobbleSettingsVm
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScrobbleSettings() {
+fun ScrobbleSettings(vm: ScrobbleSettingsVm = viewModel()) {
     val appBarState = rememberTopAppBarState(initialContentOffset = 700f)
     val appBarBehavior = TopAppBarDefaults.pinnedScrollBehavior(state = appBarState)
-    val coroutine = rememberCoroutineScope()
     val ctx = LocalContext.current
     val styledSwitch =
         SwitchDefaults.colors(
@@ -85,54 +72,15 @@ fun ScrobbleSettings() {
             uncheckedTrackColor = LighterGray,
             uncheckedBorderColor = EvenLighterGray
         )
-    val scrobblePointKey = floatPreferencesKey("scrobblePoint")
-    val enabledKey = booleanPreferencesKey("enabled")
-    // val newAppsKey = booleanPreferencesKey("newApps")
-    val enabledAppsKey = stringSetPreferencesKey("enabledApps")
-    val updateNowPlayingKey = booleanPreferencesKey("updateNowPlaying")
-    val hasNotificationPermission =
-        NotificationManagerCompat.getEnabledListenerPackages(ctx).contains(ctx.packageName)
-    val pm = ctx.packageManager
+    val lifecycle = LocalLifecycleOwner.current
 
-    val scrobblePointData = runBlocking {
-        ctx.scrobblePrefs.data.map { p -> p[scrobblePointKey] }.first()
-    }
-    val enabledData = runBlocking {
-        ctx.scrobblePrefs.data.map { p -> p[enabledKey] }.first()
-    }
-    /* val newAppsData = runBlocking {
-         ctx.scrobblePrefs.data.map { p -> p[newAppsKey] }.first()
-     }*/
-    val enabledAppsData = runBlocking {
-        ctx.scrobblePrefs.data.map { p -> p[enabledAppsKey] }.first()
-    }
-    val updateNowPlayingData = runBlocking {
-        ctx.scrobblePrefs.data.map { p -> p[updateNowPlayingKey] }.first()
-    }
-
-    if (scrobblePointData == null) {
-        LaunchedEffect(key1 = Unit) {
-            ctx.scrobblePrefs.edit { p ->
-                p[scrobblePointKey] = 50f
-            }
-        }
-    }
-
-    val scrobblePoint = remember { mutableStateOf(scrobblePointData ?: 50f) }
-    val enabled = remember { mutableStateOf(enabledData ?: false) }
-    val updatesNowPlaying = remember { mutableStateOf(updateNowPlayingData ?: false) }
-    // val newApps = remember { mutableStateOf(newAppsData ?: false) }
-    val enabledApps = remember { enabledAppsData?.toMutableStateList() ?: mutableStateListOf() }
-    val showSpotifyModal = remember { mutableStateOf(false) }
-    val mediaApps: MutableList<Triple<Drawable, String, String>> = mutableListOf()
-
-    pm.getInstalledApplications(0).forEach { appInfo ->
-        if (appInfo.category >= ApplicationInfo.CATEGORY_AUDIO) {
-            val appLogo = pm.getApplicationIcon(appInfo)
-            val appName = pm.getApplicationLabel(appInfo)
-            mediaApps.add(Triple(appLogo, appName.toString(), appInfo.packageName))
-        }
-    }
+    val scrobblePoint = vm.scrobblePoint.observeAsState(50f).value
+    val enabled = vm.isEnabled.observeAsState(false).value
+    val updatesNowPlaying = vm.updateNowPlaying.observeAsState(false).value
+    val mediaApps = vm.availableApps.observeAsState(emptyList()).value
+    val enabledPackageSet = vm.enabledPackageSet.observeAsState(emptySet()).value
+    val showSpotifyModal = vm.showSpotifyModal.observeAsState(false)
+    val hasPermission = vm.hasPermission.observeAsState(false).value
 
     val notificationIntent =
         Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS").apply {
@@ -143,20 +91,29 @@ fun ScrobbleSettings() {
             putExtra(showFragmentKey, Bundle().apply { putString(fragmentKey, app) })
         }
 
-    AnimatedVisibility(showSpotifyModal.value) {
-        SpotifyModal(state = showSpotifyModal) {
-            enabledApps.add("com.spotify.music")
-            coroutine.launch {
-                ctx.scrobblePrefs.edit { p ->
-                    p[enabledAppsKey] = enabledApps.toSet()
-                }
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                vm.checkNotificationPermission()
             }
         }
+        lifecycle.lifecycle.addObserver(observer)
+        onDispose { lifecycle.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(Unit) {
+        vm.checkNotificationPermission()
+    }
+
+    if (showSpotifyModal.value) {
+        SpotifyModal(
+            onDismiss = { vm.showSpotifyModal.value = false },
+            onEnable = { vm.enableSpotify() })
     }
 
     Scaffold(topBar = {
         MusicorumTopBar(
-            text = stringResource(id = R.string.settings),
+            text = "Scrobble Settings",
             scrollBehavior = appBarBehavior,
             fadeable = false
         ) {}
@@ -172,20 +129,8 @@ fun ScrobbleSettings() {
                 stringResource(R.string.device_scrobbling_description)
             ) {
                 Switch(
-                    checked = enabled.value,
-                    onCheckedChange = {
-                        enabled.value = it
-                        if (it) {
-                            Firebase.analytics.logEvent("enable_device_scrobbling", null)
-                        } else {
-                            Firebase.analytics.logEvent("disable_device_scrobbling", null)
-                        }
-                        coroutine.launch {
-                            ctx.scrobblePrefs.edit { p ->
-                                p[enabledKey] = it
-                            }
-                        }
-                    },
+                    checked = enabled,
+                    onCheckedChange = { vm.updateScrobbling(it) },
                     colors = styledSwitch
                 )
             }
@@ -194,7 +139,7 @@ fun ScrobbleSettings() {
                 stringResource(R.string.notification_permission_help_text),
                 intent = notificationIntent
             ) {
-                if (hasNotificationPermission) {
+                if (hasPermission == true) {
                     Icon(Icons.Rounded.Check, null, tint = Success)
                 } else Icon(Icons.Rounded.Error, null, tint = Color.Red)
             }
@@ -203,15 +148,8 @@ fun ScrobbleSettings() {
                 stringResource(R.string.update_now_playing_description)
             ) {
                 Switch(
-                    checked = updatesNowPlaying.value,
-                    onCheckedChange = {
-                        updatesNowPlaying.value = it
-                        coroutine.launch {
-                            ctx.scrobblePrefs.edit { p ->
-                                p[updateNowPlayingKey] = it
-                            }
-                        }
-                    },
+                    checked = updatesNowPlaying ?: false,
+                    onCheckedChange = { vm.updateNowPlaying(it) },
                     colors = styledSwitch
                 )
             }
@@ -229,33 +167,14 @@ fun ScrobbleSettings() {
                 }
 
                 Slider(
-                    value = scrobblePoint.value,
-                    onValueChange = { scrobblePoint.value = it },
+                    value = scrobblePoint,
+                    onValueChange = { vm.scrobblePoint.value = it },
                     valueRange = 30f..90f,
                     steps = 15,
-                    onValueChangeFinished = {
-                        coroutine.launch {
-                            ctx.scrobblePrefs.edit { p ->
-                                p[scrobblePointKey] = scrobblePoint.value
-                            }
-                        }
-                    }
+                    onValueChangeFinished = { vm.updateScrobblePoint() }
                 )
             }
-            /*            Item("Enable scrobbling for new apps") {
-                            Switch(
-                                checked = newApps.value,
-                                onCheckedChange = {
-                                    newApps.value = it
-                                    coroutine.launch {
-                                        ctx.scrobblePrefs.edit { p ->
-                                            p[newAppsKey] = it
-                                        }
-                                    }
-                                },
-                                colors = styledSwitch
-                            )
-                        }*/
+
             SectionTitle(sectionName = stringResource(R.string.media_apps), padding = false)
             Text(
                 text = stringResource(R.string.media_apps_description),
@@ -263,24 +182,24 @@ fun ScrobbleSettings() {
                 modifier = Modifier.alpha(.55f)
             )
 
-            // Triple follows the following order: App icon, app name and package
             mediaApps.forEach { app ->
-                MediaApp(
-                    name = app.second,
-                    icon = app.first,
-                    enabled = app.third in enabledApps,
-                    onChange = {
-                        if (app.second == "Spotify" && it == true) {
-                            showSpotifyModal.value = true
-                            return@MediaApp
-                        }
-                        enabledApps.remove(app.third) || enabledApps.add(app.third)
-                        coroutine.launch {
-                            ctx.scrobblePrefs.edit { p ->
-                                p[enabledAppsKey] = enabledApps.toSet()
-                            }
-                        }
-                    })
+                ListItem(
+                    headlineContent = { Text(text = app.displayName) },
+                    leadingContent = {
+                        Image(
+                            app.logo.toBitmap().asImageBitmap(),
+                            null,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = app.packageName in enabledPackageSet,
+                            onCheckedChange = { vm.updateMediaApp(app.packageName, it) },
+                            colors = styledSwitch
+                        )
+                    }
+                )
             }
         }
     }
@@ -294,7 +213,7 @@ fun Item(
     trail: (@Composable () -> Unit)? = null,
 ) {
     val ctx = LocalContext.current
-    val source = MutableInteractionSource()
+    val source = remember { MutableInteractionSource() }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -331,46 +250,21 @@ fun Item(
 }
 
 @Composable
-fun MediaApp(name: String, icon: Drawable, enabled: Boolean, onChange: (Boolean?) -> Unit) {
-    val styledSwitch =
-        SwitchDefaults.colors(
-            checkedTrackColor = MostlyRed,
-            uncheckedThumbColor = ContentSecondary,
-            uncheckedTrackColor = LighterGray,
-            uncheckedBorderColor = EvenLighterGray
-        )
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Image(icon.toBitmap().asImageBitmap(), null, modifier = Modifier.size(25.dp))
-            Text(text = name)
-        }
-        Switch(checked = enabled, onCheckedChange = onChange, colors = styledSwitch)
-    }
-}
-
-@Composable
-fun SpotifyModal(state: MutableState<Boolean>, onEnable: () -> Unit) {
+fun SpotifyModal(onEnable: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
-        onDismissRequest = { state.value = false },
+        onDismissRequest = onDismiss,
         icon = { Image(painterResource(R.drawable.spotify_icon), null) },
         title = { Text(stringResource(R.string.enable_scrobbling_for_spotify)) },
         text = { Text(stringResource(R.string.spotify_scrobble_description)) },
         dismissButton = {
-            TextButton(onClick = { state.value = false }) {
+            TextButton(onClick = { onDismiss() }) {
                 Text(stringResource(R.string.dismiss))
             }
         },
         confirmButton = {
             TextButton(onClick = {
-                state.value = false.also { onEnable() }
+                onDismiss()
+                onEnable()
             }) {
                 Text(stringResource(R.string.enable))
             }
