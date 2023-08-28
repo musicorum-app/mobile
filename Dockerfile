@@ -1,4 +1,4 @@
-FROM gradle:6.8.3-jre15
+FROM gradle:8.3.0-jdk17
 USER root
 ENV TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip" \
 ANDROID_SDK_ROOT="/usr/local/android-sdk" \
