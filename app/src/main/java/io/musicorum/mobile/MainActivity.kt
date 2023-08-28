@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -282,13 +283,28 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .padding(pv)
                         ) {
+                            val animationCurve = CubicBezierEasing(0.76f, 0f, 0.24f, 1f)
                             NavHost(
                                 navController = navController,
                                 startDestination = "home",
                                 enterTransition = { slideInHorizontally(tween(350)) { fullWidth -> fullWidth } },
                                 exitTransition = { slideOutHorizontally(tween(350)) { fullWidth -> -fullWidth / 2 } },
-                                popExitTransition = { slideOutHorizontally(tween(350)) { fullWidth -> fullWidth / 2 } },
-                                popEnterTransition = { slideInHorizontally(tween(350)) { fullWidth -> -fullWidth } }
+                                popExitTransition = {
+                                    slideOutHorizontally(
+                                        tween(
+                                            500,
+                                            easing = animationCurve
+                                        )
+                                    ) { fullWidth -> fullWidth }
+                                },
+                                popEnterTransition = {
+                                    slideInHorizontally(
+                                        tween(
+                                            500,
+                                            easing = animationCurve
+                                        )
+                                    )
+                                }
                             ) {
                                 loginGraph(navController = navController)
 
