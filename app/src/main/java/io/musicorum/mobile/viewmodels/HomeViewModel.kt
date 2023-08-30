@@ -21,7 +21,6 @@ import io.musicorum.mobile.serialization.entities.TopTracks
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
@@ -110,7 +109,7 @@ class HomeViewModel @Inject constructor(
 
         val fromTimestamp = "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}"
         viewModelScope.launch {
-            val localUser = LocalUserRepository(ctx).partialUser.first()
+            val localUser = LocalUserRepository(ctx).getUser()
             user.value = localUser
             getPalette(localUser.imageUrl, ctx)
 

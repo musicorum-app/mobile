@@ -63,7 +63,6 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.serialization.User
@@ -94,7 +93,6 @@ import io.musicorum.mobile.views.settings.ScrobbleSettings
 import io.musicorum.mobile.views.settings.Settings
 import io.sentry.android.core.SentryAndroid
 import io.sentry.compose.withSentryObservableEffect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -228,13 +226,8 @@ class MainActivity : ComponentActivity() {
                         } else {
                             val userReq = UserEndpoint.getSessionUser(sessionKey)
                             val localUser = LocalUserRepository(applicationContext)
-                            if (localUser.partialUser.first().username.isEmpty()) {
-                                localUser.updateUser(
-                                    PartialUser(
-                                        userReq?.user?.name ?: "",
-                                        userReq?.user?.bestImageUrl ?: ""
-                                    )
-                                )
+                            if (localUser.getUser().username.isEmpty()) {
+                                localUser.create(userReq?.user)
                             }
                             MutableUserState.value = userReq
 

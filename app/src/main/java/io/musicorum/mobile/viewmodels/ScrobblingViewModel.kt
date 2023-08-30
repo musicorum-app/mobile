@@ -14,7 +14,6 @@ import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.entities.Track
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,7 +32,7 @@ class ScrobblingViewModel @Inject constructor(
     fun updateScrobbles() {
         refreshing.value = true
         viewModelScope.launch {
-            val user = LocalUserRepository(ctx).partialUser.first()
+            val user = LocalUserRepository(ctx).getUser()
             val res = UserEndpoint.getRecentTracks(user.username, null, null, null)
             if (res != null) {
                 scrobbleRepository.updateData(res)

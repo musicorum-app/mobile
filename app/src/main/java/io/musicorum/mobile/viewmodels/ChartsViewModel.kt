@@ -17,7 +17,6 @@ import io.musicorum.mobile.serialization.entities.TopArtist
 import io.musicorum.mobile.serialization.entities.TopTracksData
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ChartsViewModel(application: Application) : AndroidViewModel(application) {
@@ -31,7 +30,7 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
 
     init {
         viewModelScope.launch {
-            val user = LocalUserRepository(application.applicationContext).partialUser.first()
+            val user = LocalUserRepository(application.applicationContext).getUser()
             fetchAll(user.username)
         }
     }
@@ -89,7 +88,7 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
 
     fun updatePeriod(newPeriod: FetchPeriod) {
         viewModelScope.launch {
-            val user = LocalUserRepository(_application.applicationContext).partialUser.first()
+            val user = LocalUserRepository(_application.applicationContext).getUser()
             period.value = newPeriod
             fetchAll(user.username)
         }
