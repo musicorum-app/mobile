@@ -6,7 +6,7 @@ import io.musicorum.mobile.views.mostListened.RecentTracksPageSource
 
 object RecentTracksRepository {
     fun getRecentTracks(user: String) = Pager(
-        config = PagingConfig(pageSize = 5),
+        config = PagingConfig(pageSize = 10),
         pagingSourceFactory = { RecentTracksPageSource(user) }
     ).flow
 }

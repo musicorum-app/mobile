@@ -13,7 +13,6 @@ import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.serialization.entities.TopArtist
 import io.musicorum.mobile.serialization.entities.Track
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -51,7 +50,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
 
     private suspend fun fetch() {
         if (entity.value == null) return
-        val user = LocalUserRepository(application_.applicationContext).partialUser.first()
+        val user = LocalUserRepository(application_.applicationContext).getUser()
         val entity = entity.value
         val period = period.value!!
         if (entity == ResourceEntity.Artist) {

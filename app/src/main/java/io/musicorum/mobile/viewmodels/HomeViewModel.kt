@@ -11,17 +11,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.models.FetchPeriod
+import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.RecentTracks
-import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.serialization.entities.TopTracks
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
@@ -34,7 +33,7 @@ class HomeViewModel @Inject constructor(
     AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     val ctx = application as Context
-    val user = MutableLiveData<User>()
+    val user = MutableLiveData<PartialUser>()
     val userPalette = MutableLiveData<Palette>()
     val recentTracks = MutableLiveData<RecentTracks>()
     val weekTracks = MutableLiveData<TopTracks>()
@@ -110,12 +109,13 @@ class HomeViewModel @Inject constructor(
 
         val fromTimestamp = "${Instant.now().minusSeconds(604800).toEpochMilli() / 1000}"
         viewModelScope.launch {
-            val user = LocalUserRepository(ctx).partialUser.first()
-            getPalette(user.imageUrl, ctx)
+            val localUser = LocalUserRepository(ctx).getUser()
+            user.value = localUser
+            getPalette(localUser.imageUrl, ctx)
 
-            fetchRecentTracks(user.username, fromTimestamp)
-            fetchTopTracks(user.username)
-            fetchFriends(user.username)
+            fetchRecentTracks(localUser.username, fromTimestamp)
+            fetchTopTracks(localUser.username)
+            fetchFriends(localUser.username)
         }
     }
 
