@@ -54,8 +54,8 @@ import io.musicorum.mobile.components.FriendActivity
 import io.musicorum.mobile.components.HorizontalTracksRow
 import io.musicorum.mobile.components.LabelType
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
+import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.serialization.RecentTracks
-import io.musicorum.mobile.serialization.UserData
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
@@ -102,7 +102,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             }
 
             if (user != null && palette != null) {
-                UserCard(user.user, palette, recentTracks, nav)
+                UserCard(user, palette, recentTracks, nav)
             } else {
                 Box(
                     modifier = Modifier
@@ -211,7 +211,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
 
 @Composable
 private fun UserCard(
-    user: UserData,
+    user: PartialUser,
     palette: Palette,
     recentTracks: RecentTracks?,
     nav: NavHostController
@@ -240,7 +240,7 @@ private fun UserCard(
         ) {
             AsyncImage(
                 model = defaultImageRequestBuilder(
-                    url = user.bestImageUrl,
+                    url = user.imageUrl,
                     PlaceholderType.USER
                 ), contentDescription = "user profile pic",
                 modifier = Modifier
@@ -252,7 +252,7 @@ private fun UserCard(
 
             Spacer(modifier = Modifier.width(10.dp))
             Column {
-                Text(text = user.name, style = Typography.headlineMedium)
+                Text(text = user.username, style = Typography.headlineMedium)
                 val total = recentTracks?.recentTracks?.recentTracksAttributes?.total?.toInt() ?: 0
                 Text(
                     text = pluralStringResource(
