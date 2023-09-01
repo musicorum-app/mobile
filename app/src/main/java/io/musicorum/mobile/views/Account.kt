@@ -1,21 +1,20 @@
 package io.musicorum.mobile.views
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
-import io.musicorum.mobile.LocalAnalytics
-import io.musicorum.mobile.LocalUser
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.musicorum.mobile.components.CenteredLoadingSpinner
+import io.musicorum.mobile.viewmodels.AccountVm
 import io.musicorum.mobile.views.individual.User
 
 @Composable
-fun Account() {
-    val analytics = LocalAnalytics.current!!
-    LaunchedEffect(Unit) {
-        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "user_own_profile")
-        }
+fun Account(model: AccountVm = viewModel()) {
+
+    val user = model.user.observeAsState(null).value
+
+    if (user == null) {
+        CenteredLoadingSpinner()
+    } else {
+        User(username = user.username)
     }
-    val user = LocalUser.current
-    User(username = user!!.user.name)
 }

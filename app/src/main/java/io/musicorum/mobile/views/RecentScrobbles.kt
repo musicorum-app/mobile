@@ -19,18 +19,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
-import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackItem
 import io.musicorum.mobile.ui.theme.LighterGray
@@ -39,18 +34,10 @@ import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecentScrobbles(
-    recentSrcobblesViewModel: RecentSrcobblesViewModel = viewModel(),
+    viewModel: RecentSrcobblesViewModel = viewModel(),
 ) {
     val nav = LocalNavigation.current!!
-    val analytics = LocalAnalytics.current!!
-    LaunchedEffect(Unit) {
-        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
-            param(FirebaseAnalytics.Param.SCREEN_NAME, "recent_scrobbles")
-        }
-    }
-    val user = LocalUser.current!!
-    val recentTracks = recentSrcobblesViewModel.fetchRecentTracks(user.user.name)
-        .collectAsLazyPagingItems()
+    val recentTracks = viewModel.recentTracks.value?.collectAsLazyPagingItems()
     val state = rememberLazyListState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val appBarColors = TopAppBarDefaults.topAppBarColors(
@@ -71,6 +58,10 @@ fun RecentScrobbles(
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { paddingValues ->
+        if (recentTracks == null) {
+            return@Scaffold CenteredLoadingSpinner()
+        }
+
         Column(
             modifier = Modifier
                 .padding(paddingValues)
