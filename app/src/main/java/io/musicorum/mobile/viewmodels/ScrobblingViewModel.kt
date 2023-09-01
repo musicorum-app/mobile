@@ -36,6 +36,8 @@ class ScrobblingViewModel @Inject constructor(
             val res = UserEndpoint.getRecentTracks(user.username, null, null, null)
             if (res != null) {
                 scrobbleRepository.updateData(res)
+                if (res.recentTracks.tracks.isEmpty()) return@launch
+
                 if (res.recentTracks.tracks[0].attributes?.nowPlaying == "true") {
                     if (res.recentTracks.tracks[0].loved) {
                         isTrackLoved.value = true
