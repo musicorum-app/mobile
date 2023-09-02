@@ -44,6 +44,7 @@ job("Build and release to internal testing") {
                 echo Get crowdin.properties...
                 echo ${'$'}CROWDIN_PROPERTIES > crowdin_properties.hex
                 xxd -plain -revert crowdin_properties.hex crowdin.properties
+                cat crowdin.properties
                 echo Get Sentry properties file...
                 echo ${'$'}SENTRY_PROPERTIES > sentry_properties.hex
                 xxd -plain -revert sentry_properties.hex sentry.properties
