@@ -14,8 +14,8 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable
 
 object MusicorumAlbumEndpoint {
-    suspend fun fetchAlbums(albums: List<Album?>): List<TrackResponse?>? {
-        if (albums.isEmpty()) return null
+    suspend fun fetchAlbums(albums: List<Album?>): List<TrackResponse?> {
+        if (albums.isEmpty()) return emptyList()
         val albumList: MutableList<RequestAlbum> = mutableListOf()
         albums.forEach { album ->
             album?.let {
@@ -32,7 +32,7 @@ object MusicorumAlbumEndpoint {
                 ListSerializer(TrackResponse.serializer().nullable),
                 res.bodyAsText()
             )
-        } else null
+        } else emptyList()
     }
 
     @kotlinx.serialization.Serializable

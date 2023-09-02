@@ -121,7 +121,15 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                             Spacer(Modifier.width(10.dp))
                             Text(text = user?.user?.name ?: "", style = Typography.titleMedium)
                         }
-                        IconButton(onClick = { viewModel.logout {} }) {
+                        IconButton(onClick = {
+                            viewModel.logout {
+                                nav?.navigate(Routes.login) {
+                                    popUpTo(Routes.settings) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        }) {
                             Icon(Icons.Rounded.Logout, null, tint = MostlyRed)
                         }
                     }
