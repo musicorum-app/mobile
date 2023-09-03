@@ -13,6 +13,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
+import io.musicorum.mobile.serialization.SearchTrack
 import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.serialization.builtins.ListSerializer
@@ -31,6 +32,35 @@ object MusicorumTrackEndpoint {
         if (tracks.isEmpty()) return emptyList()
         val trackList: MutableList<BodyTrack> = mutableListOf()
         tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist.name)) }
+        val res: HttpResponse = KtorConfiguration.musicorumClient.post {
+            url("/v2/resources/tracks")
+            contentType(ContentType.Application.Json)
+            setBody(Body(trackList.toList()))
+        }
+
+        /* Re-run requests that are 201 -- Experimental */
+        if (res.status == HttpStatusCode.Created) {
+            val requestBuilder = HttpRequestBuilder().takeFrom(res.request)
+            val newRes = KtorConfiguration.musicorumClient.post(requestBuilder)
+            return if (res.status.isSuccess()) {
+                json.decodeFromString(
+                    ListSerializer(TrackResponse.serializer().nullable),
+                    newRes.bodyAsText()
+                )
+            } else emptyList()
+        }
+
+        return if (res.status.isSuccess()) {
+            json.decodeFromString(ListSerializer(TrackResponse.serializer()), res.bodyAsText())
+        } else emptyList()
+
+    }
+
+    @JvmName("fetchTracks1")
+    suspend fun fetchTracks(tracks: List<SearchTrack>): List<TrackResponse?> {
+        if (tracks.isEmpty()) return emptyList()
+        val trackList: MutableList<BodyTrack> = mutableListOf()
+        tracks.forEach { t -> trackList.add(BodyTrack(t.name, t.artist)) }
         val res: HttpResponse = KtorConfiguration.musicorumClient.post {
             url("/v2/resources/tracks")
             contentType(ContentType.Application.Json)

@@ -9,6 +9,7 @@ import io.ktor.client.request.post
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.BaseIndividualTrack
+import io.musicorum.mobile.serialization.SearchResponse
 import io.musicorum.mobile.serialization.SimilarTrack
 import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.userData
@@ -75,6 +76,20 @@ object TrackEndpoint {
         } else {
             null
         }
+    }
+
+    suspend fun search(query: String, limit: Int? = null, page: Int? = null, artist: String? = null): SearchResponse? {
+        val res = KtorConfiguration.lastFmClient.get {
+            parameter("method", "track.search")
+            parameter("track", query)
+            parameter("artist", artist)
+            parameter("limit", limit)
+            parameter("page", page)
+        }
+
+        return if (res.status.isSuccess()) {
+            res.body<SearchResponse>()
+        } else null
     }
 
 }

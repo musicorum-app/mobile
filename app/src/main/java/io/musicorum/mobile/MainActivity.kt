@@ -249,6 +249,7 @@ class MainActivity : ComponentActivity() {
                     "scrobbling" -> true
                     "profile" -> true
                     "charts" -> true
+                    "discover" -> true
                     else -> false
                 }
 
