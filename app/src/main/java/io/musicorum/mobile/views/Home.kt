@@ -83,6 +83,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             Modifier
                 .verticalScroll(rememberScrollState())
                 .background(KindaBlack)
+                .fillMaxSize()
                 .padding(top = 30.dp, bottom = 20.dp)
         ) {
             Row(
@@ -186,7 +187,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 if (friendsActivity == null && friends == null) {
                     if (errored == true) {
                         Text(
-                            text = "When you follow people, their listening activity will appear here",
+                            text = stringResource(R.string.empty_friendlist_message),
                             softWrap = true,
                             style = Subtitle1
                         )

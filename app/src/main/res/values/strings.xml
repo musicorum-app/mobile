@@ -117,6 +117,8 @@
     <string name="update_now_playing">Update now playing</string>
     <string name="update_now_playing_description">Whether this will update your profile with the current playing song, even if it hasn\'t finished scrobbling</string>
     <string name="nothing_playing">Nothing playing</string>
+    <string name="empty_friendlist_message">When you follow people, their listening activity will appear here</string>
+    <string name="empty_tracklist_message">Your tracks will be shown here</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Enabled • %1$d app</item>
         <item quantity="other">Enabled • %1$d apps</item>

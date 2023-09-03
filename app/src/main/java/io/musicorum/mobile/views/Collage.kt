@@ -52,7 +52,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -60,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.ui.theme.ContentSecondary
@@ -69,8 +67,6 @@ import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.utils.PeriodResolver
-import io.musicorum.mobile.utils.downloadFile
-import io.musicorum.mobile.utils.shareFile
 import io.musicorum.mobile.viewmodels.ChartCollageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -80,10 +76,9 @@ fun Collage(model: ChartCollageViewModel = viewModel(), args: Bundle) {
     val themeDropdown = remember { mutableStateOf(false) }
     val typeDropdown = remember { mutableStateOf(false) }
     val periodDropdown = remember { mutableStateOf(false) }
-    val user = LocalUser.current?.user
+    val user = model.user.observeAsState(null).value
     val generatedImageUrl = model.imageUrl.observeAsState().value
     val ready = model.ready.observeAsState().value!!
-    val ctx = LocalContext.current
     val isGenerating = model.isGenerating.observeAsState().value!!
     val nav = LocalNavigation.current
 
@@ -207,7 +202,7 @@ fun Collage(model: ChartCollageViewModel = viewModel(), args: Bundle) {
                 onClick = {
                     keyboardController?.hide()
                     model.generate(
-                        user.name,
+                        user.username,
                         rowCount.value.toInt(),
                         colCount.value.toInt(),
                         selectedType.value.second,
@@ -246,7 +241,7 @@ fun Collage(model: ChartCollageViewModel = viewModel(), args: Bundle) {
                             contentColor = Color.White
                         )
                         OutlinedButton(
-                            onClick = { shareFile(ctx, uri, shareText) },
+                            onClick = { model.shareFile(uri, shareText) },
                             modifier = Modifier.weight(.5f, true),
                             colors = outlinedButtonColors
                         ) {
@@ -255,9 +250,10 @@ fun Collage(model: ChartCollageViewModel = viewModel(), args: Bundle) {
                             Text(text = "Share")
                         }
                         Spacer(modifier = Modifier.width(20.dp))
-                        Button(onClick = {
-                            downloadFile(ctx, uri = uri)
-                        }, modifier = Modifier.weight(.5f, true)) {
+                        Button(
+                            onClick = { model.downloadFile(uri) },
+                            modifier = Modifier.weight(.5f, true)
+                        ) {
                             Icon(Icons.Rounded.Download, null)
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(text = "Save")

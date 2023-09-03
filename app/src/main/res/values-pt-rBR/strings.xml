@@ -17,15 +17,15 @@
     <string name="top_artists">Top artistas</string>
     <plurals name="tracks_quantity">
         <item quantity="one">%1$s faixa</item>
-        <item quantity="other">%1$s faixas</item>
+        <item quantity="many">%1$s faixas</item>
     </plurals>
     <plurals name="albums_quantity">
         <item quantity="one">%1$s álbum</item>
-        <item quantity="other">%1$s álbuns</item>
+        <item quantity="many">%1$s álbuns</item>
     </plurals>
     <plurals name="artists_quantity">
         <item quantity="one">%1$s artista</item>
-        <item quantity="other">%1$s artistas</item>
+        <item quantity="many">%1$s artistas</item>
     </plurals>
     <string name="listeners">Ouvintes</string>
     <string name="scrobbles">Reproduções</string>
@@ -39,7 +39,7 @@
     <!-- Discover -->
     <plurals name="discover_page_results_text">
         <item quantity="one">%1$s resultado</item>
-        <item quantity="other">%1$s resultados</item>
+        <item quantity="many">%1$s resultados</item>
     </plurals>
     <string name="discover_page_no_results">Nada encontrado</string>
     <!-- Artist -->
@@ -49,7 +49,7 @@
     <string name="friends_activity">Atividade dos amigos</string>
     <plurals name="total_scrobbles_week">
         <item quantity="one">%1$d reprodução • últimos 7 dias</item>
-        <item quantity="other">%1$d reproduções • últimos 7 dias</item>
+        <item quantity="many">%1$d reproduções • últimos 7 dias</item>
     </plurals>
     <string name="from">De</string>
     <string name="appears_on">Aparece em</string>
@@ -67,6 +67,7 @@
     <string name="welcome">Bem-vindo, %1$s!</string>
     <string name="analytics_description">Enviar relatório de falhas e informações do dispositivo</string>
     <string name="hold_on">Espere</string>
+    x
     <string name="last_month">Últimos 30 dias</string>
     <string name="no_data_available">Sem dados disponíveis</string>
 </resources>

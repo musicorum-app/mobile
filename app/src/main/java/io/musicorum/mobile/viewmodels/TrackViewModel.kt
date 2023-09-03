@@ -58,7 +58,7 @@ class TrackViewModel : ViewModel() {
             try {
                 val musARes = MusicorumAlbumEndpoint.fetchAlbums(listOf(musicorumReqAlbum))
                 res.track.album?.bestImageUrl =
-                    musARes?.get(0)?.resources?.getOrNull(0)?.bestImageUrl.toString()
+                    musARes[0]?.resources?.getOrNull(0)?.bestImageUrl.toString()
             } catch (_: ServerResponseException) {
             }
 

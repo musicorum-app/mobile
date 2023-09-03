@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -120,6 +121,15 @@ class NotificationListener : NotificationListenerService() {
         }
 
         val timestamp = Date()
+        val analytics = FirebaseAnalytics.getInstance(applicationContext)
+
+        if (artist == null || track == null) {
+            val bundle = Bundle()
+            bundle.putString("reason", "track os artist is null")
+            bundle.putString("artist", artist)
+            bundle.putString("track", track)
+            analytics.logEvent("device_scrobble_failed", bundle)
+        }
 
         if (!isPlayerPaused && updateNowPlaying == true && isScrobbleAllowed) {
             CoroutineScope(Dispatchers.IO).launch {
@@ -134,7 +144,6 @@ class NotificationListener : NotificationListenerService() {
             }
         }
         if (timeToScrobble < 0) return
-        val analytics = FirebaseAnalytics.getInstance(applicationContext)
 
         job = if (isPlayerPaused) {
             Log.d(tag, "player has been paused")
