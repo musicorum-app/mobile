@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
+import io.musicorum.mobile.serialization.SearchResponse
 import io.musicorum.mobile.serialization.TopAlbumsResponse
 import io.musicorum.mobile.serialization.entities.Artist
 import io.musicorum.mobile.serialization.entities.TopTracks
@@ -51,6 +52,19 @@ object ArtistEndpoint {
         } else {
             return null
         }
+    }
+
+    suspend fun search(query: String, limit: Int? = null, page: Int? = null): SearchResponse? {
+        val res = KtorConfiguration.lastFmClient.get {
+            parameter("method", "artist.search")
+            parameter("artist", query)
+            parameter("limit", limit)
+            parameter("page", page)
+        }
+
+       return if (res.status.isSuccess()) {
+            res.body<SearchResponse>()
+        } else null
     }
 }
 

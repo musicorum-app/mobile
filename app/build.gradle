@@ -109,10 +109,12 @@ android {
 }
 
 play {
+    double fraction = 100
     def googleServiceAccountKeyFile = "../google_sa_key.json"
     track.set("internal")
     serviceAccountCredentials.set(file(googleServiceAccountKeyFile))
-    releaseStatus.set(ReleaseStatus.IN_PROGRESS)
+    releaseStatus.set(ReleaseStatus.COMPLETED)
+    play.userFraction.set(fraction)
 }
 
 dependencies {

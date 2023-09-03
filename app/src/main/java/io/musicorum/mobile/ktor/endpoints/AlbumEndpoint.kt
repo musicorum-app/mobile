@@ -5,6 +5,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
+import io.musicorum.mobile.serialization.SearchResponse
 import io.musicorum.mobile.serialization.entities.Album
 import kotlinx.serialization.Serializable
 
@@ -21,6 +22,19 @@ object AlbumEndpoint {
         } else {
             null
         }
+    }
+
+    suspend fun search(query: String, limit: Int? = null, page: Int? = null): SearchResponse? {
+        val res = KtorConfiguration.lastFmClient.get {
+            parameter("method", "album.search")
+            parameter("album", query)
+            parameter("limit", limit)
+            parameter("page", page)
+        }
+
+        return if (res.status.isSuccess()) {
+            res.body<SearchResponse>()
+        } else null
     }
 }
 

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.QueueMusic
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -26,9 +27,10 @@ import java.util.Locale
 
 @Composable
 fun BottomNavBar(nav: NavHostController) {
-    val items = listOf("Home", "Scrobbling", "Charts", "Profile")
+    val items = listOf("Home", "Discover", "Scrobbling", "Charts", "Profile")
     val icons = listOf(
         Icons.Rounded.Home,
+        Icons.Rounded.Search,
         Icons.Rounded.QueueMusic,
         Icons.Rounded.BarChart,
         Icons.Rounded.Person
