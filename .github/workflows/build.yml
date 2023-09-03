@@ -1,0 +1,95 @@
+name: Build and publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  print-summary:
+    name: "Print summary"
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v3
+      -
+        name: Print summary
+        shell: bash
+        run: |
+          VERSION_NAME=$(grep "versionName" ./app/build.gradle | awk '{print $2; exit}' | sed "s/\"//g")
+          VERSION_CODE=$(grep "versionCode" ./app/build.gradle | awk '{print $2; exit}')
+          echo "## $VERSION_NAME (version code $VERSION_CODE)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Go to app releases](https://play.google.com/console/u/0/developers/5504935531627839187/app/4975635377278941382/releases/overview)" >> $GITHUB_STEP_SUMMARY
+  build:
+    name: "Build and publish bundle"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      -
+        name: Checkout repository
+        uses: actions/checkout@v3
+      -
+        name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: corretto
+          java-version: 17
+          cache: 'gradle'
+      -
+        name: Setup build tokens
+        shell: bash
+        run: |
+          echo "- Setting tokens"
+          echo LASTFM_API_KEY=\"${{ secrets.LASTFM_API_KEY }}\" >> tokens.properties
+          echo LASTFM_SECRET=\"${{ secrets.LASTFM_SECRET }}\" >> tokens.properties
+          echo MUSICORUM_API_KEY=\"${{ secrets.MUSICORUM_API_KEY }}\" >> tokens.properties
+          cp tokens.properties tokens.release.properties
+      -
+        name: Setup keys
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          CROWDIN_PROPERTIES: ${{ secrets.CROWDIN_PROPERTIES }}
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_B64 }}
+          GOOGLE_SA_JSON_B64: ${{ secrets.GOOGLE_SA_JSON_B64 }}
+          SENTRY_PROPERTIES: ${{ secrets.SENTRY_PROPERTIES }}
+        run: |
+          echo "- Setting signing key"
+          echo "$KEYSTORE_BASE64" > keystore.base64
+          base64 -d keystore.base64 > upload_key.jks
+          echo "- Setting crowdin"
+          echo "$CROWDIN_PROPERTIES" > crowdin.properties
+          echo "- Setting google services json"
+          echo "$GOOGLE_SERVICES_JSON_B64" > app/google-services.json.base64
+          base64 -d app/google-services.json.base64 > app/google-services.json
+          echo "$GOOGLE_SA_JSON_B64" > google_sa_key.json.base64
+          base64 -d google_sa_key.json.base64 > google_sa_key.json
+          echo "- Setting Sentry"
+          echo "$SENTRY_PROPERTIES" > sentry.properties
+      -
+        name: Download font
+        shell: bash
+        run: |
+          cd app/src/main/res
+          mkdir font
+          cd font
+          wget https://api.fontshare.com/v2/fonts/download/author -O author.zip
+          unzip author.zip
+          cp Author_Complete/Fonts/WEB/fonts/*.ttf .
+          rm -rf Author_Complete/
+          rm author.zip
+          echo "Renaming"
+          for i in $( ls | grep [A-Z] );
+          do 
+            mv -i $i `echo $i | tr [:upper:] [:lower:] | tr '-' '_'`;
+          done
+      -
+        name: Build app
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: bash ./gradlew publishReleaseBundle
