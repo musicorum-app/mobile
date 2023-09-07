@@ -92,6 +92,8 @@ import io.musicorum.mobile.views.login.loginGraph
 import io.musicorum.mobile.views.mostListened.MostListened
 import io.musicorum.mobile.views.settings.ScrobbleSettings
 import io.musicorum.mobile.views.settings.Settings
+import io.sentry.android.core.SentryAndroid
+import io.sentry.compose.withSentryObservableEffect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -196,14 +198,14 @@ class MainActivity : ComponentActivity() {
         }
         if (!BuildConfig.DEBUG) {
             try {
-                //SentryAndroid.init(this)
+                SentryAndroid.init(this)
             } catch (_: Exception) {
             }
         }
 
         setContent {
             val useDarkIcons = !isSystemInDarkTheme()
-            navController = rememberNavController()//.withSentryObservableEffect()
+            navController = rememberNavController().withSentryObservableEffect()
 
             val mostListenedViewModel: MostListenedViewModel = viewModel()
             val ctx = LocalContext.current
