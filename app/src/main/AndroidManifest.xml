@@ -48,7 +48,7 @@
             android:value="true" />
         <meta-data
             android:name="io.sentry.auto-init"
-            android:value="true" />
+            android:value="false" />
         <meta-data
             android:name="io.sentry.traces.profiling.sample-rate"
             android:value="1.0" />
