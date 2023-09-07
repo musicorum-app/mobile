@@ -54,6 +54,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.ktx.startUpdateFlowForResult
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -91,8 +92,6 @@ import io.musicorum.mobile.views.login.loginGraph
 import io.musicorum.mobile.views.mostListened.MostListened
 import io.musicorum.mobile.views.settings.ScrobbleSettings
 import io.musicorum.mobile.views.settings.Settings
-import io.sentry.android.core.SentryAndroid
-import io.sentry.compose.withSentryObservableEffect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -197,14 +196,14 @@ class MainActivity : ComponentActivity() {
         }
         if (!BuildConfig.DEBUG) {
             try {
-                SentryAndroid.init(this)
+                //SentryAndroid.init(this)
             } catch (_: Exception) {
             }
         }
 
         setContent {
             val useDarkIcons = !isSystemInDarkTheme()
-            navController = rememberNavController().withSentryObservableEffect()
+            navController = rememberNavController()//.withSentryObservableEffect()
 
             val mostListenedViewModel: MostListenedViewModel = viewModel()
             val ctx = LocalContext.current

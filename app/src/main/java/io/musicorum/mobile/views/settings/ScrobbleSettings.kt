@@ -129,7 +129,7 @@ fun ScrobbleSettings(vm: ScrobbleSettingsVm = viewModel()) {
                 stringResource(R.string.device_scrobbling_description)
             ) {
                 Switch(
-                    checked = enabled,
+                    checked = enabled ?: false,
                     onCheckedChange = { vm.updateScrobbling(it) },
                     colors = styledSwitch
                 )
@@ -194,7 +194,7 @@ fun ScrobbleSettings(vm: ScrobbleSettingsVm = viewModel()) {
                     },
                     trailingContent = {
                         Switch(
-                            checked = app.packageName in enabledPackageSet,
+                            checked = app.packageName in (enabledPackageSet ?: emptyList()),
                             onCheckedChange = { vm.updateMediaApp(app.packageName, it) },
                             colors = styledSwitch
                         )

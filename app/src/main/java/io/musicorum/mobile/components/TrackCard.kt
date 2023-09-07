@@ -9,19 +9,25 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CloudOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -36,6 +42,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.entities.Track
+import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.Typography
@@ -99,18 +106,32 @@ fun TrackCard(track: Track, labelType: LabelType) {
                     )
                 }
             }
+
         }
-        Text(
-            text = track.name,
-            textAlign = TextAlign.Start,
-            style = Typography.bodyLarge,
-            modifier = Modifier
-                .width(120.dp)
-                .padding(top = 7.dp)
-                .indication(interactionSource, null),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row {
+            if (track.pending) {
+                Icon(
+                    Icons.Rounded.CloudOff,
+                    null,
+                    modifier = Modifier
+                        .size(23.dp)
+                        .padding(end = 5.dp)
+                        .align(CenterVertically),
+                    tint = ContentSecondary
+                )
+            }
+            Text(
+                text = track.name,
+                textAlign = TextAlign.Start,
+                style = Typography.bodyLarge,
+                modifier = Modifier
+                    .widthIn(10.dp, 120.dp)
+                    .indication(interactionSource, null)
+                    .align(CenterVertically),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
 
         if (labelType == LabelType.DATE) {
             val text = if (track.attributes?.nowPlaying.toBoolean()) {

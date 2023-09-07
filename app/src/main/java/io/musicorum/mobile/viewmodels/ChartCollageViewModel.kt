@@ -14,8 +14,6 @@ import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.musicorum.Generator
 import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.repositories.LocalUserRepository
-import io.sentry.Sentry
-import io.sentry.SpanStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,9 +36,9 @@ class ChartCollageViewModel(application: Application) : AndroidViewModel(applica
         period: String,
         showNames: Boolean
     ) {
-        val transaction = Sentry.startTransaction("generate", "task")
-        transaction.setTag("entity", entity)
-        transaction.setTag("collageType", "grid")
+        //val transaction = Sentry.startTransaction("generate", "task")
+        //transaction.setTag("entity", entity)
+        //transaction.setTag("collageType", "grid")
         ready.value = false
         isGenerating.value = true
         viewModelScope.launch {
@@ -50,11 +48,11 @@ class ChartCollageViewModel(application: Application) : AndroidViewModel(applica
             ready.value = true
             isGenerating.value = false
             if (url == null) {
-                transaction.status = SpanStatus.INTERNAL_ERROR
+                //transaction.status = SpanStatus.INTERNAL_ERROR
             } else {
-                transaction.status = SpanStatus.OK
+                //transaction.status = SpanStatus.OK
             }
-            transaction.finish()
+            //transaction.finish()
         }
     }
 

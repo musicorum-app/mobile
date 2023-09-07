@@ -27,7 +27,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
 
     val scrobblePoint = MutableLiveData(50f)
     val updateNowPlaying = MutableLiveData(false)
-    val enabledPackageSet: MutableLiveData<Set<String>> = MutableLiveData()
+    val enabledPackageSet: MutableLiveData<Set<String>> = MutableLiveData(emptySet())
     val isEnabled = MutableLiveData(false)
     val availableApps: MutableLiveData<List<MediaApp>> = MutableLiveData()
     val hasPermission = MutableLiveData(false)
@@ -72,7 +72,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
     }
 
     fun enableSpotify() {
-        val newSet = enabledPackageSet.value!!.toMutableSet()
+        val newSet = enabledPackageSet.value?.toMutableSet() ?: mutableSetOf()
         newSet.add("com.spotify.music")
         viewModelScope.launch {
             ctx.scrobblePrefs.edit { p ->

@@ -27,7 +27,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.components.CenteredLoadingSpinner
-import io.musicorum.mobile.components.TrackItem
+import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.viewmodels.RecentSrcobblesViewModel
 
@@ -73,7 +73,7 @@ fun RecentScrobbles(
                     items(
                         count = recentTracks.itemCount
                     ) { index ->
-                        TrackItem(track = recentTracks[index])
+                        TrackListItem(track = recentTracks[index])
                     }
                     item {
                         when (recentTracks.loadState.append) {

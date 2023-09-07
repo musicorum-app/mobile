@@ -22,9 +22,8 @@ enum class LabelType {
 fun HorizontalTracksRow(
     tracks: List<Track>?,
     labelType: LabelType,
-    errored: Boolean?
 ) {
-    if (errored == true) {
+    if (tracks?.isEmpty() == true) {
         Text(
             text = stringResource(R.string.empty_tracklist_message),
             style = Subtitle1,
@@ -36,9 +35,9 @@ fun HorizontalTracksRow(
             modifier = Modifier
                 .padding(start = 20.dp)
         ) {
-            if (tracks.isNullOrEmpty()) {
+            if (tracks == null) {
                 items(4) { _ ->
-                    GenericCardPlaceholder(visible = tracks.isNullOrEmpty())
+                    GenericCardPlaceholder(visible = true)
                 }
             } else {
                 items(tracks) { track ->

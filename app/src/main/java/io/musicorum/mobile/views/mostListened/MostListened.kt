@@ -28,7 +28,7 @@ import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
-import io.musicorum.mobile.components.TrackItem
+import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.utils.LocalSnackbar
@@ -98,7 +98,7 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
                     .padding(it),
             ) {
                 items(mostListened.value!!.topTracks.tracks) { track ->
-                    TrackItem(track = track)
+                    TrackListItem(track = track)
                 }
             }
         }

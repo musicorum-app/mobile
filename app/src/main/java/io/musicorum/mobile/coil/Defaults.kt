@@ -17,9 +17,12 @@ fun defaultImageRequestBuilder(
     placeholderType: PlaceholderType = PlaceholderType.TRACK
 ): ImageRequest {
     val builder = ImageRequest.Builder(LocalContext.current)
+        .diskCacheKey(url)
+        .diskCachePolicy(CachePolicy.ENABLED)
         .data(url)
         .crossfade(true)
         .networkCachePolicy(CachePolicy.READ_ONLY)
+
 
     when (placeholderType) {
         PlaceholderType.ARTIST -> {

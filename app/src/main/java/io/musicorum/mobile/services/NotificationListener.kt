@@ -19,11 +19,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.ktor.http.isSuccess
+import io.musicorum.mobile.database.PendingScrobblesDb
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
+import io.musicorum.mobile.models.PendingScrobble
+import io.musicorum.mobile.repositories.OfflineScrobblesRepository
 import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.userData
-import io.sentry.Sentry
-import io.sentry.SpanStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -32,17 +33,43 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.net.UnknownHostException
 import java.util.Date
 
 class NotificationListener : NotificationListenerService() {
     private val tag = "NotificationListener"
+    private var lastListened = ""
     private var job: Job? = null
     private var isScrobbleAllowed = false
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
             isScrobbleAllowed = true
-            Log.d(tag, "internet connection available")
+            Log.d(tag, "internet connection available. syncing offline scrobbles")
+            CoroutineScope(Dispatchers.IO).launch {
+                val sessionKey = applicationContext.userData.data.map { p ->
+                    p[stringPreferencesKey("session_key")]
+                }.first() ?: return@launch
+
+                val scrobbles = offlineScrobblesRepo.getAllScrobblesStream()
+                val list = scrobbles.first()
+                if (list.isEmpty()) {
+                    Log.d(tag, "no scrobbles to sync")
+                } else {
+                    for (scrobble in list) {
+                        val res = UserEndpoint.scrobble(
+                            track = scrobble.trackName,
+                            artist = scrobble.artistName,
+                            sessionKey = sessionKey,
+                            timestamp = scrobble.timestamp,
+                            album = scrobble.album
+                        )
+                        if (res.isSuccess()) {
+                            offlineScrobblesRepo.deleteScrobble(scrobble)
+                        }
+                    }
+                }
+            }
         }
 
         override fun onLost(network: Network) {
@@ -51,6 +78,7 @@ class NotificationListener : NotificationListenerService() {
             isScrobbleAllowed = false
         }
     }
+    private lateinit var offlineScrobblesRepo: OfflineScrobblesRepository
 
     override fun onListenerConnected() {
         val networkRequest = NetworkRequest.Builder()
@@ -62,9 +90,25 @@ class NotificationListener : NotificationListenerService() {
         val connectivityManager =
             getSystemService(ConnectivityManager::class.java) as ConnectivityManager
         connectivityManager.requestNetwork(networkRequest, networkCallback)
+        offlineScrobblesRepo = OfflineScrobblesRepository(
+            PendingScrobblesDb.getDatabase(applicationContext).pendingScrobblesDao()
+        )
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        val media =
+            applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+        val component = ComponentName(applicationContext, NotificationListener::class.java)
+
+        val activeSessions = media.getActiveSessions(component)
+        val player = activeSessions.getOrNull(0) ?: return
+        val track = player.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
+        val artist = player.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+        val album = player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
+
+        if (lastListened == "$track - $artist") return
+        lastListened = "$track - $artist"
+
         val scrobbleEnabled = runBlocking {
             applicationContext.scrobblePrefs.data.map { p ->
                 p[booleanPreferencesKey("enabled")]
@@ -91,22 +135,12 @@ class NotificationListener : NotificationListenerService() {
             }.first()
         }
 
-        val media =
-            applicationContext.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
-        val component = ComponentName(applicationContext, NotificationListener::class.java)
-
-        val activeSessions = media.getActiveSessions(component)
-        val player = activeSessions.getOrNull(0) ?: return
-
         val isPlayerPaused = player.playbackState?.state == PlaybackState.STATE_PAUSED
         val trackDuration = player.metadata?.getLong(MediaMetadata.METADATA_KEY_DURATION)
         val elapsed = player.playbackState?.position
 
         if (trackDuration == null || trackDuration < 0) return
 
-        val track = player.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
-        val artist = player.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
-        val album = player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
         val albumArtist =
             if (artist != player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)) {
                 player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST)
@@ -129,14 +163,15 @@ class NotificationListener : NotificationListenerService() {
             bundle.putString("artist", artist)
             bundle.putString("track", track)
             analytics.logEvent("device_scrobble_failed", bundle)
+            return
         }
 
         if (!isPlayerPaused && updateNowPlaying == true && isScrobbleAllowed) {
             CoroutineScope(Dispatchers.IO).launch {
                 val success = UserEndpoint.updateNowPlaying(
-                    track = track!!,
+                    track = track,
                     album = album,
-                    artist = artist!!,
+                    artist = artist,
                     albumArtist = albumArtist,
                     sessionKey = sessionKey!!
                 )
@@ -152,17 +187,15 @@ class NotificationListener : NotificationListenerService() {
             null
         } else {
             job?.cancel()
-            if (!isScrobbleAllowed) return
             Log.d(tag, "lauching new job...")
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("listener job", "this job will wait ${timeToScrobble / 1000} seconds.")
                 delay(timeToScrobble.toLong())
                 Log.d("listener job", "time reached - scrobbling.")
-                val transaction = Sentry.startTransaction("device-scrobble", "task")
                 try {
                     val reqStatus = UserEndpoint.scrobble(
-                        track = track!!,
-                        artist = artist!!,
+                        track = track,
+                        artist = artist,
                         album = album,
                         albumArtist = albumArtist,
                         sessionKey = sessionKey!!,
@@ -172,18 +205,24 @@ class NotificationListener : NotificationListenerService() {
                     val success = reqStatus.isSuccess()
                     Log.d(tag, "is scrobble success? $success")
                     if (success) {
-                        transaction.status = SpanStatus.OK
                         analytics.logEvent("device_scrobble_success", null)
-                    } else {
-                        transaction.status = SpanStatus.ABORTED
-                        transaction.setData("status_code", reqStatus.value)
-                        transaction.setData("attempted_song", "$track by $artist, on $album")
                     }
                 } catch (e: Exception) {
-                    transaction.throwable = e
-                    transaction.status = SpanStatus.INTERNAL_ERROR
-                } finally {
-                    transaction.finish()
+                    if (e is UnknownHostException) {
+                        val offlineScrobble = PendingScrobble(
+                            artistName = artist,
+                            trackName = track,
+                            timestamp = timestamp.time,
+                            album = album
+                        )
+                        offlineScrobblesRepo.insertScrobble(offlineScrobble)
+                        Log.d(tag, "scrobble has been saved offline")
+                    } else {
+                        val bundle = Bundle()
+                        bundle.putString("reason", "exception")
+                        bundle.putString("exception", e.message)
+                        analytics.logEvent("device_scrobble_failed", bundle)
+                    }
                 }
             }
         }

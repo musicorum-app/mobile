@@ -99,7 +99,7 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Divider(modifier = Modifier.padding(vertical = 18.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 18.dp))
                 StatisticRow(
                     short = true,
                     stringResource(id = R.string.listeners) to artist.stats?.listeners,
@@ -123,13 +123,13 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
                     }
                 }
 
-                Divider(modifier = Modifier.padding(vertical = 18.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 18.dp))
                 Section(title = "Top Tracks")
                 topTracks?.let {
-                    TrackItem(track = it.getOrNull(0), favoriteIcon = false)
-                    TrackItem(track = it.getOrNull(1), favoriteIcon = false)
-                    TrackItem(track = it.getOrNull(2), favoriteIcon = false)
-                    TrackItem(track = it.getOrNull(3), favoriteIcon = false)
+                    TrackListItem(track = it.getOrNull(0), favoriteIcon = false)
+                    TrackListItem(track = it.getOrNull(1), favoriteIcon = false)
+                    TrackListItem(track = it.getOrNull(2), favoriteIcon = false)
+                    TrackListItem(track = it.getOrNull(3), favoriteIcon = false)
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
