@@ -3,11 +3,14 @@ package io.musicorum.mobile.components
 import android.text.format.DateUtils
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Icon
@@ -18,6 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +46,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Composable
-fun TrackItem(
+fun TrackListItem(
     track: Track?,
     favoriteIcon: Boolean = true,
     showTimespan: Boolean = false,
@@ -61,12 +66,24 @@ fun TrackItem(
             .fillMaxWidth()
             .clickable { nav.navigate("track/$dest") },
         headlineContent = {
-            Text(
-                text = track.name,
-                style = Typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row {
+                if (track.pending) {
+                    Icon(
+                        Icons.Rounded.CloudOff,
+                        null,
+                        modifier = Modifier
+                            .size(22.dp)
+                            .padding(end = 5.dp)
+                    )
+                }
+                Text(
+                    text = track.name,
+                    style = Typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.align(CenterVertically)
+                )
+            }
         },
         colors = listColors,
         supportingContent = {
@@ -119,7 +136,7 @@ fun TrackItem(
 }
 
 @Composable
-fun TrackItem(
+fun TrackListItem(
     track: SearchTrack?
 ) {
     if (track == null) return

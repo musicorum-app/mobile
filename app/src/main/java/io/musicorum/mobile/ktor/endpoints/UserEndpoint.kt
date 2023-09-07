@@ -30,16 +30,18 @@ object UserEndpoint {
     }
 
     suspend fun getSessionUser(sessionKey: String): User? {
-        val fetched = KtorConfiguration.lastFmClient.get {
-            parameter("method", "user.getInfo")
-            parameter("sk", sessionKey)
-        }
+        return kotlin.runCatching {
+            val fetched = KtorConfiguration.lastFmClient.get {
+                parameter("method", "user.getInfo")
+                parameter("sk", sessionKey)
+            }
 
-        return if (fetched.status.isSuccess()) {
-            fetched.body<User>()
-        } else {
-            null
-        }
+            return@runCatching if (fetched.status.isSuccess()) {
+                fetched.body<User>()
+            } else {
+                null
+            }
+        }.getOrNull()
     }
 
     suspend fun getTopArtists(
@@ -47,17 +49,19 @@ object UserEndpoint {
         limit: Int?,
         period: FetchPeriod?
     ): TopArtistsResponse? {
-        val res = KtorConfiguration.lastFmClient.get {
-            parameter("method", "user.getTopArtists")
-            parameter("user", username)
-            parameter("limit", limit)
-            parameter("period", period?.value)
-        }
-        return if (res.status.isSuccess()) {
-            return res.body<TopArtistsResponse>()
-        } else {
-            null
-        }
+        return kotlin.runCatching {
+            val res = KtorConfiguration.lastFmClient.get {
+                parameter("method", "user.getTopArtists")
+                parameter("user", username)
+                parameter("limit", limit)
+                parameter("period", period?.value)
+            }
+            return@runCatching if (res.status.isSuccess()) {
+                return res.body<TopArtistsResponse>()
+            } else {
+                null
+            }
+        }.getOrNull()
     }
 
     suspend fun getRecentTracks(
@@ -83,45 +87,53 @@ object UserEndpoint {
 
     }
 
-    suspend fun getFriends(user: String, limit: Int?): FriendsResponse? {
-        val res = KtorConfiguration.lastFmClient.get {
-            parameter("method", "user.getFriends")
-            parameter("username", user)
-            parameter("limit", limit)
-            headers.remove("Cache-Control")
+    suspend fun getFriends(user: String, limit: Int?): FriendsResponse?  {
+        val result = kotlin.runCatching {
+            val res = KtorConfiguration.lastFmClient.get {
+                parameter("method", "user.getFriends")
+                parameter("username", user)
+                parameter("limit", limit)
+                headers.remove("Cache-Control")
+            }
+            return@runCatching if (res.status.isSuccess()) {
+                res.body<FriendsResponse>()
+            } else null
         }
-        return if (res.status.isSuccess()) {
-            res.body<FriendsResponse>()
-        } else null
+
+        return result.getOrNull()
     }
 
     suspend fun getTopTracks(user: String, period: FetchPeriod?, limit: Int?): TopTracks? {
-        val res = KtorConfiguration.lastFmClient.get {
-            parameter("method", "user.getTopTracks")
-            parameter("user", user)
-            parameter("period", period?.value)
-            parameter("limit", limit)
-        }
-        return if (res.status.isSuccess()) {
-            res.body<TopTracks>()
-        } else {
-            null
-        }
+        return kotlin.runCatching {
+            val res = KtorConfiguration.lastFmClient.get {
+                parameter("method", "user.getTopTracks")
+                parameter("user", user)
+                parameter("period", period?.value)
+                parameter("limit", limit)
+            }
+            return@runCatching if (res.status.isSuccess()) {
+                res.body<TopTracks>()
+            } else {
+                null
+            }
+        }.getOrNull()
     }
 
     suspend fun getTopAlbums(user: String, period: FetchPeriod?, limit: Int?): TopAlbumsResponse? {
-        val res = KtorConfiguration.lastFmClient.get {
-            parameter("method", "user.getTopAlbums")
-            parameter("user", user)
-            parameter("period", period?.value)
-            parameter("limit", limit)
-        }
+        return kotlin.runCatching {
+            val res = KtorConfiguration.lastFmClient.get {
+                parameter("method", "user.getTopAlbums")
+                parameter("user", user)
+                parameter("period", period?.value)
+                parameter("limit", limit)
+            }
 
-        return if (res.status.isSuccess()) {
-            res.body<TopAlbumsResponse>()
-        } else {
-            null
-        }
+            return@runCatching if (res.status.isSuccess()) {
+                res.body<TopAlbumsResponse>()
+            } else {
+                null
+            }
+        }.getOrNull()
     }
 
     suspend fun updateNowPlaying(
@@ -145,8 +157,8 @@ object UserEndpoint {
     suspend fun scrobble(
         track: String,
         artist: String,
-        album: String?,
-        albumArtist: String?,
+        album: String? = null,
+        albumArtist: String? = null,
         sessionKey: String,
         timestamp: Long
     ): HttpStatusCode {

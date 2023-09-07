@@ -56,7 +56,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
-import io.musicorum.mobile.components.TrackItem
+import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -80,9 +80,11 @@ fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
     val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 200f, 1f, 0f)
     val clamped = interpolated.coerceIn(0f..1f)
     val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f, label = "")
+    val recentTracks = vm.recentScrobbles.observeAsState(null).value
+    val npTrack = vm.nowPlayingTrack.observeAsState(null).value
 
 
-    if (vm.recentScrobbles.value == null) {
+    if (recentTracks == null) {
         CenteredLoadingSpinner()
     } else {
         Column(
@@ -98,8 +100,7 @@ fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
             )
             Column {
                 NowPlayingCard(
-                    track = vm.recentScrobbles.value!!
-                        .recentTracks.tracks.getOrNull(0),
+                    track = npTrack,
                     fraction = value.value,
                     vm = vm
                 )
@@ -237,15 +238,15 @@ private fun TrackList(vm: ScrobblingViewModel, state: LazyListState) {
     SwipeRefresh(state = refreshing, onRefresh = { vm.updateScrobbles() }) {
         Column(modifier = Modifier.fillMaxHeight()) {
             val list =
-                if (vm.recentScrobbles.value!!.recentTracks.tracks.firstOrNull()?.attributes?.nowPlaying == "true") {
-                    vm.recentScrobbles.value!!.recentTracks.tracks.drop(1)
+                if (vm.recentScrobbles.value!!.firstOrNull()?.attributes?.nowPlaying == "true") {
+                    vm.recentScrobbles.value!!.drop(1)
                 } else {
-                    vm.recentScrobbles.value!!.recentTracks.tracks
+                    vm.recentScrobbles.value!!
                 }
 
             LazyColumn(state = state) {
                 items(list) { track ->
-                    TrackItem(
+                    TrackListItem(
                         track = track,
                         favoriteIcon = false,
                         showTimespan = true

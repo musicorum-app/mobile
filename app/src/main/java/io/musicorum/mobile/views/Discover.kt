@@ -1,7 +1,6 @@
 package io.musicorum.mobile.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.rounded.Audiotrack
-import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.DockedSearchBar
@@ -32,7 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.musicorum.mobile.components.AlbumListItem
 import io.musicorum.mobile.components.ArtistListItem
 import io.musicorum.mobile.components.CenteredLoadingSpinner
-import io.musicorum.mobile.components.TrackItem
+import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
@@ -94,7 +92,7 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             Text("No results")
         } else {
             tracks.take(4).forEach {
-                TrackItem(track = it)
+                TrackListItem(track = it)
             }
         }
 

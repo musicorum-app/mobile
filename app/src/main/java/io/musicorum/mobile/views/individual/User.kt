@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,7 +34,7 @@ import io.musicorum.mobile.components.Section
 import io.musicorum.mobile.components.StatisticRow
 import io.musicorum.mobile.components.TopAlbumsRow
 import io.musicorum.mobile.components.TopArtistsRow
-import io.musicorum.mobile.components.TrackItem
+import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.components.skeletons.GenericListItemSkeleton
 import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.ui.theme.ContentSecondary
@@ -117,7 +118,7 @@ fun User(
                     )
                 }
 
-                Divider(modifier = Modifier.run { padding(vertical = 20.dp) })
+                HorizontalDivider(modifier = Modifier.run { padding(vertical = 20.dp) })
                 StatisticRow(
                     short = false,
                     stringResource(R.string.scrobbles) to user.user.scrobbles.toLong(),
@@ -125,7 +126,7 @@ fun User(
                     stringResource(R.string.albums) to user.user.albumCount?.toLongOrNull()
                 )
 
-                Divider(modifier = Modifier.run { padding(vertical = 20.dp) })
+                HorizontalDivider(modifier = Modifier.run { padding(vertical = 20.dp) })
                 Text(
                     text = stringResource(R.string.recent_scrobbles),
                     style = Heading4,
@@ -141,7 +142,7 @@ fun User(
                 } else {
                     recentScrobbles.let { track ->
                         track.forEach {
-                            TrackItem(
+                            TrackListItem(
                                 track = it,
                                 favoriteIcon = false,
                                 showTimespan = true
@@ -151,7 +152,7 @@ fun User(
                 }
 
                 /* TOP ARTISTS */
-                Divider(modifier = Modifier.run { padding(vertical = 20.dp) })
+                HorizontalDivider(modifier = Modifier.run { padding(vertical = 20.dp) })
                 Section(title = stringResource(id = R.string.top_artists), TextAlign.Start)
 
                 Text(

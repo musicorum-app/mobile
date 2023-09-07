@@ -1,6 +1,7 @@
 package io.musicorum.mobile.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -20,6 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.CloudOff
+import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -55,7 +61,8 @@ import io.musicorum.mobile.components.HorizontalTracksRow
 import io.musicorum.mobile.components.LabelType
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.models.PartialUser
-import io.musicorum.mobile.serialization.RecentTracks
+import io.musicorum.mobile.ui.theme.ContentSecondary
+import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
@@ -75,6 +82,9 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
     val errored = vm.errored.observeAsState().value
     val nav = LocalNavigation.current!!
     val isRefreshing = vm.isRefreshing.collectAsState()
+    val weeklyScrobbles = vm.weeklyScrobbles.observeAsState().value
+    val isOffline = vm.isOffline.observeAsState(initial = false)
+    val hasPendingScrobbles = vm.hasPendingScrobbles.observeAsState(false).value
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing.value),
@@ -103,7 +113,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             }
 
             if (user != null && palette != null) {
-                UserCard(user, palette, recentTracks, nav)
+                UserCard(user, palette, weeklyScrobbles, nav)
             } else {
                 Box(
                     modifier = Modifier
@@ -121,13 +131,54 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
 
             Spacer(Modifier.height(20.dp))
 
+            if (isOffline.value) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .border(1.dp, EvenLighterGray, RoundedCornerShape(12.dp))
+                        .padding(16.dp)
+                ) {
+                    Row {
+                        Icon(
+                            Icons.Rounded.CloudOff,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(CenterVertically)
+                                .size(30.dp)
+                        )
+                        Column(modifier = Modifier.padding(start = 22.dp)) {
+                            Text("You're offline", style = Typography.titleMedium)
+                            Text("Your data might be outdated.", style = Typography.bodySmall)
+                        }
+                    }
+                }
+                if (hasPendingScrobbles) {
+                    Row(modifier = Modifier.padding(start = 20.dp, top = 10.dp)) {
+                        Icon(
+                            Icons.Rounded.Error,
+                            null,
+                            tint = ContentSecondary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            "You have pending scrobbles",
+                            style = Typography.labelSmall,
+                            color = ContentSecondary,
+                            modifier = Modifier.align(CenterVertically).padding(start = 10.dp)
+                        )
+                    }
+                    Spacer(Modifier.height(20.dp))
+                }
+            }
+
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
                     .clickable { nav.navigate("recentScrobbles") },
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.recent_scrobbles),
@@ -140,9 +191,8 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             }
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalTracksRow(
-                tracks = recentTracks?.recentTracks?.tracks,
-                labelType = LabelType.DATE,
-                errored = recentTracks?.recentTracks?.tracks?.isEmpty()
+                tracks = recentTracks,
+                labelType = LabelType.DATE
             )
 
             Spacer(Modifier.height(20.dp))
@@ -152,7 +202,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     .fillMaxWidth()
                     .height(50.dp)
                     .clickable { nav.navigate("mostListened") },
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = stringResource(R.string.most_listened_week),
@@ -166,8 +216,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalTracksRow(
                 tracks = weekTracks?.topTracks?.tracks,
-                labelType = LabelType.ARTIST_NAME,
-                errored = weekTracks?.topTracks?.tracks?.isEmpty()
+                labelType = LabelType.ARTIST_NAME
             )
 
             Spacer(Modifier.height(20.dp))
@@ -214,7 +263,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
 private fun UserCard(
     user: PartialUser,
     palette: Palette,
-    recentTracks: RecentTracks?,
+    weeklyScrobbles: Int?,
     nav: NavHostController
 ) {
     var vibrant = Color(palette.getVibrantColor(0))
@@ -254,18 +303,17 @@ private fun UserCard(
             Spacer(modifier = Modifier.width(10.dp))
             Column {
                 Text(text = user.username, style = Typography.headlineMedium)
-                val total = recentTracks?.recentTracks?.recentTracksAttributes?.total?.toInt() ?: 0
                 Text(
                     text = pluralStringResource(
                         id = R.plurals.total_scrobbles_week,
-                        count = total,
-                        total
+                        count = weeklyScrobbles ?: 0,
+                        weeklyScrobbles ?: 0
                     ),
                     style = Typography.bodyMedium,
                     modifier = Modifier
                         .alpha(0.55f)
                         .placeholder(
-                            recentTracks == null,
+                            weeklyScrobbles == null,
                             highlight = PlaceholderHighlight.shimmer(),
                             color = SkeletonSecondaryColor
                         )

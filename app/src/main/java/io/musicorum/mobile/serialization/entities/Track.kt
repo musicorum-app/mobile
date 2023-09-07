@@ -6,6 +6,7 @@ import io.musicorum.mobile.serialization.Wiki
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNames
 import kotlinx.serialization.json.JsonPrimitive
@@ -31,7 +32,10 @@ data class Track @OptIn(ExperimentalSerializationApi::class) constructor(
     val date: TrackDate? = null,
     @SerialName("playcount")
     private val _playCount: JsonElement? = null,
-    private val _listeners: String? = null
+    private val _listeners: String? = null,
+
+    @Transient
+    val pending: Boolean = false
 ) {
     val userPlayCount = _userPlayCount?.toLongOrNull()
     val playCount: Long? =

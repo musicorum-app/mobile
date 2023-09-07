@@ -165,7 +165,7 @@ fun Track(
                         style = Typography.bodyLarge,
                         color = ContentSecondary
                     )
-                    Divider(Modifier.padding(vertical = 18.dp))
+                    HorizontalDivider(Modifier.padding(vertical = 18.dp))
                     StatisticRow(
                         short = true,
                         stringResource(R.string.listeners) to track.listeners,
@@ -183,7 +183,7 @@ fun Track(
                             ItemInformation(palette = coverPalette, info = it.summary)
                         }
                     }
-                    Divider(Modifier.padding(vertical = 20.dp))
+                    HorizontalDivider(Modifier.padding(vertical = 20.dp))
                     ContextRow(
                         appearsOn = track.album?.name to track.album?.bestImageUrl,
                         from = track.artist.name to track.artist.bestImageUrl
@@ -198,7 +198,7 @@ fun Track(
                         ) {
                             Section(title = stringResource(R.string.similar_tracks))
                             it.similarTracks.tracks.forEach {
-                                TrackItem(track = it, false)
+                                TrackListItem(track = it, false)
                             }
                         }
                     }
