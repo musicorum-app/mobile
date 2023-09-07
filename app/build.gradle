@@ -11,21 +11,19 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.github.triplet.play' version '3.7.0'
     id 'com.google.devtools.ksp'
+    id "io.sentry.android.gradle" version "3.12.0"
 }
 
 def appKeyStoreFile = "../upload_key.jks"
-//def appKeyStorePassword = System.env.KEY_STORE_PASSWORD
-//def appKeyAlias = System.env.KEY_ALIAS
-//def appKeyPassword = System.env.KEY_PASSWORD
 def appKeyStorePassword = System.env.KEY_STORE_PASSWORD
 def appKeyAlias = System.env.KEY_ALIAS
 def appKeyPassword = System.env.KEY_PASSWORD
 
-/*sentry {
+sentry {
     includeProguardMapping = true
     autoUploadProguardMapping = true
     experimentalGuardsquareSupport = true
-}*/
+}
 
 android {
     namespace 'io.musicorum.mobile'
@@ -127,8 +125,8 @@ dependencies {
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
     implementation 'org.jsoup:jsoup:1.15.3'
 
-    //implementation 'io.sentry:sentry-android:6.14.0'
-    //implementation 'io.sentry:sentry-compose-android:6.14.0'
+    implementation 'io.sentry:sentry-android:6.27.0'
+    implementation 'io.sentry:sentry-compose-android:6.27.0'
 
     def room_version = "2.5.2"
     implementation "androidx.room:room-runtime:$room_version"
