@@ -147,8 +147,8 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                                 .size(30.dp)
                         )
                         Column(modifier = Modifier.padding(start = 22.dp)) {
-                            Text("You're offline", style = Typography.titleMedium)
-                            Text("Your data might be outdated.", style = Typography.bodySmall)
+                            Text(stringResource(id = R.string.youre_offline), style = Typography.titleMedium)
+                            Text(stringResource(R.string.outdated_data_notice), style = Typography.bodySmall)
                         }
                     }
                 }
@@ -161,7 +161,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            "You have pending scrobbles",
+                            stringResource(R.string.pending_scrobbles_notice),
                             style = Typography.labelSmall,
                             color = ContentSecondary,
                             modifier = Modifier
@@ -235,7 +235,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 if (isOffline.value) {
-                    Text(text = "You're offline.")
+                    Text(text = stringResource(R.string.youre_offline))
                 } else {
 
 
