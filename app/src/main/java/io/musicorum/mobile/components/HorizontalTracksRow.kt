@@ -1,6 +1,7 @@
 package io.musicorum.mobile.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -32,9 +33,10 @@ fun HorizontalTracksRow(
     } else {
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-                .padding(start = 20.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.padding(start = 10.dp))
+            }
             if (tracks == null) {
                 items(4) { _ ->
                     GenericCardPlaceholder(visible = true)
@@ -43,6 +45,9 @@ fun HorizontalTracksRow(
                 items(tracks) { track ->
                     TrackCard(track = track, labelType)
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.padding(start = 10.dp))
             }
         }
     }

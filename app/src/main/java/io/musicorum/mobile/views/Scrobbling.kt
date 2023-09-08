@@ -90,13 +90,13 @@ fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
         Column(
             modifier = Modifier
                 .background(KindaBlack)
-                .padding(top = 30.dp, start = 20.dp, end = 20.dp)
+                .padding(top = 20.dp)
                 .fillMaxSize()
         ) {
             Text(
                 text = "Scrobbling",
                 style = Typography.displaySmall,
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier.padding(bottom = 20.dp, start = 20.dp)
             )
             Column {
                 NowPlayingCard(
@@ -157,6 +157,7 @@ fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(brush)
     ) {
@@ -236,7 +237,10 @@ private fun TrackList(vm: ScrobblingViewModel, state: LazyListState) {
     val refreshValue = vm.refreshing.observeAsState(false).value
     val refreshing = rememberSwipeRefreshState(isRefreshing = refreshValue)
     SwipeRefresh(state = refreshing, onRefresh = { vm.updateScrobbles() }) {
-        Column(modifier = Modifier.fillMaxHeight()) {
+        Column(modifier = Modifier
+            .fillMaxHeight()
+            .padding(horizontal = 4.dp) // sum up with 16dp of list padding
+        ) {
             val list =
                 if (vm.recentScrobbles.value!!.firstOrNull()?.attributes?.nowPlaying == "true") {
                     vm.recentScrobbles.value!!.drop(1)
