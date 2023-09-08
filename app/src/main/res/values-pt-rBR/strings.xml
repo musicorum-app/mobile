@@ -17,15 +17,15 @@
     <string name="top_artists">Top artistas</string>
     <plurals name="tracks_quantity">
         <item quantity="one">%1$s faixa</item>
-        <item quantity="many">%1$s faixas</item>
+        <item quantity="other">%1$s tracks</item>
     </plurals>
     <plurals name="albums_quantity">
         <item quantity="one">%1$s álbum</item>
-        <item quantity="many">%1$s álbuns</item>
+        <item quantity="other">%1$s albums</item>
     </plurals>
     <plurals name="artists_quantity">
         <item quantity="one">%1$s artista</item>
-        <item quantity="many">%1$s artistas</item>
+        <item quantity="other">%1$s artists</item>
     </plurals>
     <string name="listeners">Ouvintes</string>
     <string name="scrobbles">Reproduções</string>
@@ -39,7 +39,7 @@
     <!-- Discover -->
     <plurals name="discover_page_results_text">
         <item quantity="one">%1$s resultado</item>
-        <item quantity="many">%1$s resultados</item>
+        <item quantity="other">%1$s results</item>
     </plurals>
     <string name="discover_page_no_results">Nada encontrado</string>
     <!-- Artist -->
@@ -49,7 +49,7 @@
     <string name="friends_activity">Atividade dos amigos</string>
     <plurals name="total_scrobbles_week">
         <item quantity="one">%1$d reprodução • últimos 7 dias</item>
-        <item quantity="many">%1$d reproduções • últimos 7 dias</item>
+        <item quantity="other">%1$d scrobbles • last 7 days</item>
     </plurals>
     <string name="from">De</string>
     <string name="appears_on">Aparece em</string>
@@ -67,7 +67,45 @@
     <string name="welcome">Bem-vindo, %1$s!</string>
     <string name="analytics_description">Enviar relatório de falhas e informações do dispositivo</string>
     <string name="hold_on">Espere</string>
-    x
     <string name="last_month">Últimos 30 dias</string>
     <string name="no_data_available">Sem dados disponíveis</string>
+    <string name="device_scrobbling_description">Register the songs you listen on this device to your Last.fm account</string>
+    <string name="enable_scrobbling">Enable Scrobbling</string>
+    <string name="notification_access">Notification access</string>
+    <string name="notification_permission_help_text">Notification access is needed in order to see which song is being played on the device. Tap here to manage</string>
+    <string name="scrobble_point">Scrobble Point</string>
+    <string name="scrobble_point_description">The percentage where the song will be considered as listened</string>
+    <string name="media_apps">Media apps</string>
+    <string name="media_apps_description">Select apps to scrobble from</string>
+    <string name="enable_scrobbling_for_spotify">Enable scrobbling for Spotify?</string>
+    <string name="spotify_scrobble_description">Make sure you don’t have the Last.fm Spotify connection enabled, otherwise your scrobbles might start duplicating.</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="enable">Enable</string>
+    <string name="disabled">Disabled</string>
+    <string name="device_scrobbling">Device Scrobbling</string>
+    <string name="scrobbling_settings">Scrobbling settings</string>
+    <string name="about">About</string>
+    <string name="donate_on_patreon">Donate on Patreon</string>
+    <string name="join_our_discord_server">Join our Discord server</string>
+    <string name="view_source_code_on_github">View source code on GitHub</string>
+    <string name="last_fm_website">Last.fm Website</string>
+    <string name="made_by">Made by Pedro Piva and Matheus Dias. Powered by Musicorum</string>
+    <string name="grant_notification_access">Grant notification access?</string>
+    <string name="grant_nofication_access_onboard_description">You need to grant notification access so we can see what you’re listening to if you want to scrobble from this device</string>
+    <string name="open_notification_settings">Open notification settings</string>
+    <string name="notification_access_skip">I\'ll do it later</string>
+    <string name="beta">Beta</string>
+    <string name="scrobbling_enabled_no_apps">Enabled • no apps</string>
+    <string name="update_now_playing">Update now playing</string>
+    <string name="update_now_playing_description">Whether this will update your profile with the current playing song, even if it hasn\'t finished scrobbling</string>
+    <string name="nothing_playing">Nothing playing</string>
+    <string name="empty_friendlist_message">When you follow people, their listening activity will appear here</string>
+    <string name="empty_tracklist_message">Your tracks will be shown here</string>
+    <string name="youre_offline">You\'re offline.</string>
+    <string name="pending_scrobbles_notice">You have pending scrobbles</string>
+    <string name="outdated_data_notice">Your data might be outdated.</string>
+    <plurals name="scrobble_apps">
+        <item quantity="one">Enabled • %1$d app</item>
+        <item quantity="other">Enabled • %1$d apps</item>
+    </plurals>
 </resources>
