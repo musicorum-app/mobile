@@ -159,7 +159,7 @@ class NotificationListener : NotificationListenerService() {
 
         if (artist == null || track == null) {
             val bundle = Bundle()
-            bundle.putString("reason", "track os artist is null")
+            bundle.putString("reason", "track or artist is null")
             bundle.putString("artist", artist)
             bundle.putString("track", track)
             analytics.logEvent("device_scrobble_failed", bundle)

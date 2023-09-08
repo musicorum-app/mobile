@@ -14,7 +14,8 @@ data class CachedScrobble(
     val trackName: String,
     val artistName: String,
     val scrobbleDate: Long,
-    val imageUrl: String
+    val imageUrl: String,
+    val isTopTrack: Boolean
 ) {
     fun toTrack(): Track {
         return Track(

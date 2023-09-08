@@ -87,7 +87,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
             showSpotifyModal.value = true
             return
         }
-        val newSet = enabledPackageSet.value!!.toMutableSet()
+        val newSet = enabledPackageSet.value?.toMutableSet() ?: mutableSetOf()
         if (state) {
             newSet.add(pkg)
         } else {
