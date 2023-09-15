@@ -54,7 +54,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.android.play.core.ktx.startUpdateFlowForResult
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -231,7 +230,6 @@ class MainActivity : ComponentActivity() {
                                 localUser.create(userReq?.user)
                             }
                             MutableUserState.value = userReq
-
                         }
                     }
                 }
