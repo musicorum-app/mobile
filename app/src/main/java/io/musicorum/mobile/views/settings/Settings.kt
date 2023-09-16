@@ -155,13 +155,15 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                     horizontalArrangement = Arrangement.spacedBy((-7).dp),
                     modifier = Modifier.padding(start = 16.dp)
                 ) {
-                    enabledApps.forEach { pkg ->
-                        val icon = ctx.packageManager.getApplicationIcon(pkg)
-                        Image(
-                            icon.toBitmap().asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier.size(25.dp)
-                        )
+                    kotlin.runCatching {
+                        enabledApps.forEach { pkg ->
+                            val icon = ctx.packageManager.getApplicationIcon(pkg)
+                            Image(
+                                icon.toBitmap().asImageBitmap(),
+                                contentDescription = null,
+                                modifier = Modifier.size(25.dp)
+                            )
+                        }
                     }
                 }
             }

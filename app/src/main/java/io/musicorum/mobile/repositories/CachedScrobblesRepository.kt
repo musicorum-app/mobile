@@ -5,11 +5,16 @@ import io.musicorum.mobile.models.CachedScrobble
 
 class CachedScrobblesRepository(private val cachedScrobblesDao: CachedScrobblesDao) {
 
-    fun getAll() = cachedScrobblesDao.getAll()
+    /**
+     * Get all scrobbles from cache
+     */
+    fun getAllFromCache() = cachedScrobblesDao.getAll()
 
     suspend fun delete(data: CachedScrobble) = cachedScrobblesDao.delete(data)
 
     suspend fun insert(data: CachedScrobble) = cachedScrobblesDao.insert(data)
 
     suspend fun deleteAll() = cachedScrobblesDao.clearAll()
+
+    fun getAllTopsFromCache() = cachedScrobblesDao.getAllTops()
 }

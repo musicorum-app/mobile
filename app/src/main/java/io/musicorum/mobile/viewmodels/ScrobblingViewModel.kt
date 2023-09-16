@@ -55,6 +55,7 @@ class ScrobblingViewModel @Inject constructor(
                                 artistName = t.artist.name,
                                 imageUrl = t.bestImageUrl,
                                 scrobbleDate = t.date?.uts?.toLong() ?: 0,
+                                isTopTrack = false
                             )
                         )
                     }
@@ -76,7 +77,7 @@ class ScrobblingViewModel @Inject constructor(
                 val pendingRepo = OfflineScrobblesRepository(pendingScrobblesDao)
                 val list = mutableListOf<Track>()
 
-                val cached = cachedRepo.getAll().first()
+                val cached = cachedRepo.getAllFromCache().first()
                 for (t in cached) {
                     list.add(t.toTrack())
                 }

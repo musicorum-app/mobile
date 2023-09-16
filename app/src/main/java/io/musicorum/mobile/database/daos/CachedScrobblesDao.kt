@@ -16,8 +16,11 @@ interface CachedScrobblesDao {
     @Delete
     suspend fun delete(data: CachedScrobble)
 
-    @Query("SELECT * FROM cachedScrobbles")
+    @Query("SELECT * FROM cachedScrobbles WHERE isTopTrack is 0")
     fun getAll(): Flow<List<CachedScrobble>>
+
+    @Query("SELECT * FROM cachedScrobbles WHERE isTopTrack is 1")
+    fun getAllTops(): Flow<List<CachedScrobble>>
 
     @Query("DELETE FROM cachedScrobbles")
     suspend fun clearAll()

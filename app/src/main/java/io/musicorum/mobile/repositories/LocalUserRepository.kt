@@ -14,12 +14,13 @@ import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.serialization.UserData
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.net.UnknownHostException
 import java.util.Date
 
 val Context.localUser: DataStore<Preferences> by preferencesDataStore("partialUser")
 
 class LocalUserRepository(val context: Context) {
-    val prefUser = context.localUser.data.map {
+    private val userFlow = context.localUser.data.map {
         PartialUser(
             it[usernameKey] ?: "",
             it[pfpKey] ?: "",
@@ -28,17 +29,21 @@ class LocalUserRepository(val context: Context) {
     }
 
     suspend fun getUser(): PartialUser {
-        val user = prefUser.first()
+        val user = userFlow.first()
         return if (Date().time > user.expiresIn) {
             Log.d("user repository", "fetching online")
             val fetchedUser = fetch()
-            val updatedUser = PartialUser(
-                fetchedUser?.user?.name ?: "",
-                fetchedUser?.user?.bestImageUrl ?: "",
-                cacheTime
-            )
-            updateUser(updatedUser)
-            updatedUser
+            if (fetchedUser != null) {
+                val updatedUser = PartialUser(
+                    fetchedUser.user.name,
+                    fetchedUser.user.bestImageUrl,
+                    cacheTime
+                )
+                updateUser(updatedUser)
+                return updatedUser
+            } else {
+                return user
+            }
         } else {
             Log.d("user repository", "skipping fetch")
             user
@@ -55,9 +60,13 @@ class LocalUserRepository(val context: Context) {
     }
 
     suspend fun fetch(): User? {
-        val user = prefUser.first()
+        val user = userFlow.first()
         if (user.username.isEmpty()) return null
-        return UserEndpoint.getUser(user.username)
+        return try {
+            UserEndpoint.getUser(user.username)
+        } catch(e: UnknownHostException) {
+            null
+        }
     }
 
     suspend fun updateUser(partialUser: PartialUser) {

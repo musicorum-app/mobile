@@ -67,6 +67,7 @@
     <string name="friends_activity">Friends activity</string>
     <plurals name="total_scrobbles_week">
         <item quantity="one">%1$d scrobble • last 7 days</item>
+        <item quantity="many">%1$d scrobbles • last 7 days</item>
         <item quantity="other">%1$d scrobbles • last 7 days</item>
     </plurals>
     <string name="from">From</string>
@@ -119,6 +120,9 @@
     <string name="nothing_playing">Nothing playing</string>
     <string name="empty_friendlist_message">When you follow people, their listening activity will appear here</string>
     <string name="empty_tracklist_message">Your tracks will be shown here</string>
+    <string name="youre_offline">You\'re offline.</string>
+    <string name="pending_scrobbles_notice">You have pending scrobbles</string>
+    <string name="outdated_data_notice">Your data might be outdated.</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Enabled • %1$d app</item>
         <item quantity="other">Enabled • %1$d apps</item>
