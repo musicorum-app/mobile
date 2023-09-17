@@ -61,7 +61,7 @@ class NotificationListener : NotificationListenerService() {
                             track = scrobble.trackName,
                             artist = scrobble.artistName,
                             sessionKey = sessionKey,
-                            timestamp = scrobble.timestamp,
+                            timestamp = scrobble.timestamp / 1000,
                             album = scrobble.album
                         )
                         if (res.isSuccess()) {
