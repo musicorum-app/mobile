@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -128,6 +129,7 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(Crowdin.wrapContext(newBase))
     }
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -373,9 +375,11 @@ class MainActivity : ComponentActivity() {
 
                                 composable(
                                     "track/{trackData}",
-                                    arguments = listOf(navArgument("trackData") {
-                                        type = NavType.StringType
-                                    })
+                                    arguments = listOf(
+                                        navArgument("trackData") {
+                                            type = NavType.StringType
+                                        },
+                                    )
                                 ) {
                                     Track(it.arguments?.getString("trackData"))
                                 }
