@@ -67,6 +67,7 @@
     <string name="friends_activity">Friends activity</string>
     <plurals name="total_scrobbles_week">
         <item quantity="one">%1$d scrobble • last 7 days</item>
+        <item quantity="many">%1$d scrobbles • last 7 days</item>
         <item quantity="other">%1$d scrobbles • last 7 days</item>
     </plurals>
     <string name="from">From</string>
