@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bottom_navigation_item_scrobbling">Scrobble</string>
+    <string name="bottom_navigation_item_profile">Profilo</string>
+    <!-- Common -->
+    <string name="view_more">Mostra altro</string>
+    <string name="artists">Artisti</string>
+    <string name="artist">Artista</string>
+    <string name="albums">Album</string>
+    <string name="album">Album</string>
+    <string name="tracks">Tracce</string>
+    <string name="track">Traccia</string>
+    <string name="users">Utenti</string>
+    <string name="user">Utente</string>
+    <string name="top_tracks">Migliori tracce</string>
+    <string name="top_albums">Migliori album</string>
+    <string name="top_artists">Migliori artisti</string>
+    <plurals name="tracks_quantity">
+        <item quantity="one">%1$s traccia</item>
+        <item quantity="other">%1$s tracce</item>
+    </plurals>
+    <plurals name="albums_quantity">
+        <item quantity="one">%1$s album</item>
+        <item quantity="other">%1$s album</item>
+    </plurals>
+    <plurals name="artists_quantity">
+        <item quantity="one">%1$s artista</item>
+        <item quantity="other">%1$s artisti</item>
+    </plurals>
+    <string name="listeners">Ascoltatori</string>
+    <string name="scrobbles">Scrobble</string>
+    <string name="your_scrobbles">I tuoi scrobble</string>
+    <string name="settings">Impostazioni</string>
+    <string name="search">Cerca</string>
+    <string name="back">Indietro</string>
+    <!-- Home -->
+    <string name="home_page_scrobbles_text">%1$s scrobble • ultimi 7 giorni</string>
+    <string name="home_page_image_content_user">Immagine profilo utente</string>
+    <!-- Discover -->
+    <plurals name="discover_page_results_text">
+        <item quantity="one">%1$s risultato</item>
+        <item quantity="other">%1$s risultati</item>
+    </plurals>
+    <string name="discover_page_no_results">Nessun risultato</string>
+    <!-- Artist -->
+    <string name="similar_artists">Artisti simili</string>
+    <string name="recent_scrobbles">Scrobble recenti</string>
+    <string name="most_listened_week">Più ascoltati • ultimi 7 giorni</string>
+    <string name="friends_activity">Attività amici</string>
+    <plurals name="total_scrobbles_week">
+        <item quantity="one">%1$d scrobble • ultimi 7 giorni</item>
+        <item quantity="other">%1$d scrobble • ultimi 7 giorni</item>
+    </plurals>
+    <string name="from">Da</string>
+    <string name="appears_on">Appare in</string>
+    <string name="most_listened_tracks">Tracce più ascoltate</string>
+    <string name="homescreen_welcome">Benvenuto nell\'app Musicorum</string>
+    <string name="homescreen_lfm_access">È necessario l\'accesso al tuo account Last.fm per continuare</string>
+    <string name="homescreen_login_button">LOG IN CON LAST.FM</string>
+    <string name="scrobbling_now">Scrobbling in corso</string>
+    <string name="similar_tracks">Tracce Simili</string>
+    <string name="section_coming_soon">Questa sezione è in arrivo. Rimani sintonizzato per aggiornamenti!</string>
+    <string name="analytics_warning">Le analytics per noi sono essenziali durante la fase di testing interno per tenere traccia dei crash imprevisti. Disabilitarli potrebbe rendere difficile il nostro lavoro per fornire build di alta qualità e massimizzare la percentuale di utenti senza crash.</string>
+    <string name="confirmation_continue">Continua</string>
+    <string name="disable_anyway">Disabilita comunque</string>
+    <string name="cancel">Annulla</string>
+    <string name="welcome">Benvenuto, %1$s!</string>
+    <string name="analytics_description">Condividi crash report e informazioni sul dispositivo</string>
+    <string name="hold_on">Atttendere</string>
+    <string name="last_month">Ultimi 30 giorni</string>
+    <string name="no_data_available">Nessun dato disponibile</string>
+    <string name="device_scrobbling_description">Registra i brani che ascolti su questo dispositivo nel tuo account Last.fm</string>
+    <string name="enable_scrobbling">Abilita scrobbling</string>
+    <string name="notification_access">Accesso alle notifiche</string>
+    <string name="notification_permission_help_text">L\'accesso alle notifiche è necessario per vedere quale brano sta venendo riprodotto sul dispositivo. Tocca qui per gestire</string>
+    <string name="scrobble_point">Punto di scrobble</string>
+    <string name="scrobble_point_description">La percentuale dopo la quale la canzone verrà considerata come ascoltata</string>
+    <string name="media_apps">App multimediali</string>
+    <string name="media_apps_description">Scegli le app per lo scrobbling</string>
+    <string name="enable_scrobbling_for_spotify">Abilitare scrobbling per Spotify?</string>
+    <string name="spotify_scrobble_description">Assicurati di non avere la connessione di Last.fm a Spotify abilitata, altrimenti i tuoi scrobble potrebbero iniziare a duplicarsi.</string>
+    <string name="dismiss">Chiudi</string>
+    <string name="enable">Abilita</string>
+    <string name="disabled">Disabilitato</string>
+    <string name="device_scrobbling">Scrobbling dispositivo</string>
+    <string name="scrobbling_settings">Impostazioni scrobbling</string>
+    <string name="about">Info</string>
+    <string name="donate_on_patreon">Dona su Patreon</string>
+    <string name="join_our_discord_server">Unisciti al nostro server Discord</string>
+    <string name="view_source_code_on_github">Visualizza il codice sorgente su GitHub</string>
+    <string name="last_fm_website">Sito Last.fm</string>
+    <string name="made_by">Realizzato da Pedro Piva e Matheus Dias. Reso possibile da Musicorum</string>
+    <string name="grant_notification_access">Concedere l\'accesso alle notifiche?</string>
+    <string name="grant_nofication_access_onboard_description">È necessario concedere l\'accesso alle notifiche in modo da poter vedere cosa stai ascoltando se si desidera fare scrobbling da questo dispositivo</string>
+    <string name="open_notification_settings">Apri impostazioni di notifica</string>
+    <string name="notification_access_skip">Lo farò più tardi</string>
+    <string name="beta">Beta</string>
+    <string name="scrobbling_enabled_no_apps">Abilitato • nessuna app</string>
+    <string name="update_now_playing">Aggiorna riproduzione attuale</string>
+    <string name="update_now_playing_description">Questo aggiornerà il tuo profilo con la canzone attualmente in riproduzione, anche se lo scrobbling non è ancora terminato</string>
+    <string name="nothing_playing">Niente in riproduzione</string>
+    <string name="empty_friendlist_message">Quando segui qualcuno, le loro attività di ascolto appariranno qui</string>
+    <string name="empty_tracklist_message">Le tue tracce verranno mostrate qui</string>
+    <string name="youre_offline">Sei offline.</string>
+    <string name="pending_scrobbles_notice">Hai scrobble in sospeso</string>
+    <string name="outdated_data_notice">I tuoi dati potrebbero essere obsoleti.</string>
+    <plurals name="scrobble_apps">
+        <item quantity="one">Abilitato • %1$d app</item>
+        <item quantity="other">Abilitato • %1$d app</item>
+    </plurals>
+</resources>
