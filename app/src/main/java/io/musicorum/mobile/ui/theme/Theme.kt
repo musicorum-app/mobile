@@ -13,6 +13,7 @@ private val ColorPalette = darkColorScheme(
     surface = KindaBlack,
     onPrimary = Color.White,
     onBackground = Color.White,
+    onSurfaceVariant = ContentSecondary
 )
 
 @Composable

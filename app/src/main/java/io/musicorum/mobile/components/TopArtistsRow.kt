@@ -6,6 +6,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -31,13 +32,18 @@ import io.musicorum.mobile.ui.theme.Typography
 @Composable
 fun TopArtistsRow(artists: List<TopArtist>) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(15.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
-            .padding(start = 20.dp)
             .fillMaxWidth()
     ) {
+        item {
+            Spacer(modifier = Modifier.padding(start = 10.dp))
+        }
         items(artists) { artist ->
             ArtistCard(artist)
+        }
+        item {
+            Spacer(modifier = Modifier.padding(start = 10.dp))
         }
     }
 }

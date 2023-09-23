@@ -8,6 +8,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,11 +39,16 @@ import kotlinx.serialization.json.Json
 fun TopAlbumsRow(albums: List<TopAlbum>) {
     val nav = LocalNavigation.current!!
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(15.dp),
-        modifier = Modifier.padding(start = 20.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        item {
+            Spacer(modifier = Modifier.padding(start = 10.dp))
+        }
         items(albums) { album ->
             AlbumCard(album = album, nav)
+        }
+        item {
+            Spacer(modifier = Modifier.padding(start = 10.dp))
         }
     }
 }

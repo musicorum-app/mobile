@@ -116,12 +116,12 @@ fun Charts() {
         ) {
             Row(
                 modifier = Modifier
-                    .padding(15.dp)
+                    .padding(20.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(text = "Charts", style = Typography.displayMedium)
+                    Text(text = "Charts", style = Typography.displaySmall)
                     Box(
                         modifier = Modifier
                             .background(EvenLighterGray, RoundedCornerShape(15.dp))
