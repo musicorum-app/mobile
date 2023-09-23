@@ -26,7 +26,7 @@ class UserViewModel : ViewModel() {
         recentTracks.value = null
     }
 
-    fun getUser(username: String) {
+    fun getUser(username: String) = kotlin.runCatching {
         viewModelScope.launch {
             val userInfo = UserEndpoint.getUser(username)
             user.value = userInfo
@@ -34,13 +34,13 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun getTopArtists(username: String, limit: Int?, period: FetchPeriod?) {
+    fun getTopArtists(username: String, limit: Int?, period: FetchPeriod?) = kotlin.runCatching {
         viewModelScope.launch {
             val res = UserEndpoint.getTopArtists(username, limit, period)
             if (res != null) {
                 val musRes =
                     MusicorumArtistEndpoint.fetchArtist(res.topArtists.artists)
-                musRes?.forEachIndexed { index, trackResponse ->
+                musRes.forEachIndexed { index, trackResponse ->
                     val trackImageUrl = trackResponse.resources.getOrNull(0)?.bestImageUrl ?: ""
                     res.topArtists.artists[index].bestImageUrl = trackImageUrl
                 }
@@ -49,7 +49,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun getRecentTracks(username: String, limit: Int?, extended: Boolean?) {
+    fun getRecentTracks(username: String, limit: Int?, extended: Boolean?) = kotlin.runCatching {
         viewModelScope.launch {
             val res = UserEndpoint.getRecentTracks(username, null, limit, extended)
             recentTracks.value = res
@@ -57,7 +57,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun getTopAlbums(username: String, period: FetchPeriod?, limit: Int?) {
+    fun getTopAlbums(username: String, period: FetchPeriod?, limit: Int?) = kotlin.runCatching {
         viewModelScope.launch {
             val res = UserEndpoint.getTopAlbums(username, period, limit)
             topAlbums.value = res

@@ -104,19 +104,17 @@ object UserEndpoint {
     }
 
     suspend fun getTopTracks(user: String, period: FetchPeriod?, limit: Int?): TopTracks? {
-        return kotlin.runCatching {
             val res = KtorConfiguration.lastFmClient.get {
                 parameter("method", "user.getTopTracks")
                 parameter("user", user)
                 parameter("period", period?.value)
                 parameter("limit", limit)
             }
-            return@runCatching if (res.status.isSuccess()) {
+            return if (res.status.isSuccess()) {
                 res.body<TopTracks>()
             } else {
                 null
             }
-        }.getOrNull()
     }
 
     suspend fun getTopAlbums(user: String, period: FetchPeriod?, limit: Int?): TopAlbumsResponse? {

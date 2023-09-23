@@ -11,6 +11,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -54,7 +55,6 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.android.play.core.ktx.startUpdateFlowForResult
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -129,6 +129,7 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(Crowdin.wrapContext(newBase))
     }
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -231,7 +232,6 @@ class MainActivity : ComponentActivity() {
                                 localUser.create(userReq?.user)
                             }
                             MutableUserState.value = userReq
-
                         }
                     }
                 }
@@ -375,9 +375,11 @@ class MainActivity : ComponentActivity() {
 
                                 composable(
                                     "track/{trackData}",
-                                    arguments = listOf(navArgument("trackData") {
-                                        type = NavType.StringType
-                                    })
+                                    arguments = listOf(
+                                        navArgument("trackData") {
+                                            type = NavType.StringType
+                                        },
+                                    )
                                 ) {
                                     Track(it.arguments?.getString("trackData"))
                                 }

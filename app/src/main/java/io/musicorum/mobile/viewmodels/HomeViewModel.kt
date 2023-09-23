@@ -22,7 +22,6 @@ import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.UserData
-import io.musicorum.mobile.serialization.entities.TopTracks
 import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
@@ -44,7 +43,7 @@ class HomeViewModel @Inject constructor(
     val user = MutableLiveData<PartialUser>()
     val userPalette = MutableLiveData<Palette>()
     val recentTracks = MutableLiveData<List<Track>>()
-    val weekTracks = MutableLiveData<TopTracks>()
+    val weekTracks = MutableLiveData<List<Track>>()
     val friends = MutableLiveData<List<UserData>>()
     val friendsActivity = MutableLiveData<List<RecentTracks>>()
     val errored = MutableLiveData(false)
@@ -87,7 +86,8 @@ class HomeViewModel @Inject constructor(
                                 trackName = it.name,
                                 artistName = it.artist.name,
                                 scrobbleDate = it.date?.uts?.toLong() ?: 0,
-                                imageUrl = it.bestImageUrl
+                                imageUrl = it.bestImageUrl,
+                                isTopTrack = false
                             )
                         )
                     }
@@ -107,7 +107,7 @@ class HomeViewModel @Inject constructor(
                 if (pendingScrobbles.isNotEmpty()) {
                     hasPendingScrobbles.value = true
                 }
-                val cache = cacheRepository.getAll().first()
+                val cache = cacheRepository.getAllFromCache().first()
                 cache.forEach {
                     list.add(it.toTrack())
                 }
@@ -129,20 +129,44 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun fetchTopTracks(username: String) {
+        val cachedDao = CachedScrobblesDb.getDatabase(ctx).cachedScrobblesDao()
+        val cachedRepo = CachedScrobblesRepository(cachedDao)
         viewModelScope.launch {
-            val topTracksRes = UserEndpoint.getTopTracks(username, FetchPeriod.WEEK, 10)
-            if (topTracksRes == null) {
-                errored.value = true
-                return@launch
+            val res = kotlin.runCatching {
+                val topTracksRes = UserEndpoint.getTopTracks(username, FetchPeriod.WEEK, 10)
+                if (topTracksRes == null) {
+                    errored.value = true
+                    return@launch
+                }
+                val musicorumTrRes =
+                    MusicorumTrackEndpoint.fetchTracks(topTracksRes.topTracks.tracks)
+                musicorumTrRes.forEachIndexed { i, track ->
+                    val url = track?.resources?.getOrNull(0)?.bestImageUrl
+                    topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
+                    topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
+                }
+                weekTracks.value = topTracksRes.topTracks.tracks
+                for (t in topTracksRes.topTracks.tracks) {
+                    cachedRepo.insert(
+                        CachedScrobble(
+                            isTopTrack = true,
+                            scrobbleDate = t.date?.uts?.toLong() ?: 0,
+                            imageUrl = t.bestImageUrl,
+                            artistName = t.artist.name,
+                            trackName = t.name
+                        )
+                    )
+                }
             }
-            val musicorumTrRes =
-                MusicorumTrackEndpoint.fetchTracks(topTracksRes.topTracks.tracks)
-            musicorumTrRes.forEachIndexed { i, track ->
-                val url = track?.resources?.getOrNull(0)?.bestImageUrl
-                topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
-                topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
+
+            if (res.exceptionOrNull() is UnknownHostException) {
+                val topTracks = cachedRepo.getAllTopsFromCache().first()
+                val list = mutableListOf<Track>()
+                for (t in topTracks) {
+                    list.add(t.toTrack())
+                }
+                weekTracks.value = list
             }
-            weekTracks.value = topTracksRes
         }
     }
 

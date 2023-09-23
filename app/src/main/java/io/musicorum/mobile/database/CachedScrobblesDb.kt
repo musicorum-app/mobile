@@ -9,7 +9,7 @@ import io.musicorum.mobile.models.CachedScrobble
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
-@Database(entities = [CachedScrobble::class], version = 2, exportSchema = false)
+@Database(entities = [CachedScrobble::class], version = 3, exportSchema = false)
 abstract class CachedScrobblesDb : RoomDatabase() {
     abstract fun cachedScrobblesDao(): CachedScrobblesDao
 

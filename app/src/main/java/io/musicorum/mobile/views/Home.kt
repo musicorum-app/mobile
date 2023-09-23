@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Error
-import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -99,7 +98,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 Text(
                     text = "Home",
@@ -148,8 +147,8 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                                 .size(30.dp)
                         )
                         Column(modifier = Modifier.padding(start = 22.dp)) {
-                            Text("You're offline", style = Typography.titleMedium)
-                            Text("Your data might be outdated.", style = Typography.bodySmall)
+                            Text(stringResource(id = R.string.youre_offline), style = Typography.titleMedium)
+                            Text(stringResource(R.string.outdated_data_notice), style = Typography.bodySmall)
                         }
                     }
                 }
@@ -162,10 +161,12 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            "You have pending scrobbles",
+                            stringResource(R.string.pending_scrobbles_notice),
                             style = Typography.labelSmall,
                             color = ContentSecondary,
-                            modifier = Modifier.align(CenterVertically).padding(start = 10.dp)
+                            modifier = Modifier
+                                .align(CenterVertically)
+                                .padding(start = 10.dp)
                         )
                     }
                     Spacer(Modifier.height(20.dp))
@@ -215,7 +216,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             }
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalTracksRow(
-                tracks = weekTracks?.topTracks?.tracks,
+                tracks = weekTracks,
                 labelType = LabelType.ARTIST_NAME
             )
 
@@ -233,25 +234,31 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                if (friendsActivity == null && friends == null) {
-                    if (errored == true) {
-                        Text(
-                            text = stringResource(R.string.empty_friendlist_message),
-                            softWrap = true,
-                            style = Subtitle1
-                        )
-                    } else {
-                        GenericCardPlaceholder(visible = true)
-                        GenericCardPlaceholder(visible = true)
-                        GenericCardPlaceholder(visible = true)
-                    }
+                if (isOffline.value) {
+                    Text(text = stringResource(R.string.youre_offline))
                 } else {
-                    friendsActivity?.forEachIndexed { i, rt ->
-                        FriendActivity(
-                            track = rt.recentTracks.tracks[0],
-                            friendImageUrl = friends?.get(i)?.bestImageUrl,
-                            friendUsername = friends?.get(i)?.name
-                        )
+
+
+                    if (friendsActivity == null && friends == null) {
+                        if (errored == true) {
+                            Text(
+                                text = stringResource(R.string.empty_friendlist_message),
+                                softWrap = true,
+                                style = Subtitle1
+                            )
+                        } else {
+                            GenericCardPlaceholder(visible = true)
+                            GenericCardPlaceholder(visible = true)
+                            GenericCardPlaceholder(visible = true)
+                        }
+                    } else {
+                        friendsActivity?.forEachIndexed { i, rt ->
+                            FriendActivity(
+                                track = rt.recentTracks.tracks[0],
+                                friendImageUrl = friends?.get(i)?.bestImageUrl,
+                                friendUsername = friends?.get(i)?.name
+                            )
+                        }
                     }
                 }
             }
@@ -286,7 +293,7 @@ private fun UserCard(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(15.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = CenterVertically
         ) {
             AsyncImage(
                 model = defaultImageRequestBuilder(
