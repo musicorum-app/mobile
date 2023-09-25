@@ -104,10 +104,9 @@ fun Charts() {
     val userGradient = getDarkenGradient(userColor)
 
     Scaffold(floatingActionButton = { CollageFab() }) { paddingValues ->
-        Column {
+        Column(modifier = Modifier.padding(paddingValues)) {
             Column(
                 modifier = Modifier
-                    .padding(paddingValues)
                     .navigationBarsPadding()
                     .fillMaxHeight(.94f)
                     .verticalScroll(rememberScrollState())
@@ -226,11 +225,13 @@ fun Charts() {
 @Composable
 private fun CollageFab() {
     val nav = LocalNavigation.current
-    FloatingActionButton(
-        onClick = { nav?.navigate(Routes.collage()) },
-        containerColor = MostlyRed
-    ) {
-        Icon(Icons.Filled.AutoAwesomeMosaic, null)
+    Box(modifier = Modifier.padding(bottom = 35.dp)) {
+        FloatingActionButton(
+            onClick = { nav?.navigate(Routes.collage()) },
+            containerColor = MostlyRed
+        ) {
+            Icon(Icons.Filled.AutoAwesomeMosaic, null)
+        }
     }
 }
 

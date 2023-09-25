@@ -2,6 +2,7 @@ package io.musicorum.mobile.views.charts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -25,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.models.FetchPeriod
@@ -44,7 +44,6 @@ fun BaseChartDetail(
     val nav = LocalNavigation.current
     val tabIndex = remember { mutableIntStateOf(index) }
     val showBottomSheet = remember { mutableStateOf(false) }
-    val sysUiController = rememberSystemUiController()
 
     val busy = viewModel.busy.observeAsState().value
     val artists = viewModel.artists.observeAsState().value
@@ -88,6 +87,11 @@ fun BaseChartDetail(
     )
 
     Scaffold(
+        bottomBar = {
+            PeriodPicker(selectedPeriod = fetchPeriod.value, onPeriodChanged = {
+                viewModel.updatePeriod(it)
+            })
+        },
         topBar = {
             TopAppBar(
                 colors = appBarColors,
@@ -115,22 +119,27 @@ fun BaseChartDetail(
         Column(
             modifier = Modifier
                 .padding(it)
-                .background(KindaBlack)
-                .fillMaxSize()
+                .consumeWindowInsets(it)
         ) {
-            ChartTabs(tabIndex)
+            Column(
+                modifier = Modifier
+                    .background(KindaBlack)
+                    .fillMaxSize()
+            ) {
+                ChartTabs(tabIndex)
 
-            if (busy == true) {
-                CenteredLoadingSpinner()
-            } else {
-                if (tabIndex.intValue == 0) {
-                    ArtistChartDetail(artists = artists, currentViewMode.value)
-                }
-                if (tabIndex.intValue == 1) {
-                    AlbumChartDetail(albums = albums, currentViewMode.value)
-                }
-                if (tabIndex.intValue == 2) {
-                    TrackChartDetail(tracks = tracks, currentViewMode.value)
+                if (busy == true) {
+                    CenteredLoadingSpinner()
+                } else {
+                    if (tabIndex.intValue == 0) {
+                        ArtistChartDetail(artists = artists, currentViewMode.value)
+                    }
+                    if (tabIndex.intValue == 1) {
+                        AlbumChartDetail(albums = albums, currentViewMode.value)
+                    }
+                    if (tabIndex.intValue == 2) {
+                        TrackChartDetail(tracks = tracks, currentViewMode.value)
+                    }
                 }
             }
         }

@@ -5,7 +5,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
     id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.7.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.9.10'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
     id 'dagger.hilt.android.plugin'
@@ -97,7 +97,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.2'
+        kotlinCompilerExtensionVersion '1.5.3'
     }
     packagingOptions {
         resources {
@@ -118,7 +118,7 @@ play {
 dependencies {
     implementation 'com.github.skydoves:balloon-compose:1.5.2'
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
-    implementation "androidx.paging:paging-compose:3.2.0-rc01"
+    implementation "androidx.paging:paging-compose:3.3.0-alpha02"
     implementation 'com.github.crowdin.mobile-sdk-android:sdk:1.5.7'
     implementation platform('androidx.compose:compose-bom:2022.11.00')
     implementation 'com.google.android.play:app-update:2.1.0'
@@ -136,11 +136,10 @@ dependencies {
 
     implementation "com.google.dagger:hilt-android:2.44.2"
     implementation 'androidx.core:core-ktx:1.10.0'
-    kapt "com.google.dagger:hilt-compiler:2.44.2"
+    kapt "com.google.dagger:hilt-compiler:2.48"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
 
-    // implementation "com.google.accompanist:accompanist-permissions:0.29.0-alpha17"
-    implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.2.1'
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
     implementation 'app.rive:rive-android:4.0.0'
     implementation "androidx.startup:startup-runtime:1.1.1"
@@ -188,4 +187,8 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+hilt {
+    enableAggregatingTask true
 }
