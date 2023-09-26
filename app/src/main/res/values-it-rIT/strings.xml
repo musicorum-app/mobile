@@ -108,8 +108,8 @@
     <string name="last_30_days">ultimi 30 giorni</string>
     <string name="last_90_days">ultimi 90 giorni</string>
     <string name="last_6_months">ultimi 6 mesi</string>
-    <string name="last_12_months">last 12 months</string>
-    <string name="overall">overall</string>
+    <string name="last_12_months">ultimi 12 mesi</string>
+    <string name="overall">generale</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Abilitato • %1$d app</item>
         <item quantity="other">Abilitato • %1$d app</item>
