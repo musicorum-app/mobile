@@ -48,7 +48,7 @@ android {
         minSdk 28
         targetSdk 34
         versionCode 63
-        versionName "1.18.3-pre-release"
+        versionName "1.19.0-pre-release"
         //compileSdkPreview = "UpsideDownCake"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
