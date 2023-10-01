@@ -108,7 +108,7 @@ fun TrackCard(track: Track, labelType: LabelType) {
             }
 
         }
-        Row {
+        Row(modifier = Modifier.padding(top = 7.dp)) {
             if (track.pending) {
                 Icon(
                     Icons.Rounded.CloudOff,
@@ -120,12 +120,15 @@ fun TrackCard(track: Track, labelType: LabelType) {
                     tint = ContentSecondary
                 )
             }
+            val maxWidth = if (track.pending) {
+                100.dp
+            } else 120.dp
             Text(
                 text = track.name,
                 textAlign = TextAlign.Start,
                 style = Typography.bodyLarge,
                 modifier = Modifier
-                    .widthIn(10.dp, 120.dp)
+                    .widthIn(10.dp, maxWidth)
                     .indication(interactionSource, null)
                     .align(CenterVertically),
                 maxLines = 1,

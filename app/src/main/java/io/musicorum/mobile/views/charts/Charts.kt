@@ -3,12 +3,12 @@ package io.musicorum.mobile.views.charts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -24,10 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,12 +68,10 @@ import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.models.ResourceEntity
 import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.ContentSecondary
-import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.ui.theme.Typography
-import io.musicorum.mobile.utils.PeriodResolver
 import io.musicorum.mobile.utils.Placeholders
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
@@ -108,131 +104,119 @@ fun Charts() {
     val userGradient = getDarkenGradient(userColor)
 
     Scaffold(floatingActionButton = { CollageFab() }) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Row(
+        Column(modifier = Modifier.padding(paddingValues)) {
+            Column(
                 modifier = Modifier
-                    .padding(15.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .navigationBarsPadding()
+                    .fillMaxHeight(.94f)
+                    .verticalScroll(rememberScrollState())
             ) {
-                Column {
-                    Text(text = "Charts", style = Typography.displayMedium)
+                Text(
+                    text = "Charts",
+                    style = Typography.displaySmall,
+                    modifier = Modifier.padding(20.dp)
+                )
+
+                Box(modifier = Modifier.padding(15.dp)) {
                     Box(
                         modifier = Modifier
-                            .background(EvenLighterGray, RoundedCornerShape(15.dp))
-                            .clickable { showBottomSheet.value = true }
+                            .background(
+                                Brush.linearGradient(userGradient.asReversed()),
+                                RoundedCornerShape(12.dp)
+                            )
+                            .padding(start = 10.dp)
+                            .fillMaxWidth()
+                            .height(70.dp),
+                        contentAlignment = Alignment.CenterStart
                     ) {
-                        Text(
-                            text = PeriodResolver.resolve(period.value!!),
-                            modifier = Modifier.padding(vertical = 3.dp, horizontal = 7.dp)
-                        )
-                    }
-                }
-                FilledIconButton(onClick = { showBottomSheet.value = true }) {
-                    Icon(Icons.Rounded.DateRange, null)
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            Box(modifier = Modifier.padding(15.dp)) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            Brush.linearGradient(userGradient.asReversed()),
-                            RoundedCornerShape(12.dp)
-                        )
-                        .padding(start = 10.dp)
-                        .fillMaxWidth()
-                        .height(70.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Column {
-                        Text(
-                            text = topTracks?.attributes?.total ?: ".......",
-                            style = Typography.headlineLarge,
-                            modifier = Modifier.placeholder(
-                                visible = busy,
-                                color = SkeletonSecondaryColor,
-                                highlight = PlaceholderHighlight.shimmer(),
-                                shape = RoundedCornerShape(5.dp)
+                        Column {
+                            Text(
+                                text = topTracks?.attributes?.total ?: ".......",
+                                style = Typography.headlineLarge,
+                                modifier = Modifier.placeholder(
+                                    visible = busy,
+                                    color = SkeletonSecondaryColor,
+                                    highlight = PlaceholderHighlight.shimmer(),
+                                    shape = RoundedCornerShape(5.dp)
+                                )
                             )
+                            Text(text = "scrobbles", style = Typography.titleMedium)
+                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.chart_decorations),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(CenterEnd)
+                                .alpha(.15f)
                         )
-                        Text(text = "scrobbles", style = Typography.titleMedium)
                     }
-                    Image(
-                        painter = painterResource(id = R.drawable.chart_decorations),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .align(CenterEnd)
-                            .alpha(.15f)
-                    )
                 }
-            }
 
-            if (busy) {
-                CenteredLoadingSpinner()
-            } else {
-                val topArtist = topArtists?.getOrNull(0)
-                val topAlbum = topAlbums?.getOrNull(0)
-                val topTrack = topTracks?.tracks?.getOrNull(0)
-                ChartComponentBox(
-                    leadImage = topArtist?.bestImageUrl,
-                    trailDetail = Icons.Rounded.Star,
-                    shape = CircleShape,
-                    artist = topArtist?.name,
-                    scrobbleCount = topArtist?.playCount,
-                    top = ResourceEntity.Artist,
-                    album = null,
-                    innerData = topArtists?.drop(1)?.fold(mutableListOf()) { list, artist ->
-                        list.add(ChartData(artist.name, artist.bestImageUrl, artist.playCount))
-                        list
-                    }
-                )
-                Spacer(modifier = Modifier.height(70.dp))
-                ChartComponentBox(
-                    leadImage = topAlbums?.getOrNull(0)?.bestImageUrl,
-                    trailDetail = Icons.Outlined.Album,
-                    shape = RoundedCornerShape(6.dp),
-                    artist = topAlbum?.name,
-                    scrobbleCount = topAlbum?.playCount?.toInt() ?: 0,
-                    album = null,
-                    top = ResourceEntity.Album,
-                    innerData = topAlbums?.drop(1)?.fold(mutableListOf()) { list, album ->
-                        list.add(
-                            ChartData(
-                                album.name,
-                                album.bestImageUrl,
-                                album.playCount?.toInt() ?: 0
+                if (busy) {
+                    CenteredLoadingSpinner()
+                } else {
+                    val topArtist = topArtists?.getOrNull(0)
+                    val topAlbum = topAlbums?.getOrNull(0)
+                    val topTrack = topTracks?.tracks?.getOrNull(0)
+                    ChartComponentBox(
+                        leadImage = topArtist?.bestImageUrl,
+                        trailDetail = Icons.Rounded.Star,
+                        shape = CircleShape,
+                        artist = topArtist?.name,
+                        scrobbleCount = topArtist?.playCount,
+                        top = ResourceEntity.Artist,
+                        album = null,
+                        innerData = topArtists?.drop(1)?.fold(mutableListOf()) { list, artist ->
+                            list.add(ChartData(artist.name, artist.bestImageUrl, artist.playCount))
+                            list
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(70.dp))
+                    ChartComponentBox(
+                        leadImage = topAlbums?.getOrNull(0)?.bestImageUrl,
+                        trailDetail = Icons.Outlined.Album,
+                        shape = RoundedCornerShape(6.dp),
+                        artist = topAlbum?.name,
+                        scrobbleCount = topAlbum?.playCount?.toInt() ?: 0,
+                        album = null,
+                        top = ResourceEntity.Album,
+                        innerData = topAlbums?.drop(1)?.fold(mutableListOf()) { list, album ->
+                            list.add(
+                                ChartData(
+                                    album.name,
+                                    album.bestImageUrl,
+                                    album.playCount?.toInt() ?: 0
+                                )
                             )
-                        )
-                        list
-                    }
-                )
-                Spacer(modifier = Modifier.height(70.dp))
-                ChartComponentBox(
-                    leadImage = topTracks?.tracks?.getOrNull(0)?.bestImageUrl,
-                    trailDetail = Icons.Rounded.MusicNote,
-                    shape = RoundedCornerShape(6.dp),
-                    artist = topTrack?.name,
-                    scrobbleCount = topTrack?.playCount?.toInt() ?: 0,
-                    album = null,
-                    top = ResourceEntity.Track,
-                    innerData = topTracks?.tracks?.drop(1)?.fold(mutableListOf()) { list, track ->
-                        list.add(
-                            ChartData(
-                                track.name,
-                                track.bestImageUrl,
-                                track.playCount?.toInt() ?: 0
-                            )
-                        )
-                        list
-                    }
-                )
-                Spacer(modifier = Modifier.height(150.dp))
+                            list
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(70.dp))
+                    ChartComponentBox(
+                        leadImage = topTracks?.tracks?.getOrNull(0)?.bestImageUrl,
+                        trailDetail = Icons.Rounded.MusicNote,
+                        shape = RoundedCornerShape(6.dp),
+                        artist = topTrack?.name,
+                        scrobbleCount = topTrack?.playCount?.toInt() ?: 0,
+                        album = null,
+                        top = ResourceEntity.Track,
+                        innerData = topTracks?.tracks?.drop(1)
+                            ?.fold(mutableListOf()) { list, track ->
+                                list.add(
+                                    ChartData(
+                                        track.name,
+                                        track.bestImageUrl,
+                                        track.playCount?.toInt() ?: 0
+                                    )
+                                )
+                                list
+                            }
+                    )
+                    Spacer(modifier = Modifier.height(150.dp))
+                }
+            }
+            PeriodPicker(true, period.value!!) {
+                model.updatePeriod(it)
             }
         }
     }
@@ -241,11 +225,13 @@ fun Charts() {
 @Composable
 private fun CollageFab() {
     val nav = LocalNavigation.current
-    FloatingActionButton(
-        onClick = { nav?.navigate(Routes.collage()) },
-        containerColor = MostlyRed
-    ) {
-        Icon(Icons.Filled.AutoAwesomeMosaic, null)
+    Box(modifier = Modifier.padding(bottom = 35.dp)) {
+        FloatingActionButton(
+            onClick = { nav?.navigate(Routes.collage()) },
+            containerColor = MostlyRed
+        ) {
+            Icon(Icons.Filled.AutoAwesomeMosaic, null)
+        }
     }
 }
 
@@ -361,7 +347,7 @@ fun ChartComponentBox(
                             model = defaultImageRequestBuilder(url = data.image),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(20.dp)
+                                .size(24.dp)
                                 .clip(shape)
                         )
                         Spacer(modifier = Modifier.width(5.dp))

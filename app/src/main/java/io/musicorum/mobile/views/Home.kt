@@ -93,7 +93,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 .verticalScroll(rememberScrollState())
                 .background(KindaBlack)
                 .fillMaxSize()
-                .padding(top = 30.dp, bottom = 20.dp)
+                .padding(top = 20.dp, bottom = 20.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

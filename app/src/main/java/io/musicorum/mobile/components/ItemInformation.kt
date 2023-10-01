@@ -130,5 +130,6 @@ private fun InformationSheet(state: MutableState<Boolean>, text: String, palette
             Spacer(modifier = Modifier.width(10.dp))
             Text(text = "More on Last.fm")
         }
+        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
     }
 }

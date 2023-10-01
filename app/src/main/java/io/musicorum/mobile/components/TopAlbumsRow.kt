@@ -8,6 +8,7 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,6 +28,8 @@ import coil.compose.AsyncImage
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
+import io.musicorum.mobile.ktor.endpoints.TagAlbum
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.views.individual.PartialAlbum
@@ -38,11 +41,16 @@ import kotlinx.serialization.json.Json
 fun TopAlbumsRow(albums: List<TopAlbum>) {
     val nav = LocalNavigation.current!!
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(15.dp),
-        modifier = Modifier.padding(start = 20.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        item {
+            Spacer(modifier = Modifier.padding(start = 10.dp))
+        }
         items(albums) { album ->
             AlbumCard(album = album, nav)
+        }
+        item {
+            Spacer(modifier = Modifier.padding(start = 10.dp))
         }
     }
 }
@@ -90,6 +98,42 @@ fun AlbumCard(album: TopAlbum, nav: NavHostController) {
                 .toString()
         Text(
             text = "$formattedNumber plays",
+            style = Typography.bodyMedium,
+            modifier = Modifier.alpha(0.55f)
+        )
+    }
+}
+
+@Composable
+fun AlbumCard(album: TagAlbum) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val nav = LocalNavigation.current
+    val partialAlbum =
+        Json.encodeToString(PartialAlbum(album.name, album.artist.name))
+    Column(modifier = Modifier
+        .clickable(
+            enabled = true,
+            indication = null,
+            interactionSource = interactionSource
+        ) { nav?.navigate(Routes.album(partialAlbum)) }
+    ) {
+        AsyncImage(
+            model = defaultImageRequestBuilder(album.images[0].url, PlaceholderType.ALBUM),
+            contentDescription = null,
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .indication(interactionSource, LocalIndication.current)
+        )
+        Text(
+            text = album.name,
+            style = Typography.bodyLarge,
+            modifier = Modifier.width(120.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            album.artist.name,
             style = Typography.bodyMedium,
             modifier = Modifier.alpha(0.55f)
         )

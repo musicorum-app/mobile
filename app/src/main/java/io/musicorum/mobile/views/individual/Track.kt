@@ -36,7 +36,6 @@ import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.viewmodels.TrackViewModel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 
@@ -189,7 +188,7 @@ fun Track(
                         from = track.artist.name to track.artist.bestImageUrl
                     )
                     similarTracks?.let {
-                        Divider(Modifier.padding(vertical = 20.dp))
+                        HorizontalDivider(Modifier.padding(vertical = 20.dp))
                         Column(
                             Modifier
                                 .padding(horizontal = 5.dp)

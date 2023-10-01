@@ -13,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
@@ -37,7 +36,6 @@ import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.viewmodels.AlbumViewModel
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -137,7 +135,7 @@ fun Album(
                         color = ContentSecondary
                     )
 
-                    Divider(Modifier.padding(vertical = 20.dp))
+                    HorizontalDivider(Modifier.padding(vertical = 20.dp))
 
                     StatisticRow(
                         true,
@@ -162,7 +160,7 @@ fun Album(
                         }
                     }
 
-                    Divider(Modifier.padding(vertical = 20.dp))
+                    HorizontalDivider(Modifier.padding(vertical = 20.dp))
 
                     ContextRow(appearsOn = null, from = Pair(album.artist, artistImage))
                     val navAlbum =
@@ -170,7 +168,7 @@ fun Album(
 
                     album.tracks?.let {
                         if (it.size > 1) {
-                            Divider(Modifier.padding(vertical = 20.dp))
+                            HorizontalDivider(Modifier.padding(vertical = 20.dp))
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,

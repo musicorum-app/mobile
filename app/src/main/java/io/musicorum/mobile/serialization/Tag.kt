@@ -11,5 +11,8 @@ data class Tag(
 
 @Serializable
 data class TagData(
-    val name: String
+    val name: String,
+    val total: Int? = null,
+    val reach: Int? = null,
+    val wiki: Wiki? = null
 )

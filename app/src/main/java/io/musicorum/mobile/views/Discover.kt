@@ -60,7 +60,7 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
         Text(
             "Discover",
             style = Typography.displaySmall,
-            modifier = Modifier.padding(start = 15.dp)
+            modifier = Modifier.padding(start = 20.dp)
         )
 
         DockedSearchBar(

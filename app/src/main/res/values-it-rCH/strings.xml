@@ -1,13 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Musicorum</string>
-    <string name="bottom_navigation_item_home" translatable="false">Home</string>
     <string name="bottom_navigation_item_scrobbling">Scrobbles</string>
-    <string name="bottom_navigation_item_charts" translatable="false">Charts</string>
     <string name="bottom_navigation_item_profile">Profile</string>
-
     <!-- Common -->
     <string name="view_more">View more</string>
-
     <string name="artists">Artists</string>
     <string name="artist">Artist</string>
     <string name="albums">Albums</string>
@@ -16,50 +12,36 @@
     <string name="track">Track</string>
     <string name="users">Users</string>
     <string name="user">User</string>
-
     <string name="top_tracks">Top tracks</string>
     <string name="top_albums">Top albums</string>
     <string name="top_artists">Top artists</string>
-
     <plurals name="tracks_quantity">
-        <item quantity="zero">No tracks</item>
         <item quantity="one">%1$s track</item>
         <item quantity="other">%1$s tracks</item>
     </plurals>
-
     <plurals name="albums_quantity">
-        <item quantity="zero">No albums</item>
         <item quantity="one">%1$s album</item>
         <item quantity="other">%1$s albums</item>
     </plurals>
-
     <plurals name="artists_quantity">
-        <item quantity="zero">No artists</item>
         <item quantity="one">%1$s artist</item>
         <item quantity="other">%1$s artists</item>
     </plurals>
-
     <string name="listeners">Listeners</string>
     <string name="scrobbles">Scrobbles</string>
     <string name="your_scrobbles">Your scrobbles</string>
-
-
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
-
-
     <!-- Home -->
     <string name="home_page_scrobbles_text">%1$s scrobbles • last 7 days</string>
     <string name="home_page_image_content_user">User profile image</string>
-
     <!-- Discover -->
     <plurals name="discover_page_results_text">
         <item quantity="one">%1$s result</item>
         <item quantity="other">%1$s results</item>
     </plurals>
     <string name="discover_page_no_results">Nothing found</string>
-
     <!-- Artist -->
     <string name="similar_artists">Similar artists</string>
     <string name="recent_scrobbles">Recent scrobbles</string>
@@ -67,7 +49,6 @@
     <string name="friends_activity">Friends activity</string>
     <plurals name="total_scrobbles_week">
         <item quantity="one">%1$d scrobble • last 7 days</item>
-        <item quantity="many">%1$d scrobbles • last 7 days</item>
         <item quantity="other">%1$d scrobbles • last 7 days</item>
     </plurals>
     <string name="from">From</string>
@@ -123,12 +104,6 @@
     <string name="youre_offline">You\'re offline.</string>
     <string name="pending_scrobbles_notice">You have pending scrobbles</string>
     <string name="outdated_data_notice">Your data might be outdated.</string>
-    <string name="last_7_days">last 7 days</string>
-    <string name="last_30_days">last 30 days</string>
-    <string name="last_90_days">last 90 days</string>
-    <string name="last_6_months">last 6 months</string>
-    <string name="last_12_months">last 12 months</string>
-    <string name="overall">overall</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Enabled • %1$d app</item>
         <item quantity="other">Enabled • %1$d apps</item>

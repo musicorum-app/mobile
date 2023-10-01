@@ -38,13 +38,10 @@ import java.util.Date
 
 class NotificationListener : NotificationListenerService() {
     private val tag = "NotificationListener"
-    private var lastListened = ""
     private var job: Job? = null
-    private var isScrobbleAllowed = false
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            isScrobbleAllowed = true
             Log.d(tag, "internet connection available. syncing offline scrobbles")
             CoroutineScope(Dispatchers.IO).launch {
                 val sessionKey = applicationContext.userData.data.map { p ->
@@ -75,7 +72,6 @@ class NotificationListener : NotificationListenerService() {
         override fun onLost(network: Network) {
             super.onLost(network)
             Log.d(tag, "internet connection lost")
-            isScrobbleAllowed = false
         }
     }
     private lateinit var offlineScrobblesRepo: OfflineScrobblesRepository
@@ -105,9 +101,6 @@ class NotificationListener : NotificationListenerService() {
         val track = player.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE)
         val artist = player.metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
         val album = player.metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM)
-
-        if (lastListened == "$track - $artist") return
-        lastListened = "$track - $artist"
 
         val scrobbleEnabled = runBlocking {
             applicationContext.scrobblePrefs.data.map { p ->
@@ -166,16 +159,19 @@ class NotificationListener : NotificationListenerService() {
             return
         }
 
-        if (!isPlayerPaused && updateNowPlaying == true && isScrobbleAllowed) {
+        if (!isPlayerPaused && updateNowPlaying == true) {
             CoroutineScope(Dispatchers.IO).launch {
-                val success = UserEndpoint.updateNowPlaying(
-                    track = track,
-                    album = album,
-                    artist = artist,
-                    albumArtist = albumArtist,
-                    sessionKey = sessionKey!!
-                )
-                Log.d(tag, "is now playing? $success")
+                try {
+                    val success = UserEndpoint.updateNowPlaying(
+                        track = track,
+                        album = album,
+                        artist = artist,
+                        albumArtist = albumArtist,
+                        sessionKey = sessionKey!!
+                    )
+                    Log.d(tag, "is now playing? $success")
+                } catch (_: UnknownHostException) {
+                }
             }
         }
         if (timeToScrobble < 0) return
