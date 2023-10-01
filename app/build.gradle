@@ -29,7 +29,6 @@ android {
     namespace 'io.musicorum.mobile'
     compileSdk 34
 
-
     signingConfigs {
         release {
             storeFile file(appKeyStoreFile)
@@ -39,11 +38,10 @@ android {
         }
     }
 
-
     lintOptions {
-        disable 'MissingTranslation'
         disable 'NullSafeMutableLiveData'
     }
+
 
     defaultConfig {
         applicationId "io.musicorum.mobile"

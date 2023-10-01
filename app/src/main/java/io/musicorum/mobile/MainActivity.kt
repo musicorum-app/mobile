@@ -86,6 +86,7 @@ import io.musicorum.mobile.views.individual.Album
 import io.musicorum.mobile.views.individual.AlbumTracklist
 import io.musicorum.mobile.views.individual.Artist
 import io.musicorum.mobile.views.individual.PartialAlbum
+import io.musicorum.mobile.views.individual.TagScreen
 import io.musicorum.mobile.views.individual.Track
 import io.musicorum.mobile.views.individual.User
 import io.musicorum.mobile.views.login.loginGraph
@@ -96,7 +97,6 @@ import io.sentry.android.core.SentryAndroid
 import io.sentry.compose.withSentryObservableEffect
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 val Context.userData: DataStore<Preferences> by preferencesDataStore(name = "userdata")
@@ -397,6 +397,17 @@ class MainActivity : ComponentActivity() {
 
                                 composable("settings") { Settings() }
                                 composable("settings/scrobble") { ScrobbleSettings() }
+
+                                composable(
+                                    "tag/{tagName}",
+                                    arguments = listOf(
+                                        navArgument("tagName") {
+                                            type = NavType.StringType
+                                        },
+                                    )
+                                ) {
+                                    TagScreen()
+                                }
                             }
                         }
 

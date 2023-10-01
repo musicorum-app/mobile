@@ -25,7 +25,13 @@ import io.musicorum.mobile.ui.theme.KindaBlack
 val HEADER_HEIGHT = 400.dp
 
 @Composable
-fun GradientHeader(backgroundUrl: String?, coverUrl: String?, shape: Shape, placeholderType: PlaceholderType) {
+fun GradientHeader(
+    backgroundUrl: String?,
+    coverUrl: String?,
+    shape: Shape,
+    placeholderType: PlaceholderType,
+    showCover: Boolean = true
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,17 +58,19 @@ fun GradientHeader(backgroundUrl: String?, coverUrl: String?, shape: Shape, plac
                     )
                 )
         )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-            AsyncImage(
-                model = defaultImageRequestBuilder(url = coverUrl, placeholderType),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(top = 200.dp)
-                    .shadow(elevation = 20.dp, shape = shape, spotColor = Color.Black)
-                    .clip(shape)
-                    .size(300.dp),
-                contentScale = ContentScale.Crop
-            )
+        if (showCover) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                AsyncImage(
+                    model = defaultImageRequestBuilder(url = coverUrl, placeholderType),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(top = 200.dp)
+                        .shadow(elevation = 20.dp, shape = shape, spotColor = Color.Black)
+                        .clip(shape)
+                        .size(300.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
     }
 }

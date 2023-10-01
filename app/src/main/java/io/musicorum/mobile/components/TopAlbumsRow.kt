@@ -28,6 +28,8 @@ import coil.compose.AsyncImage
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
+import io.musicorum.mobile.ktor.endpoints.TagAlbum
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.views.individual.PartialAlbum
@@ -96,6 +98,42 @@ fun AlbumCard(album: TopAlbum, nav: NavHostController) {
                 .toString()
         Text(
             text = "$formattedNumber plays",
+            style = Typography.bodyMedium,
+            modifier = Modifier.alpha(0.55f)
+        )
+    }
+}
+
+@Composable
+fun AlbumCard(album: TagAlbum) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val nav = LocalNavigation.current
+    val partialAlbum =
+        Json.encodeToString(PartialAlbum(album.name, album.artist.name))
+    Column(modifier = Modifier
+        .clickable(
+            enabled = true,
+            indication = null,
+            interactionSource = interactionSource
+        ) { nav?.navigate(Routes.album(partialAlbum)) }
+    ) {
+        AsyncImage(
+            model = defaultImageRequestBuilder(album.images[0].url, PlaceholderType.ALBUM),
+            contentDescription = null,
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .indication(interactionSource, LocalIndication.current)
+        )
+        Text(
+            text = album.name,
+            style = Typography.bodyLarge,
+            modifier = Modifier.width(120.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            album.artist.name,
             style = Typography.bodyMedium,
             modifier = Modifier.alpha(0.55f)
         )

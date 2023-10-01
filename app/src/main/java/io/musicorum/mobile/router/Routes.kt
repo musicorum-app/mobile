@@ -3,12 +3,10 @@ package io.musicorum.mobile.router
 import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.models.ResourceEntity
 import io.musicorum.mobile.serialization.entities.Album
-import io.musicorum.mobile.serialization.entities.Artist
 import io.musicorum.mobile.utils.PeriodResolver
 import io.musicorum.mobile.views.individual.PartialAlbum
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 
 object Routes {
     fun user(username: String) = "user/$username"
@@ -28,6 +26,7 @@ object Routes {
     const val profile = "profile"
     fun track(data: String) = "track/$data"
     const val charts = "charts"
+    fun tag(tagName: String) = "tag/$tagName"
     fun chartsDetail(index: Int) = "charts/detail?index=${index}"
     fun collage(entity: ResourceEntity? = null, period: FetchPeriod? = null): String {
         val periodString = period?.let { PeriodResolver.resolve(it) } ?: "7day"
