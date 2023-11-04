@@ -14,6 +14,7 @@ import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.serialization.entities.TopArtist
 import io.musicorum.mobile.serialization.entities.Track
+import io.musicorum.mobile.utils.PeriodResolver
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +27,7 @@ class DetailViewModel @Inject constructor(
     val albums = MutableLiveData<List<TopAlbum>>()
     val tracks = MutableLiveData<List<Track>>()
     val busy = MutableLiveData(false)
-    val period = MutableLiveData(FetchPeriod.valueOf(savedStateHandle["period"] ?: ""))
+    val period = MutableLiveData(PeriodResolver.resolve(savedStateHandle.get<String>("period")))
     val entity = MutableLiveData<ResourceEntity>()
     val application_ = application
     val viewMode = MutableLiveData(ViewMode.List)

@@ -15,15 +15,15 @@ object PeriodResolver {
         }
     }
 
-    fun resolve(period: String): FetchPeriod? {
-        return when (period.uppercase(Locale.ROOT)) {
+    fun resolve(period: String?): FetchPeriod {
+        return when (period?.uppercase(Locale.ROOT)) {
             "7DAY" -> FetchPeriod.WEEK
             "1MONTH" -> FetchPeriod.MONTH
             "3MONTH" -> FetchPeriod.TRIMESTER
             "6MONTH" -> FetchPeriod.SEMESTER
             "12MONTH" -> FetchPeriod.YEAR
             "OVERALL" -> FetchPeriod.OVERALL
-            else -> null
+            else -> FetchPeriod.WEEK
         }
     }
 }
