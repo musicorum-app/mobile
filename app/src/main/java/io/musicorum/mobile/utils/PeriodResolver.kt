@@ -15,15 +15,15 @@ object PeriodResolver {
         }
     }
 
-    fun resolve(period: String): Pair<String, String> {
+    fun resolve(period: String): FetchPeriod? {
         return when (period.uppercase(Locale.ROOT)) {
-            "7DAY" -> "Last week" to "7DAY"
-            "1MONTH" -> "Last month" to "1MONTH"
-            "3MONTH" -> "Last 3 months" to "3MONTH"
-            "6MONTH" -> "Last 6 months" to "6MONTH"
-            "12MONTH" -> "Last year" to "12MONTH"
-            "OVERALL" -> "Overall" to "OVERALL"
-            else -> "Last week" to "7DAY"
+            "7DAY" -> FetchPeriod.WEEK
+            "1MONTH" -> FetchPeriod.MONTH
+            "3MONTH" -> FetchPeriod.TRIMESTER
+            "6MONTH" -> FetchPeriod.SEMESTER
+            "12MONTH" -> FetchPeriod.YEAR
+            "OVERALL" -> FetchPeriod.OVERALL
+            else -> null
         }
     }
 }

@@ -3,6 +3,7 @@ package io.musicorum.mobile.views.charts
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
@@ -14,13 +15,18 @@ import io.musicorum.mobile.serialization.TopAlbum
 import io.musicorum.mobile.serialization.entities.TopArtist
 import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DetailViewModel(application: Application) : AndroidViewModel(application) {
+class DetailViewModel @Inject constructor(
+    application: Application,
+    savedStateHandle: SavedStateHandle
+) :
+    AndroidViewModel(application) {
     val artists = MutableLiveData<List<TopArtist>>()
     val albums = MutableLiveData<List<TopAlbum>>()
     val tracks = MutableLiveData<List<Track>>()
     val busy = MutableLiveData(false)
-    val period = MutableLiveData(FetchPeriod.WEEK)
+    val period = MutableLiveData(FetchPeriod.valueOf(savedStateHandle["period"] ?: ""))
     val entity = MutableLiveData<ResourceEntity>()
     val application_ = application
     val viewMode = MutableLiveData(ViewMode.List)
@@ -64,7 +70,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
             }
             val musRes = MusicorumArtistEndpoint.fetchArtist(artistsRes)
             artistsRes.onEachIndexed { i, a ->
-                a.bestImageUrl = musRes[i].bestResource?.bestImageUrl!!
+                a.bestImageUrl = musRes[i].bestResource?.bestImageUrl ?: ""
             }
             artists.value = artistsRes
             busy.value = false

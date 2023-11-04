@@ -1,6 +1,8 @@
 package io.musicorum.mobile.views.charts
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -74,6 +76,7 @@ fun PeriodPicker(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun PeriodComponent(
     period: Pair<FetchPeriod, String>,
@@ -90,7 +93,17 @@ private fun PeriodComponent(
         .padding(end = 15.dp)
         .clickable { onClick(period.first) }
 
-    AnimatedContent(targetState = active, label = "period_picker") {
+    AnimatedContent(
+        targetState = active,
+        label = "period_picker",
+        transitionSpec = {
+            ContentTransform(
+                targetContentEnter = this.scaleInToFitContainer(Alignment.Center),
+                initialContentExit = this.scaleOutToFitContainer(Alignment.Center)
+            )
+        }
+    ) {
+
         when (it) {
             true -> Box(modifier = activeMod, contentAlignment = Alignment.Center) {
                 Text(text = period.second)
