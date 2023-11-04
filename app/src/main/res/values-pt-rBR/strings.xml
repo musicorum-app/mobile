@@ -104,10 +104,10 @@
     <string name="youre_offline">Você está sem conexão.</string>
     <string name="pending_scrobbles_notice">Você tem scrobbles pendentes</string>
     <string name="outdated_data_notice">Seus dados podem estar desatualizados.</string>
-    <string name="last_7_days">last 7 days</string>
-    <string name="last_30_days">last 30 days</string>
-    <string name="last_90_days">last 90 days</string>
-    <string name="last_6_months">last 6 months</string>
+    <string name="last_7_days">últimos 7 dias</string>
+    <string name="last_30_days">últimos 30 dias</string>
+    <string name="last_90_days">últimos 90 dias</string>
+    <string name="last_6_months">últimos 6 meses</string>
     <string name="last_12_months">last 12 months</string>
     <string name="overall">overall</string>
     <string name="grid_collage_sheet_text">Check out my %1$dx%2$d grid collage, made with the Musicorum Android app.</string>
