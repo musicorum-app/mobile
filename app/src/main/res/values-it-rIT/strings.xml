@@ -125,9 +125,9 @@
     <string name="generate">Genera</string>
     <string name="share">Condividi</string>
     <string name="save">Salva</string>
-    <string name="generator_error">An internal error occurred while generating your image.\n%1$s</string>
-    <string name="sharing_item">Sharing item…</string>
-    <string name="starting_download">Starting download…</string>
+    <string name="generator_error">Sì è verificato un errore durante la creazione della tua immagine.\n%1$s</string>
+    <string name="sharing_item">Condivisione elemento…</string>
+    <string name="starting_download">Avvio download…</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Abilitato • %1$d app</item>
         <item quantity="other">Abilitato • %1$d app</item>
