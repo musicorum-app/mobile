@@ -3,10 +3,13 @@ package io.musicorum.mobile.viewmodels
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.database.CachedScrobblesDb
 import io.musicorum.mobile.database.PendingScrobblesDb
@@ -51,6 +54,10 @@ class HomeViewModel @Inject constructor(
     val isRefreshing = MutableStateFlow(false)
     val isOffline = MutableLiveData(false)
     val hasPendingScrobbles = MutableLiveData(false)
+    val showRewindCard = MutableLiveData(false)
+    val rewindCardMessage = MutableLiveData("")
+    private val remoteConfig = FirebaseRemoteConfig.getInstance()
+
 
     fun refresh() {
         isRefreshing.value = true
@@ -58,6 +65,13 @@ class HomeViewModel @Inject constructor(
         friends.value = null
         friendsActivity.value = null
         init()
+    }
+
+    fun launchRewind() {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://rewind.musc.pw")).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        ctx.startActivity(intent)
     }
 
     private fun fetchRecentTracks(username: String, from: String?) {
@@ -197,6 +211,13 @@ class HomeViewModel @Inject constructor(
             fetchRecentTracks(localUser.username, fromTimestamp)
             fetchTopTracks(localUser.username)
             fetchFriends(localUser.username)
+            val rewindEnabled = remoteConfig.getBoolean("rewind_enabled")
+            val firebaseRewindMessage = remoteConfig.getString("rewind_custom_message")
+            val rewindMessage = firebaseRewindMessage.ifEmpty {
+                "Check out this year's Rewind!"
+            }
+            showRewindCard.value = rewindEnabled
+            rewindCardMessage.value = rewindMessage
         }
     }
 

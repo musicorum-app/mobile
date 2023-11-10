@@ -64,6 +64,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
+import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.serialization.User
@@ -300,6 +301,16 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             ) {
+                                /* WIP val views =
+                                    Reflections("io.musicorum.mobile")
+                                        .getMethodsAnnotatedWith(Route::class.java)
+                                Log.d("REGISTRY", "${views.size} routes were found.")
+                                views.forEach { method ->
+                                    val routeName = method.annotations[0].annotationClass.simpleName
+                                        ?: return@forEach
+                                    composable(route = routeName) { method.invoke(null) }
+                                }*/
+
                                 loginGraph(navController = navController)
 
                                 composable("home") { Home() }
@@ -323,11 +334,17 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable(
-                                    "charts/detail?index={index}",
-                                    arguments = listOf(navArgument("index") {
-                                        type = NavType.IntType
-                                        defaultValue = 1
-                                    })
+                                    "charts/detail?index={index}&period={period}",
+                                    arguments = listOf(
+                                        navArgument("index") {
+                                            type = NavType.IntType
+                                            defaultValue = 1
+                                        },
+                                        navArgument("period") {
+                                            type = NavType.StringType
+                                            defaultValue = FetchPeriod.WEEK.value
+                                        }
+                                    )
                                 ) { backStack ->
                                     BaseChartDetail(backStack.arguments?.getInt("index")!!)
                                 }

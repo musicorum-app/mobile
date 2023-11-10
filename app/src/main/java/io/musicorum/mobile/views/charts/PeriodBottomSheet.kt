@@ -26,7 +26,7 @@ internal fun PeriodBottomSheet(
     onChange: (FetchPeriod) -> Unit
 ) {
     ModalBottomSheet(onDismissRequest = { state.value = false }, containerColor = LighterGray) {
-        FetchPeriod.values().forEach {
+        FetchPeriod.entries.forEach {
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .clickable {

@@ -114,6 +114,7 @@ play {
 }
 
 dependencies {
+    implementation 'org.reflections:reflections:0.10.2'
     implementation 'com.github.skydoves:balloon-compose:1.5.2'
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     implementation "androidx.paging:paging-compose:3.3.0-alpha02"

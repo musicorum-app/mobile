@@ -32,7 +32,9 @@ object Routes {
     fun track(data: NavigationTrack) = "track/${json.encodeToString(data)}"
     const val charts = "charts"
     fun tag(tagName: String) = "tag/$tagName"
-    fun chartsDetail(index: Int) = "charts/detail?index=${index}"
+    fun chartsDetail(index: Int, period: FetchPeriod?) =
+        "charts/detail?index=${index}&period=${period?.value}"
+
     fun collage(entity: ResourceEntity? = null, period: FetchPeriod? = null): String {
         val periodString = period?.let { PeriodResolver.resolve(it) } ?: "7day"
         val entityString = entity?.entityName ?: "ARTIST"
