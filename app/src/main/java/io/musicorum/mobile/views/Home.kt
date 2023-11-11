@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -58,8 +59,10 @@ import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.FriendActivity
 import io.musicorum.mobile.components.HorizontalTracksRow
 import io.musicorum.mobile.components.LabelType
+import io.musicorum.mobile.components.RewindCard
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.models.PartialUser
+import io.musicorum.mobile.router.Route
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -71,19 +74,21 @@ import io.musicorum.mobile.utils.getDarkenGradient
 import io.musicorum.mobile.viewmodels.HomeViewModel
 
 @Composable
+@Route("home")
 fun Home(vm: HomeViewModel = hiltViewModel()) {
     val user = vm.user.observeAsState().value
-    val recentTracks = vm.recentTracks.observeAsState().value
-    val palette = vm.userPalette.observeAsState().value
-    val weekTracks = vm.weekTracks.observeAsState().value
-    val friends = vm.friends.observeAsState().value
-    val friendsActivity = vm.friendsActivity.observeAsState().value
-    val errored = vm.errored.observeAsState().value
+    val recentTracks by vm.recentTracks.observeAsState()
+    val palette by vm.userPalette.observeAsState()
+    val weekTracks by vm.weekTracks.observeAsState()
+    val friends by vm.friends.observeAsState()
+    val friendsActivity by vm.friendsActivity.observeAsState()
+    val errored by vm.errored.observeAsState()
     val nav = LocalNavigation.current!!
     val isRefreshing = vm.isRefreshing.collectAsState()
-    val weeklyScrobbles = vm.weeklyScrobbles.observeAsState().value
+    val weeklyScrobbles by vm.weeklyScrobbles.observeAsState()
     val isOffline = vm.isOffline.observeAsState(initial = false)
-    val hasPendingScrobbles = vm.hasPendingScrobbles.observeAsState(false).value
+    val hasPendingScrobbles by vm.hasPendingScrobbles.observeAsState(false)
+    val showRewindCard by vm.showRewindCard.observeAsState(initial = false)
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing.value),
@@ -111,8 +116,16 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 }
             }
 
+            if (showRewindCard) {
+                val rewindMessage by vm.rewindCardMessage.observeAsState()
+                RewindCard(description = rewindMessage ?: "") {
+                    vm.launchRewind()
+                }
+
+            }
+
             if (user != null && palette != null) {
-                UserCard(user, palette, weeklyScrobbles, nav)
+                UserCard(user, palette!!, weeklyScrobbles, nav)
             } else {
                 Box(
                     modifier = Modifier

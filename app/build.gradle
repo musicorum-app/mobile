@@ -47,8 +47,8 @@ android {
         applicationId "io.musicorum.mobile"
         minSdk 28
         targetSdk 34
-        versionCode 64
-        versionName "1.19.1-pre-release"
+        versionCode 65
+        versionName "1.20-pre-release"
         //compileSdkPreview = "UpsideDownCake"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -114,6 +114,7 @@ play {
 }
 
 dependencies {
+    implementation 'org.reflections:reflections:0.10.2'
     implementation 'com.github.skydoves:balloon-compose:1.5.2'
     implementation 'androidx.work:work-runtime-ktx:2.7.1'
     implementation "androidx.paging:paging-compose:3.3.0-alpha02"
@@ -171,7 +172,7 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.8.0-rc01'
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.ui:ui-tooling-preview"
-    implementation 'androidx.compose.material3:material3:1.2.0-alpha06'
+    implementation 'androidx.compose.material3:material3:1.2.0-alpha09'
     implementation 'com.google.accompanist:accompanist-placeholder-material:0.26.5-rc'
     implementation 'io.coil-kt:coil-compose:2.4.0'
     implementation 'androidx.datastore:datastore-preferences:1.0.0'

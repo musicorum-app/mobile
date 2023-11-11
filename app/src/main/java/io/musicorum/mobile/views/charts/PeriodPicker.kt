@@ -1,6 +1,7 @@
 package io.musicorum.mobile.views.charts
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,12 +77,20 @@ fun PeriodPicker(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun PeriodComponent(
     period: Pair<FetchPeriod, String>,
     active: Boolean,
     onClick: (FetchPeriod) -> Unit
 ) {
+    val colorState = remember { mutableStateOf(Color.Transparent) }
+    val colorAnimation = animateColorAsState(
+        if (active) {
+            MostlyRed
+        } else Color.Transparent,
+    )
+
     val activeMod = Modifier
         .padding(end = 15.dp)
         .clip(RoundedCornerShape(100))
@@ -88,17 +99,34 @@ private fun PeriodComponent(
 
     val normalMod = Modifier
         .padding(end = 15.dp)
+        .clip(RoundedCornerShape(100))
         .clickable { onClick(period.first) }
+        .background(colorAnimation.value)
+        .padding(horizontal = 9.dp, vertical = 1.dp)
 
-    AnimatedContent(targetState = active, label = "period_picker") {
-        when (it) {
-            true -> Box(modifier = activeMod, contentAlignment = Alignment.Center) {
-                Text(text = period.second)
-            }
-
-            false -> Box(modifier = normalMod, contentAlignment = Alignment.Center) {
-                Text(text = period.second)
-            }
-        }
+    Box(modifier = normalMod, contentAlignment = Alignment.Center) {
+        Text(text = period.second)
     }
+
+    /*    AnimatedContent(
+            targetState = active,
+            label = "period_picker",
+            transitionSpec = {
+                ContentTransform(
+                    targetContentEnter = this.scaleInToFitContainer(Alignment.Center),
+                    initialContentExit = this.scaleOutToFitContainer(Alignment.Center)
+                )
+            }
+        ) {
+
+            when (it) {
+                true -> Box(modifier = activeMod, contentAlignment = Alignment.Center) {
+                    Text(text = period.second)
+                }
+
+                false -> Box(modifier = normalMod, contentAlignment = Alignment.Center) {
+                    Text(text = period.second)
+                }
+            }
+        }*/
 }

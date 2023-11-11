@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.AutoAwesomeMosaic
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.List
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -26,6 +26,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.models.FetchPeriod
@@ -39,7 +40,7 @@ import io.musicorum.mobile.ui.theme.MostlyRed
 @Composable
 fun BaseChartDetail(
     index: Int,
-    viewModel: DetailViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: DetailViewModel = viewModel()
 ) {
     val nav = LocalNavigation.current
     val tabIndex = remember { mutableIntStateOf(index) }
@@ -71,7 +72,7 @@ fun BaseChartDetail(
     }
 
     val viewModeIcon = if (currentViewMode.value == ViewMode.Grid) {
-        Icons.Rounded.List
+        Icons.AutoMirrored.Rounded.List
     } else Icons.Rounded.GridView
 
     fun updateViewMode() {
@@ -88,9 +89,12 @@ fun BaseChartDetail(
 
     Scaffold(
         bottomBar = {
-            PeriodPicker(selectedPeriod = fetchPeriod.value, onPeriodChanged = {
-                viewModel.updatePeriod(it)
-            })
+            PeriodPicker(
+                selectedPeriod = fetchPeriod.value,
+                showDivider = false,
+                onPeriodChanged = {
+                    viewModel.updatePeriod(it)
+                })
         },
         topBar = {
             TopAppBar(
@@ -103,7 +107,7 @@ fun BaseChartDetail(
                 },
                 navigationIcon = {
                     IconButton(onClick = { nav?.popBackStack() }) {
-                        Icon(Icons.Rounded.ArrowBack, null)
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
                     }
                 }
             )

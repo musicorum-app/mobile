@@ -3,6 +3,7 @@ package io.musicorum.mobile.views.charts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +62,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
+import io.ktor.util.escapeHTML
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
@@ -67,6 +70,8 @@ import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.models.ResourceEntity
 import io.musicorum.mobile.router.Routes
+import io.musicorum.mobile.serialization.NavigationTrack
+import io.musicorum.mobile.serialization.entities.Album
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
@@ -81,15 +86,16 @@ import io.musicorum.mobile.viewmodels.ChartsViewModel
 @Composable
 fun Charts() {
     val model: ChartsViewModel = viewModel()
-    val period = model.period.observeAsState()
+    val period by model.period.observeAsState()
     val user = LocalUser.current ?: return
     val ctx = LocalContext.current
-    val userColor = model.preferredColor.observeAsState(Color.Gray).value
-    val topArtists = model.topArtists.observeAsState().value
-    val topAlbums = model.topAlbums.observeAsState().value
-    val topTracks = model.topTracks.observeAsState().value
+    val userColor by model.preferredColor.observeAsState(Color.Gray)
+    val topArtists by model.topArtists.observeAsState()
+    val topAlbums by model.topAlbums.observeAsState()
+    val topTracks by model.topTracks.observeAsState()
     val showBottomSheet = remember { mutableStateOf(false) }
-    val busy = model.busy.observeAsState().value!!
+    val busy by model.busy.observeAsState()
+    val nav = LocalNavigation.current
 
     LaunchedEffect(Unit) {
         model.getColor(user.user.bestImageUrl, ctx)
@@ -134,7 +140,7 @@ fun Charts() {
                                 text = topTracks?.attributes?.total ?: ".......",
                                 style = Typography.headlineLarge,
                                 modifier = Modifier.placeholder(
-                                    visible = busy,
+                                    visible = busy ?: false,
                                     color = SkeletonSecondaryColor,
                                     highlight = PlaceholderHighlight.shimmer(),
                                     shape = RoundedCornerShape(5.dp)
@@ -152,7 +158,7 @@ fun Charts() {
                     }
                 }
 
-                if (busy) {
+                if (busy == true) {
                     CenteredLoadingSpinner()
                 } else {
                     val topArtist = topArtists?.getOrNull(0)
@@ -162,60 +168,75 @@ fun Charts() {
                         leadImage = topArtist?.bestImageUrl,
                         trailDetail = Icons.Rounded.Star,
                         shape = CircleShape,
-                        artist = topArtist?.name,
+                        entityName = topArtist?.name,
                         scrobbleCount = topArtist?.playCount,
-                        top = ResourceEntity.Artist,
+                        entity = ResourceEntity.Artist,
                         album = null,
                         innerData = topArtists?.drop(1)?.fold(mutableListOf()) { list, artist ->
-                            list.add(ChartData(artist.name, artist.bestImageUrl, artist.playCount))
+                            list.add(
+                                ChartData(
+                                    artist.name,
+                                    artist.bestImageUrl,
+                                    artist.playCount,
+                                    artist.name
+                                )
+                            )
                             list
                         }
-                    )
+                    ) {
+                        nav?.navigate(Routes.chartsDetail(0, period))
+                    }
                     Spacer(modifier = Modifier.height(70.dp))
                     ChartComponentBox(
                         leadImage = topAlbums?.getOrNull(0)?.bestImageUrl,
                         trailDetail = Icons.Outlined.Album,
                         shape = RoundedCornerShape(6.dp),
-                        artist = topAlbum?.name,
+                        entityName = topAlbum?.name,
                         scrobbleCount = topAlbum?.playCount?.toInt() ?: 0,
                         album = null,
-                        top = ResourceEntity.Album,
+                        entity = ResourceEntity.Album,
                         innerData = topAlbums?.drop(1)?.fold(mutableListOf()) { list, album ->
                             list.add(
                                 ChartData(
                                     album.name,
                                     album.bestImageUrl,
-                                    album.playCount?.toInt() ?: 0
+                                    album.playCount?.toInt() ?: 0,
+                                    album.artist?.name ?: "unknown"
                                 )
                             )
                             list
                         }
-                    )
+                    ) {
+                        nav?.navigate(Routes.chartsDetail(1, period))
+                    }
                     Spacer(modifier = Modifier.height(70.dp))
                     ChartComponentBox(
                         leadImage = topTracks?.tracks?.getOrNull(0)?.bestImageUrl,
                         trailDetail = Icons.Rounded.MusicNote,
                         shape = RoundedCornerShape(6.dp),
-                        artist = topTrack?.name,
+                        entityName = topTrack?.name,
                         scrobbleCount = topTrack?.playCount?.toInt() ?: 0,
                         album = null,
-                        top = ResourceEntity.Track,
+                        entity = ResourceEntity.Track,
                         innerData = topTracks?.tracks?.drop(1)
                             ?.fold(mutableListOf()) { list, track ->
                                 list.add(
                                     ChartData(
                                         track.name,
                                         track.bestImageUrl,
-                                        track.playCount?.toInt() ?: 0
+                                        track.playCount?.toInt() ?: 0,
+                                        track.artist.name
                                     )
                                 )
                                 list
                             }
-                    )
+                    ) {
+                        nav?.navigate(Routes.chartsDetail(2, period))
+                    }
                     Spacer(modifier = Modifier.height(150.dp))
                 }
             }
-            PeriodPicker(true, period.value!!) {
+            PeriodPicker(true, period!!) {
                 model.updatePeriod(it)
             }
         }
@@ -241,11 +262,12 @@ fun ChartComponentBox(
     leadImage: String?,
     trailDetail: ImageVector,
     shape: Shape,
-    artist: String?,
+    entityName: String?,
     scrobbleCount: Int?,
     album: String?,
     innerData: List<ChartData>?,
-    top: ResourceEntity
+    entity: ResourceEntity,
+    onClick: () -> Unit
 ) {
     val vibrant = remember { mutableStateOf(Color.Gray) }
     val vibrantState = animateColorAsState(targetValue = vibrant.value, label = "vibrant")
@@ -263,11 +285,6 @@ fun ChartComponentBox(
     }
 
     val gradient = getDarkenGradient(vibrantState.value).asReversed()
-    val navRoute = when (top) {
-        ResourceEntity.Track -> Routes.chartsDetail(2)
-        ResourceEntity.Album -> Routes.chartsDetail(1)
-        ResourceEntity.Artist -> Routes.chartsDetail(0)
-    }
 
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 3.dp),
@@ -275,9 +292,9 @@ fun ChartComponentBox(
     ) {
         Icon(trailDetail, null)
         Spacer(modifier = Modifier.width(10.dp))
-        Text(text = "Top $top", style = Typography.headlineSmall)
+        Text(text = "Top $entity", style = Typography.headlineSmall)
         Spacer(modifier = Modifier.weight(1f, true))
-        IconButton(onClick = { nav?.navigate(navRoute) }) {
+        IconButton(onClick = onClick) {
             Icon(Icons.Rounded.ChevronRight, null)
         }
     }
@@ -309,7 +326,7 @@ fun ChartComponentBox(
                     .shadow(50.dp)
             )
             Column {
-                Text(text = artist ?: "unknown", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = entityName ?: "unknown", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 album?.let {
                     Text(text = it, style = Typography.labelMedium)
                 }
@@ -336,7 +353,29 @@ fun ChartComponentBox(
         ) {
             innerData?.let { list ->
                 list.forEachIndexed { i, data ->
-                    Row(modifier = Modifier.padding(10.dp), verticalAlignment = CenterVertically) {
+                    Row(
+                        modifier = Modifier
+                            .clickable {
+                                val route = when (entity) {
+                                    ResourceEntity.Artist -> Routes.artist(data.name)
+                                    ResourceEntity.Album -> Routes.album(
+                                        Album(
+                                            name = data.name,
+                                            artist = data.artist
+                                        )
+                                    )
+
+                                    ResourceEntity.Track -> Routes.track(
+                                        NavigationTrack(
+                                            trackName = data.name.escapeHTML(),
+                                            trackArtist = data.artist
+                                        )
+                                    )
+                                }
+                                nav?.navigate(route)
+                            }
+                            .padding(10.dp), verticalAlignment = CenterVertically
+                    ) {
                         Text(
                             text = "${i + 2}",
                             style = Typography.bodyMedium,
@@ -368,5 +407,6 @@ fun ChartComponentBox(
 data class ChartData(
     val name: String,
     val image: String,
-    val count: Int
+    val count: Int,
+    val artist: String
 )
