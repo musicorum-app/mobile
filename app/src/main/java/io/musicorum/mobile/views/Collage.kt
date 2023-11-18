@@ -1,6 +1,9 @@
 package io.musicorum.mobile.views
 
+import android.Manifest
 import android.os.Bundle
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -88,6 +91,11 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
     val ready = viewModel.ready.observeAsState().value!!
     val isGenerating = viewModel.isGenerating.observeAsState().value!!
     val nav = LocalNavigation.current
+    val permLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) viewModel.downloadFile()
+    }
 
     val themeOptions = listOf("Grid" to MusicorumTheme.GRID, "Duotone" to MusicorumTheme.DUOTONE)
     val entityOptions =
@@ -346,7 +354,12 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         Button(
-                            onClick = { viewModel.downloadFile() },
+                            onClick = {
+                                val result = viewModel.downloadFile()
+                                if (!result) {
+                                    permLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                }
+                            },
                             modifier = Modifier.weight(.5f, true)
                         ) {
                             Icon(Icons.Rounded.Download, null)

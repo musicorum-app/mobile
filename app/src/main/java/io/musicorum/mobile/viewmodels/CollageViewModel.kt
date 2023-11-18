@@ -1,12 +1,16 @@
 package io.musicorum.mobile.viewmodels
 
+import android.Manifest
 import android.app.Application
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -99,9 +103,20 @@ class CollageViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun downloadFile() {
+    fun downloadFile(): Boolean {
         val manager = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val uri = imageUrl.value ?: return
+        val uri = imageUrl.value ?: return false
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            if (ContextCompat.checkSelfPermission(
+                    ctx,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_DENIED
+            ) {
+                return false
+            }
+        }
+
         Toast.makeText(ctx, ctx.getString(R.string.starting_download), Toast.LENGTH_SHORT).show()
 
         val request = DownloadManager.Request(Uri.parse(uri))
@@ -111,6 +126,7 @@ class CollageViewModel(application: Application) : AndroidViewModel(application)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
         manager.enqueue(request)
+        return true
     }
 
     fun shareFile() {
