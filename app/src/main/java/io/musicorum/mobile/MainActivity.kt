@@ -350,7 +350,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable("mostListened") {
-                                    MostListened(mostListenedViewModel = mostListenedViewModel)
+                                    MostListened(viewModel = mostListenedViewModel)
                                 }
 
                                 composable(
