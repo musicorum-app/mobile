@@ -91,7 +91,7 @@ object UserEndpoint {
         val result = kotlin.runCatching {
             val res = KtorConfiguration.lastFmClient.get {
                 parameter("method", "user.getFriends")
-                parameter("usernameArg", user)
+                parameter("user", user)
                 parameter("limit", limit)
                 headers.remove("Cache-Control")
             }
