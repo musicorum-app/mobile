@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.musicorum.mobile.BuildConfig
-import io.musicorum.mobile.MutableUserState
 import io.musicorum.mobile.R
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.utils.handleAuth
@@ -50,7 +49,6 @@ fun Login(nav: NavController, deepLinkToken: String?) {
             loading.value = true
             handleAuth(deepLinkToken, ctx = ctx) { user, sk ->
                 if (user != null) {
-                    MutableUserState.value = user
                     nav.navigate("user_confirmation/${sk}")
                 }
             }

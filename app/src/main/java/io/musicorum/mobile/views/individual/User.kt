@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.CenteredLoadingSpinner
@@ -36,7 +35,6 @@ import io.musicorum.mobile.components.TopAlbumsRow
 import io.musicorum.mobile.components.TopArtistsRow
 import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.components.skeletons.GenericListItemSkeleton
-import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.Heading4
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -47,37 +45,20 @@ import io.musicorum.mobile.viewmodels.UserViewModel
 
 @Composable
 fun User(
-    username: String,
     userViewModel: UserViewModel = viewModel()
 ) {
-    val user = if (username == LocalUser.current?.user?.name) {
-        LocalUser.current!!
-    } else {
-        userViewModel.user.observeAsState().value
-    }
-    val topArtists = userViewModel.topArtists.observeAsState().value
+    val user by userViewModel.user.observeAsState()
+
+    val topArtists by userViewModel.topArtists.observeAsState()
     val recentScrobbles = userViewModel.recentTracks.observeAsState().value?.recentTracks?.tracks
-    val topAlbums = userViewModel.topAlbums.observeAsState().value
+    val topAlbums by userViewModel.topAlbums.observeAsState()
     val isRefreshing =
         rememberSwipeRefreshState(isRefreshing = userViewModel.isRefreshing.collectAsState().value)
-    val errored = userViewModel.errored.observeAsState().value
+    val errored by userViewModel.errored.observeAsState()
     val scrollState = rememberScrollState()
     val localSnack = LocalSnackbar.current
 
-    LaunchedEffect(user, recentScrobbles, errored) {
-        if (user == null) {
-            userViewModel.getUser(username)
-        } else {
-            if (topArtists == null) {
-                userViewModel.getTopArtists(username, null, FetchPeriod.MONTH)
-            }
-            if (recentScrobbles == null) {
-                userViewModel.getRecentTracks(user.user.name, limit = 4, null)
-            }
-            if (topAlbums == null) {
-                userViewModel.getTopAlbums(user.user.name, FetchPeriod.MONTH, null)
-            }
-        }
+    LaunchedEffect(errored) {
         if (errored == true) {
             localSnack.showSnackbar("Failed to get some information")
         }
@@ -97,14 +78,14 @@ fun User(
             ) {
                 GradientHeader(
                     backgroundUrl = topArtists?.topArtists?.artists?.getOrNull(0)?.bestImageUrl,
-                    coverUrl = user.user.bestImageUrl,
+                    coverUrl = user?.user?.bestImageUrl,
                     shape = CircleShape,
                     placeholderType = PlaceholderType.USER
                 )
 
-                Text(text = user.user.name, style = Typography.displaySmall)
+                Text(text = user?.user!!.name, style = Typography.displaySmall)
                 Row {
-                    user.user.realName?.let {
+                    user?.user!!.realName?.let {
                         Text(
                             text = "$it • ",
                             color = ContentSecondary,
@@ -112,7 +93,7 @@ fun User(
                         )
                     }
                     Text(
-                        text = "Scrobbling since ${user.user.registered.asParsedDate}",
+                        text = "Scrobbling since ${user?.user?.registered?.asParsedDate}",
                         style = Typography.bodyLarge,
                         color = ContentSecondary
                     )
@@ -121,9 +102,9 @@ fun User(
                 HorizontalDivider(modifier = Modifier.run { padding(vertical = 20.dp) })
                 StatisticRow(
                     short = false,
-                    stringResource(R.string.scrobbles) to user.user.scrobbles.toLong(),
-                    stringResource(R.string.artists) to user.user.artistCount?.toLongOrNull(),
-                    stringResource(R.string.albums) to user.user.albumCount?.toLongOrNull()
+                    stringResource(R.string.scrobbles) to user?.user?.scrobbles?.toLong(),
+                    stringResource(R.string.artists) to user?.user?.artistCount?.toLongOrNull(),
+                    stringResource(R.string.albums) to user?.user?.albumCount?.toLongOrNull()
                 )
 
                 HorizontalDivider(modifier = Modifier.run { padding(vertical = 20.dp) })

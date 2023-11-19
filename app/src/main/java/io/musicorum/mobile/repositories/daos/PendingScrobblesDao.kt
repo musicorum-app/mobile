@@ -1,4 +1,4 @@
-package io.musicorum.mobile.database.daos
+package io.musicorum.mobile.repositories.daos
 
 import androidx.room.Dao
 import androidx.room.Delete

@@ -11,7 +11,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.components.AlbumTrack
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.MusicorumTopBar
@@ -21,10 +20,9 @@ import io.musicorum.mobile.viewmodels.AlbumViewModel
 @Composable
 fun AlbumTracklist(partialAlbum: PartialAlbum, model: AlbumViewModel = viewModel()) {
     val album = model.album.observeAsState().value?.album
-    val user = LocalUser.current!!
 
     LaunchedEffect(Unit) {
-        model.getAlbum(partialAlbum.name, partialAlbum.artist, user)
+        model.getAlbum(partialAlbum.name, partialAlbum.artist)
     }
 
     if (album == null) {

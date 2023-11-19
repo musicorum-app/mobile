@@ -48,12 +48,12 @@ fun NavigationRouter(controller: NavHostController) {
                 }*/
 
         composable(
-            "user/{username}",
-            arguments = listOf(navArgument("username") {
+            "user/{usernameArg}",
+            arguments = listOf(navArgument("usernameArg") {
                 type = NavType.StringType
             })
         ) {
-            User(username = it.arguments?.getString("username")!!)
+            User()
         }
 
         composable(

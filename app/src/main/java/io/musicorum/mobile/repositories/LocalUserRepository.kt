@@ -5,9 +5,8 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import io.musicorum.mobile.datastore.LocalUser
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.serialization.User
@@ -22,9 +21,9 @@ val Context.localUser: DataStore<Preferences> by preferencesDataStore("partialUs
 class LocalUserRepository(val context: Context) {
     private val userFlow = context.localUser.data.map {
         PartialUser(
-            it[usernameKey] ?: "",
-            it[pfpKey] ?: "",
-            it[expiresKey] ?: 0L
+            it[LocalUser.USERNAME_KEY] ?: "",
+            it[LocalUser.PROFILE_ICON_KEY] ?: "",
+            it[LocalUser.EXPIRES_IN_KEY] ?: 0L
         )
     }
 
@@ -71,14 +70,11 @@ class LocalUserRepository(val context: Context) {
 
     suspend fun updateUser(partialUser: PartialUser) {
         context.localUser.edit {
-            it[usernameKey] = partialUser.username
-            it[pfpKey] = partialUser.imageUrl
-            it[expiresKey] = partialUser.expiresIn
+            it[LocalUser.USERNAME_KEY] = partialUser.username
+            it[LocalUser.PROFILE_ICON_KEY] = partialUser.imageUrl
+            it[LocalUser.EXPIRES_IN_KEY] = partialUser.expiresIn
         }
     }
 
-    private val usernameKey = stringPreferencesKey("username")
-    private val pfpKey = stringPreferencesKey("profilePictureUrl")
-    private val expiresKey = longPreferencesKey("expires_in")
     private val cacheTime = Date(Date().time + (1000 * 60 * 60 * 48)).time
 }

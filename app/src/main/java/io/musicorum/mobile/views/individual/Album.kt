@@ -26,7 +26,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.ktor.http.*
 import io.musicorum.mobile.LocalAnalytics
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
@@ -68,7 +67,6 @@ fun Album(
         val ctx = LocalContext.current
         val paletteReady = remember { mutableStateOf(false) }
         val palette: MutableState<Palette?> = remember { mutableStateOf(null) }
-        val user = LocalUser.current
         val errored = albumViewModel.errored.observeAsState().value
         val localSnack = LocalSnackbar.current
 
@@ -80,7 +78,7 @@ fun Album(
 
         LaunchedEffect(album) {
             if (album == null) {
-                albumViewModel.getAlbum(partialAlbum.name, partialAlbum.artist, user)
+                albumViewModel.getAlbum(partialAlbum.name, partialAlbum.artist)
             }
         }
 

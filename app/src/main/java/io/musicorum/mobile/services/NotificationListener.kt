@@ -22,7 +22,7 @@ import io.ktor.http.isSuccess
 import io.musicorum.mobile.database.PendingScrobblesDb
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.PendingScrobble
-import io.musicorum.mobile.repositories.OfflineScrobblesRepository
+import io.musicorum.mobile.repositories.PendingScrobblesRepository
 import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.userData
 import kotlinx.coroutines.CoroutineScope
@@ -48,12 +48,16 @@ class NotificationListener : NotificationListenerService() {
                     p[stringPreferencesKey("session_key")]
                 }.first() ?: return@launch
 
-                val scrobbles = offlineScrobblesRepo.getAllScrobblesStream()
-                val list = scrobbles.first()
-                if (list.isEmpty()) {
+                if (!this@NotificationListener::offlineScrobblesRepo::isInitialized.get()) {
+                    Log.w(tag, "Couldn't init offline scrobbles repo, aborting.")
+                    return@launch
+                }
+
+                val scrobbles = offlineScrobblesRepo.getAllScrobblesStream().first()
+                if (scrobbles.isEmpty()) {
                     Log.d(tag, "no scrobbles to sync")
                 } else {
-                    for (scrobble in list) {
+                    for (scrobble in scrobbles) {
                         val res = UserEndpoint.scrobble(
                             track = scrobble.trackName,
                             artist = scrobble.artistName,
@@ -74,7 +78,7 @@ class NotificationListener : NotificationListenerService() {
             Log.d(tag, "internet connection lost")
         }
     }
-    private lateinit var offlineScrobblesRepo: OfflineScrobblesRepository
+    private lateinit var offlineScrobblesRepo: PendingScrobblesRepository
 
     override fun onListenerConnected() {
         val networkRequest = NetworkRequest.Builder()
@@ -86,7 +90,7 @@ class NotificationListener : NotificationListenerService() {
         val connectivityManager =
             getSystemService(ConnectivityManager::class.java) as ConnectivityManager
         connectivityManager.requestNetwork(networkRequest, networkCallback)
-        offlineScrobblesRepo = OfflineScrobblesRepository(
+        offlineScrobblesRepo = PendingScrobblesRepository(
             PendingScrobblesDb.getDatabase(applicationContext).pendingScrobblesDao()
         )
     }

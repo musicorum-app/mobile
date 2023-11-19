@@ -70,7 +70,7 @@ object Generator {
 
     /**
      * Generates a grid collage
-     * @param username The last.fm username
+     * @param username The last.fm usernameArg
      * @param rowCount Row count
      * @param colCount Column count
      * @param entity Entity, either artist, album or track

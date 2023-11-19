@@ -1,9 +1,12 @@
 package io.musicorum.mobile.utils
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -41,6 +44,11 @@ class MessagingService : FirebaseMessagingService() {
             .build()
 
         with(NotificationManagerCompat.from(this.applicationContext)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this@MessagingService.applicationContext,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) return
             notify(message.messageId?.toIntOrNull() ?: 0, builder)
         }
     }

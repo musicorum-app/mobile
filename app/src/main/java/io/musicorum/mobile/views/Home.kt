@@ -25,6 +25,9 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -44,7 +47,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import com.google.accompanist.placeholder.PlaceholderHighlight
@@ -63,16 +65,19 @@ import io.musicorum.mobile.components.RewindCard
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.router.Route
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
+import io.musicorum.mobile.ui.theme.MostlyRed
 import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.ui.theme.Subtitle1
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.getDarkenGradient
 import io.musicorum.mobile.viewmodels.HomeViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Route("home")
 fun Home(vm: HomeViewModel = hiltViewModel()) {
@@ -89,6 +94,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
     val isOffline = vm.isOffline.observeAsState(initial = false)
     val hasPendingScrobbles by vm.hasPendingScrobbles.observeAsState(false)
     val showRewindCard by vm.showRewindCard.observeAsState(initial = false)
+    val crashBadge by vm.showSettingsBadge.observeAsState(false)
 
     SwipeRefresh(
         state = rememberSwipeRefreshState(isRefreshing.value),
@@ -111,8 +117,20 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp)
                 )
 
-                IconButton(onClick = { nav.navigate("settings") }) {
+                BadgedBox(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable {
+                            nav.navigate(Routes.settings)
+                        }
+                        .padding(12.dp),
+                    badge = {
+                        if (crashBadge) Badge(containerColor = MostlyRed)
+                    }
+                ) {
+                    //IconButton(onClick = { nav.navigate("settings") }) {
                     Icon(Icons.Rounded.Settings, contentDescription = null)
+                    //}
                 }
             }
 
@@ -125,7 +143,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
             }
 
             if (user != null && palette != null) {
-                UserCard(user, palette!!, weeklyScrobbles, nav)
+                UserCard(user, palette!!, weeklyScrobbles)
             } else {
                 Box(
                     modifier = Modifier
@@ -160,8 +178,14 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                                 .size(30.dp)
                         )
                         Column(modifier = Modifier.padding(start = 22.dp)) {
-                            Text(stringResource(id = R.string.youre_offline), style = Typography.titleMedium)
-                            Text(stringResource(R.string.outdated_data_notice), style = Typography.bodySmall)
+                            Text(
+                                stringResource(id = R.string.youre_offline),
+                                style = Typography.titleMedium
+                            )
+                            Text(
+                                stringResource(R.string.outdated_data_notice),
+                                style = Typography.bodySmall
+                            )
                         }
                     }
                 }
@@ -283,14 +307,14 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
 private fun UserCard(
     user: PartialUser,
     palette: Palette,
-    weeklyScrobbles: Int?,
-    nav: NavHostController
+    weeklyScrobbles: Int?
 ) {
     var vibrant = Color(palette.getVibrantColor(0))
     if (palette.vibrantSwatch == null) {
         vibrant = Color(palette.getDominantColor(0))
     }
     val gradient = getDarkenGradient(vibrant)
+    val nav = LocalNavigation.current
 
     Box(
         modifier = Modifier
@@ -299,7 +323,7 @@ private fun UserCard(
             .padding(20.dp, 20.dp, 20.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(brush = Brush.linearGradient(gradient))
-            .clickable { nav.navigate("profile") }
+            .clickable { nav?.navigate("profile") }
 
     ) {
         Row(

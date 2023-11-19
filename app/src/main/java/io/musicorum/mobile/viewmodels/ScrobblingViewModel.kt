@@ -16,7 +16,7 @@ import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.CachedScrobble
 import io.musicorum.mobile.repositories.CachedScrobblesRepository
 import io.musicorum.mobile.repositories.LocalUserRepository
-import io.musicorum.mobile.repositories.OfflineScrobblesRepository
+import io.musicorum.mobile.repositories.PendingScrobblesRepository
 import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.flow.first
@@ -74,7 +74,7 @@ class ScrobblingViewModel @Inject constructor(
 
             if (result.exceptionOrNull() is UnknownHostException) {
                 val pendingScrobblesDao = PendingScrobblesDb.getDatabase(ctx).pendingScrobblesDao()
-                val pendingRepo = OfflineScrobblesRepository(pendingScrobblesDao)
+                val pendingRepo = PendingScrobblesRepository(pendingScrobblesDao)
                 val list = mutableListOf<Track>()
 
                 val cached = cachedRepo.getAllFromCache().first()
