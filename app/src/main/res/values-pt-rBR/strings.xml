@@ -128,6 +128,7 @@
     <string name="generator_error">Ocorreu um erro interno ao gerar a sua imagem.\n%1$s</string>
     <string name="sharing_item">Compartilhando item…</string>
     <string name="starting_download">Iniciando download…</string>
+    <string name="report_crash">Report what happened when the app crashed</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Ativado • %1$d app</item>
         <item quantity="other">Ativado • %1$d apps</item>
