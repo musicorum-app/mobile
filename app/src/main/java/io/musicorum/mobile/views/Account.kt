@@ -15,6 +15,6 @@ fun Account(model: AccountVm = viewModel()) {
     if (user == null) {
         CenteredLoadingSpinner()
     } else {
-        User(username = user.username)
+        User()
     }
 }

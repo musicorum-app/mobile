@@ -8,18 +8,22 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -27,16 +31,13 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.components.TrackListItem
-import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.ui.theme.LighterGray
-import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.viewmodels.MostListenedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MostListened(mostListenedViewModel: MostListenedViewModel) {
+fun MostListened(viewModel: MostListenedViewModel) {
     val analytics = LocalAnalytics.current!!
     LaunchedEffect(Unit) {
         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
@@ -44,19 +45,14 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
         }
     }
 
-    val mostListened = mostListenedViewModel.mosListenedTracks.observeAsState()
-    val snack = LocalSnackbar.current
-    val user = LocalUser.current!!
+    val mostListened by viewModel.mosListenedTracks.observeAsState(emptyList())
+    val snackHost = remember { SnackbarHostState() }
     val nav = LocalNavigation.current!!
-    LaunchedEffect(Unit) {
-        if (mostListenedViewModel.mosListenedTracks.value == null) {
-            mostListenedViewModel.fetchMostListened(user.user.name, FetchPeriod.WEEK, null)
-        }
-    }
 
-    LaunchedEffect(mostListenedViewModel.error.value) {
-        if (mostListenedViewModel.error.value == true) {
-            snack.showSnackbar("Failed to fetch")
+
+    LaunchedEffect(viewModel.error.value) {
+        if (viewModel.error.value == true) {
+            snackHost.showSnackbar("Failed to fetch")
         }
     }
 
@@ -73,14 +69,15 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
                 colors = appBarColors,
                 navigationIcon = {
                     IconButton(onClick = { nav.popBackStack() }) {
-                        Icon(Icons.Rounded.ArrowBack, null)
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
                     }
                 }
             )
         },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        snackbarHost = { SnackbarHost(snackHost) }
     ) {
-        if (mostListened.value == null) {
+        if (viewModel.job.isActive) {
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,7 +94,7 @@ fun MostListened(mostListenedViewModel: MostListenedViewModel) {
                 modifier = Modifier
                     .padding(it),
             ) {
-                items(mostListened.value!!.topTracks.tracks) { track ->
+                items(mostListened) { track ->
                     TrackListItem(track = track)
                 }
             }

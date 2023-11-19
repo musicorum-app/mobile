@@ -21,6 +21,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -29,7 +30,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,11 +63,12 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import dagger.hilt.android.AndroidEntryPoint
+import io.musicorum.mobile.datastore.ScrobblePreferences
+import io.musicorum.mobile.datastore.UserData
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.router.BottomNavBar
-import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.MusicorumMobileTheme
 import io.musicorum.mobile.utils.CrowdinUtils
@@ -100,11 +101,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
-val Context.userData: DataStore<Preferences> by preferencesDataStore(name = "userdata")
-val Context.scrobblePrefs by preferencesDataStore(name = "scrobblePrefs")
-val LocalUser = compositionLocalOf<User?> { null }
+val Context.userData: DataStore<Preferences> by preferencesDataStore(UserData.DataStoreName)
+val Context.scrobblePrefs by preferencesDataStore(ScrobblePreferences.DataStoreName)
 val LocalNavigation = compositionLocalOf<NavHostController?> { null }
-val MutableUserState = mutableStateOf<User?>(null)
 val LocalAnalytics = compositionLocalOf<FirebaseAnalytics?> { null }
 
 @AndroidEntryPoint
@@ -130,6 +129,7 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(Crowdin.wrapContext(newBase))
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -199,7 +199,9 @@ class MainActivity : ComponentActivity() {
         }
         if (!BuildConfig.DEBUG) {
             try {
-                SentryAndroid.init(this)
+                SentryAndroid.init(this) { opts ->
+                    opts.isAnrEnabled
+                }
             } catch (_: Exception) {
             }
         }
@@ -214,27 +216,25 @@ class MainActivity : ComponentActivity() {
             val systemUiController = rememberSystemUiController()
 
             if (intent?.data == null) {
-                if (MutableUserState.value == null) {
-                    LaunchedEffect(Unit) {
-                        val sessionKey = ctx.applicationContext.userData.data.map { prefs ->
-                            prefs[stringPreferencesKey("session_key")]
-                        }.firstOrNull()
-                        if (sessionKey == null) {
-                            navController.navigate("login") {
-                                popUpTo("home") {
-                                    inclusive = true
-                                }
+                LaunchedEffect(Unit) {
+                    val sessionKey = ctx.applicationContext.userData.data.map { prefs ->
+                        prefs[stringPreferencesKey("session_key")]
+                    }.firstOrNull()
+                    if (sessionKey == null) {
+                        navController.navigate("login") {
+                            popUpTo("home") {
+                                inclusive = true
                             }
-                        } else {
+                        }
+                    } else {
+                        val localUser = LocalUserRepository(applicationContext)
+                        if (localUser.getUser().username.isEmpty()) {
                             val userReq = UserEndpoint.getSessionUser(sessionKey)
-                            val localUser = LocalUserRepository(applicationContext)
-                            if (localUser.getUser().username.isEmpty()) {
-                                localUser.create(userReq?.user)
-                            }
-                            MutableUserState.value = userReq
+                            localUser.create(userReq?.user)
                         }
                     }
                 }
+
             }
 
             DisposableEffect(systemUiController, useDarkIcons) {
@@ -255,7 +255,6 @@ class MainActivity : ComponentActivity() {
                 }
 
             CompositionLocalProvider(
-                LocalUser provides MutableUserState.value,
                 LocalSnackbar provides LocalSnackbarContext(snackHostState),
                 LocalNavigation provides navController,
                 LocalAnalytics provides firebaseAnalytics
@@ -350,18 +349,16 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable("mostListened") {
-                                    MostListened(mostListenedViewModel = mostListenedViewModel)
+                                    MostListened(viewModel = mostListenedViewModel)
                                 }
 
                                 composable(
-                                    "user/{username}",
-                                    arguments = listOf(navArgument("username") {
+                                    "user/{usernameArg}",
+                                    arguments = listOf(navArgument("usernameArg") {
                                         type = NavType.StringType
                                     })
                                 ) {
-                                    User(
-                                        username = it.arguments?.getString("username")!!
-                                    )
+                                    User()
                                 }
 
                                 composable(

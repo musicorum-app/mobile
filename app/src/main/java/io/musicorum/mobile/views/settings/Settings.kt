@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +49,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import io.musicorum.mobile.BuildConfig
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -60,11 +60,12 @@ import io.musicorum.mobile.viewmodels.SettingsVm
 
 @Composable
 fun Settings(viewModel: SettingsVm = viewModel()) {
-    val user = LocalUser.current
+    val user by viewModel.user.observeAsState(null)
     val ctx = LocalContext.current
     val nav = LocalNavigation.current
-    val enabledApps = viewModel.enabledApps.observeAsState().value
-    val enabled = viewModel.deviceScrobble.observeAsState().value
+    val enabledApps by viewModel.enabledApps.observeAsState(emptySet())
+    val enabled by viewModel.deviceScrobble.observeAsState()
+    val showReport by viewModel.showReport.observeAsState(false)
 
     val patreonUrl = "https://www.patreon.com/musicorumapp"
     val discordInvite = "https://discord.gg/7shqxp9Mg4"
@@ -110,7 +111,7 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(
                                 model = defaultImageRequestBuilder(
-                                    url = user?.user?.bestImageUrl,
+                                    url = user?.imageUrl,
                                     placeholderType = PlaceholderType.USER
                                 ),
                                 contentDescription = null,
@@ -119,7 +120,7 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                                     .size(43.dp)
                             )
                             Spacer(Modifier.width(10.dp))
-                            Text(text = user?.user?.name ?: "", style = Typography.titleMedium)
+                            Text(text = user?.username ?: "", style = Typography.titleMedium)
                         }
                         IconButton(onClick = {
                             viewModel.logout {
@@ -191,7 +192,18 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                 leadingContent = {
                     Image(painterResource(id = R.drawable.discord_logo), null)
                 },
-                modifier = Modifier.clickable { viewModel.launchUrl(discordInvite) }
+                modifier = Modifier.clickable { viewModel.launchUrl(discordInvite) },
+                supportingContent = {
+                    if (showReport) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Canvas(modifier = Modifier, onDraw = {
+                                drawCircle(MostlyRed, 6f)
+                            })
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(stringResource(R.string.report_crash))
+                        }
+                    }
+                }
             )
 
             ListItem(

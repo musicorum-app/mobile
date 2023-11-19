@@ -1,7 +1,7 @@
 package io.musicorum.mobile.repositories
 
-import io.musicorum.mobile.database.daos.CachedScrobblesDao
 import io.musicorum.mobile.models.CachedScrobble
+import io.musicorum.mobile.repositories.daos.CachedScrobblesDao
 
 class CachedScrobblesRepository(private val cachedScrobblesDao: CachedScrobblesDao) {
 

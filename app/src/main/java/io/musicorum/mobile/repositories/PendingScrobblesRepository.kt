@@ -1,12 +1,15 @@
 package io.musicorum.mobile.repositories
 
 import io.musicorum.mobile.models.PendingScrobble
+import io.musicorum.mobile.repositories.daos.PendingScrobblesDao
 import kotlinx.coroutines.flow.Flow
 
-interface PendingScrobblesRepository {
-    suspend fun getAllScrobblesStream(): Flow<List<PendingScrobble>>
+class PendingScrobblesRepository(private val scrobblesDao: PendingScrobblesDao) :
+    IPendingScrobbles {
+    override suspend fun getAllScrobblesStream(): Flow<List<PendingScrobble>> =
+        scrobblesDao.getAll()
 
-    suspend fun deleteScrobble(scrobble: PendingScrobble)
+    override suspend fun deleteScrobble(scrobble: PendingScrobble) = scrobblesDao.delete(scrobble)
 
-    suspend fun insertScrobble(scrobble: PendingScrobble)
+    override suspend fun insertScrobble(scrobble: PendingScrobble) = scrobblesDao.insert(scrobble)
 }

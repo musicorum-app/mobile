@@ -5,15 +5,13 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import androidx.core.app.NotificationManagerCompat
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.floatPreferencesKey
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import io.musicorum.mobile.datastore.ScrobblePreferences
 import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.views.settings.MediaApp
 import kotlinx.coroutines.flow.first
@@ -33,12 +31,6 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
     val hasPermission = MutableLiveData(false)
     val showSpotifyModal = MutableLiveData(false)
 
-    private val scrobblePointKey = floatPreferencesKey("scrobblePoint")
-    private val enabledKey = booleanPreferencesKey("enabled")
-
-    // val newAppsKey = booleanPreferencesKey("newApps")
-    private val enabledAppsKey = stringSetPreferencesKey("enabledApps")
-    private val updateNowPlayingKey = booleanPreferencesKey("updateNowPlaying")
 
     fun updateScrobbling(value: Boolean) {
         isEnabled.value = value
@@ -49,7 +41,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
         }
         viewModelScope.launch {
             ctx.scrobblePrefs.edit { p ->
-                p[enabledKey] = value
+                p[ScrobblePreferences.ENABLED_KEY] = value
             }
         }
     }
@@ -58,7 +50,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
         updateNowPlaying.value = value
         viewModelScope.launch {
             ctx.scrobblePrefs.edit { p ->
-                p[updateNowPlayingKey] = value
+                p[ScrobblePreferences.UPDATED_NOWPLAYING_KEY] = value
             }
         }
     }
@@ -66,7 +58,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
     fun updateScrobblePoint() {
         viewModelScope.launch {
             ctx.applicationContext.scrobblePrefs.edit { p ->
-                p[scrobblePointKey] = scrobblePoint.value!!
+                p[ScrobblePreferences.SCROBBLE_POINT_KEY] = scrobblePoint.value!!
             }
         }
     }
@@ -76,7 +68,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
         newSet.add("com.spotify.music")
         viewModelScope.launch {
             ctx.scrobblePrefs.edit { p ->
-                p[enabledAppsKey] = newSet
+                p[ScrobblePreferences.ALLOWED_APPS_KEY] = newSet
             }
         }
         enabledPackageSet.value = newSet
@@ -96,7 +88,7 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
 
         viewModelScope.launch {
             ctx.scrobblePrefs.edit { p ->
-                p[enabledAppsKey] = newSet
+                p[ScrobblePreferences.ALLOWED_APPS_KEY] = newSet
             }
             enabledPackageSet.value = newSet
         }
@@ -104,14 +96,17 @@ class ScrobbleSettingsVm(application: Application) : AndroidViewModel(applicatio
 
     private fun init() {
         viewModelScope.launch {
-            val scrobblePointData = ctx.scrobblePrefs.data.map { p -> p[scrobblePointKey] }
+            val scrobblePointData =
+                ctx.scrobblePrefs.data.map { p -> p[ScrobblePreferences.SCROBBLE_POINT_KEY] }
+                    .first()
+            val enabled = ctx.scrobblePrefs.data.map { p -> p[ScrobblePreferences.ENABLED_KEY] }
                 .first()
-            val enabled = ctx.scrobblePrefs.data.map { p -> p[enabledKey] }
-                .first()
-            val enabledApps = ctx.scrobblePrefs.data.map { p -> p[enabledAppsKey] }
-                .first()
-            val updateNowPlayingData = ctx.scrobblePrefs.data.map { p -> p[updateNowPlayingKey] }
-                .first()
+            val enabledApps =
+                ctx.scrobblePrefs.data.map { p -> p[ScrobblePreferences.ALLOWED_APPS_KEY] }
+                    .first()
+            val updateNowPlayingData =
+                ctx.scrobblePrefs.data.map { p -> p[ScrobblePreferences.UPDATED_NOWPLAYING_KEY] }
+                    .first()
 
             if (scrobblePointData == null) {
                 scrobblePoint.value = 50f

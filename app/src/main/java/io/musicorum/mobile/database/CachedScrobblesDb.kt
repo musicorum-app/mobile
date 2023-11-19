@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import io.musicorum.mobile.database.daos.CachedScrobblesDao
 import io.musicorum.mobile.models.CachedScrobble
+import io.musicorum.mobile.repositories.daos.CachedScrobblesDao
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 

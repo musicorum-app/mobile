@@ -1,14 +1,11 @@
 package io.musicorum.mobile.utils
 
 import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import io.musicorum.mobile.ktor.endpoints.AuthEndpoint
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.serialization.User
-import io.musicorum.mobile.userData
 import java.util.Date
 
 suspend fun handleAuth(
@@ -30,12 +27,5 @@ suspend fun handleAuth(
             )
         }
         return userBlock(user, s)
-    }
-}
-
-suspend fun commitUser(sessionKey: String, context: Context) {
-    val dataStoreKey = stringPreferencesKey("session_key")
-    context.userData.edit { prefs ->
-        prefs[dataStoreKey] = sessionKey
     }
 }

@@ -1,7 +1,6 @@
 package io.musicorum.mobile.viewmodels
 
 import android.app.Application
-import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
@@ -35,9 +34,10 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun getColor(image: String, ctx: Context) {
+    fun getUserColor() {
         viewModelScope.launch {
-            val bmp = getBitmap(image, ctx)
+            val user = LocalUserRepository(_application).getUser()
+            val bmp = getBitmap(user.imageUrl, _application)
             val palette = createPalette(bmp)
             if (palette.vibrantSwatch == null) {
                 preferredColor.value = Color(palette.getDominantColor(Color.Gray.toArgb()))
@@ -92,5 +92,9 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
             period.value = newPeriod
             fetchAll(user.username)
         }
+    }
+
+    init {
+        getUserColor()
     }
 }

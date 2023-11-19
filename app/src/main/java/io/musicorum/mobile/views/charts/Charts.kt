@@ -64,7 +64,6 @@ import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.placeholder.placeholder
 import io.ktor.util.escapeHTML
 import io.musicorum.mobile.LocalNavigation
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
@@ -87,8 +86,6 @@ import io.musicorum.mobile.viewmodels.ChartsViewModel
 fun Charts() {
     val model: ChartsViewModel = viewModel()
     val period by model.period.observeAsState()
-    val user = LocalUser.current ?: return
-    val ctx = LocalContext.current
     val userColor by model.preferredColor.observeAsState(Color.Gray)
     val topArtists by model.topArtists.observeAsState()
     val topAlbums by model.topAlbums.observeAsState()
@@ -96,10 +93,6 @@ fun Charts() {
     val showBottomSheet = remember { mutableStateOf(false) }
     val busy by model.busy.observeAsState()
     val nav = LocalNavigation.current
-
-    LaunchedEffect(Unit) {
-        model.getColor(user.user.bestImageUrl, ctx)
-    }
 
     if (showBottomSheet.value) {
         PeriodBottomSheet(state = showBottomSheet) {

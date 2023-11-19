@@ -9,6 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.database.CachedScrobblesDb
@@ -20,7 +22,7 @@ import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.models.PartialUser
 import io.musicorum.mobile.repositories.CachedScrobblesRepository
 import io.musicorum.mobile.repositories.LocalUserRepository
-import io.musicorum.mobile.repositories.OfflineScrobblesRepository
+import io.musicorum.mobile.repositories.PendingScrobblesRepository
 import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.RecentTracks
@@ -57,6 +59,7 @@ class HomeViewModel @Inject constructor(
     val showRewindCard = MutableLiveData(false)
     val rewindCardMessage = MutableLiveData("")
     private val remoteConfig = FirebaseRemoteConfig.getInstance()
+    val showSettingsBadge = MutableLiveData(false)
 
 
     fun refresh() {
@@ -109,7 +112,7 @@ class HomeViewModel @Inject constructor(
             }
             if (res.exceptionOrNull() is UnknownHostException) {
                 val pendingDao = PendingScrobblesDb.getDatabase(ctx).pendingScrobblesDao()
-                val pendingRepo = OfflineScrobblesRepository(pendingDao)
+                val pendingRepo = PendingScrobblesRepository(pendingDao)
                 val pendingScrobbles = pendingRepo.getAllScrobblesStream().first()
                 isOffline.value = true
                 val list = mutableListOf<Track>()
@@ -223,5 +226,6 @@ class HomeViewModel @Inject constructor(
 
     init {
         init()
+        showSettingsBadge.value = Firebase.crashlytics.didCrashOnPreviousExecution()
     }
 }

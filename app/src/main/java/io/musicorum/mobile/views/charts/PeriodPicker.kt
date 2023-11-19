@@ -1,6 +1,5 @@
 package io.musicorum.mobile.views.charts
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,25 +74,17 @@ fun PeriodPicker(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun PeriodComponent(
     period: Pair<FetchPeriod, String>,
     active: Boolean,
     onClick: (FetchPeriod) -> Unit
 ) {
-    val colorState = remember { mutableStateOf(Color.Transparent) }
     val colorAnimation = animateColorAsState(
         if (active) {
             MostlyRed
         } else Color.Transparent,
     )
-
-    val activeMod = Modifier
-        .padding(end = 15.dp)
-        .clip(RoundedCornerShape(100))
-        .background(MostlyRed)
-        .padding(horizontal = 9.dp, vertical = 1.dp)
 
     val normalMod = Modifier
         .padding(end = 15.dp)

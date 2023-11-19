@@ -3,10 +3,10 @@ package io.musicorum.mobile.router
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -31,7 +31,7 @@ fun BottomNavBar(nav: NavHostController) {
     val icons = listOf(
         Icons.Rounded.Home,
         Icons.Rounded.Search,
-        Icons.Rounded.QueueMusic,
+        Icons.AutoMirrored.Rounded.QueueMusic,
         Icons.Rounded.BarChart,
         Icons.Rounded.Person
     )
@@ -44,12 +44,8 @@ fun BottomNavBar(nav: NavHostController) {
     val navBackStackEntry by nav.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    Box(modifier = Modifier
-        .background(LighterGray)
-        ) {
-        NavigationBar(
-            containerColor = Color.Transparent
-        ) {
+    Box(modifier = Modifier.background(LighterGray)) {
+        NavigationBar(containerColor = Color.Transparent) {
             items.forEachIndexed { index, s ->
                 NavigationBarItem(
                     selected = currentDestination?.hierarchy?.any { it.route?.lowercase() == s.lowercase() } == true,

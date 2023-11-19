@@ -1,14 +1,15 @@
 package io.musicorum.mobile.viewmodels
 
-import android.content.Context
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.ktor.client.plugins.ServerResponseException
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
+import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.SimilarTrack
 import io.musicorum.mobile.serialization.entities.Album
@@ -16,21 +17,21 @@ import io.musicorum.mobile.serialization.entities.Artist
 import io.musicorum.mobile.serialization.entities.Track
 import kotlinx.coroutines.launch
 
-class TrackViewModel : ViewModel() {
+class TrackViewModel(application: Application) : AndroidViewModel(application) {
     val track by lazy { MutableLiveData<Track>() }
     val similar by lazy { MutableLiveData<SimilarTrack>() }
     val artistCover by lazy { MutableLiveData<String>() }
     val error by lazy { MutableLiveData<Boolean>(null) }
+    val ctx = application
 
     suspend fun fetchTrack(
         trackName: String,
         artist: String,
-        username: String?,
         autoCorrect: Boolean?
     ) {
         viewModelScope.launch {
-            val res = TrackEndpoint.getTrack(trackName, artist, username, autoCorrect)
-
+            val user = LocalUserRepository(ctx).getUser()
+            val res = TrackEndpoint.getTrack(trackName, artist, user.username, autoCorrect)
             val musRes = MusicorumTrackEndpoint.fetchTracks(listOf(res!!.track))
             musRes.getOrNull(0)?.bestResource?.bestImageUrl?.let {
                 res.track.album =
@@ -90,7 +91,7 @@ class TrackViewModel : ViewModel() {
         artistCover.value = res[0].resources.getOrNull(0)?.bestImageUrl
     }
 
-    fun updateFavoritePreference(track: Track, ctx: Context) {
+    fun updateFavoritePreference(track: Track) {
         viewModelScope.launch {
             TrackEndpoint.updateFavoritePreference(track, ctx)
         }

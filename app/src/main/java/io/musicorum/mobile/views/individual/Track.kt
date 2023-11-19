@@ -25,7 +25,6 @@ import androidx.palette.graphics.Palette
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
@@ -68,7 +67,6 @@ fun Track(
         var paletteReady by remember { mutableStateOf(false) }
         val similarTracks = trackViewModel.similar.observeAsState().value
         val artistCover = trackViewModel.artistCover.observeAsState().value
-        val user = LocalUser.current!!
         val errored = trackViewModel.error.observeAsState().value
         val localSnack = LocalSnackbar.current
 
@@ -83,7 +81,6 @@ fun Track(
                 trackViewModel.fetchTrack(
                     partialTrack.trackName,
                     partialTrack.trackArtist,
-                    user.user.name,
                     null
                 )
             } else {
@@ -122,7 +119,7 @@ fun Track(
                         IconButton(
                             onClick = {
                                 analytics.logEvent("topbar_like_pressed", null)
-                                trackViewModel.updateFavoritePreference(track, ctx)
+                                trackViewModel.updateFavoritePreference(track)
                                 loved.value = !loved.value
                             }) {
                             if (loved.value) {

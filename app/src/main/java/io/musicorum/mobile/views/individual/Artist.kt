@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,6 @@ import androidx.palette.graphics.Palette
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
-import io.musicorum.mobile.LocalUser
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
@@ -37,23 +37,22 @@ import io.musicorum.mobile.viewmodels.ArtistViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
-    val analytics = LocalAnalytics.current!!
+    val analytics = LocalAnalytics.current
     LaunchedEffect(Unit) {
-        analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
+        analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
             param(FirebaseAnalytics.Param.SCREEN_NAME, "artist")
         }
     }
     val artist = artistViewModel.artist.observeAsState().value
-    val topAlbums = artistViewModel.topAlbums.observeAsState().value
+    val topAlbums by artistViewModel.topAlbums.observeAsState()
     val topTracks = artistViewModel.topTracks.observeAsState().value
-    val user = LocalUser.current!!.user
     val palette = remember { mutableStateOf<Palette?>(null) }
     val paletteReady = remember { mutableStateOf(false) }
     val ctx = LocalContext.current
 
     LaunchedEffect(artist) {
         if (artist == null) {
-            artistViewModel.fetchArtist(artistName, user.name)
+            artistViewModel.fetchArtist(artistName)
             artistViewModel.fetchTopAlbums(artistName)
             artistViewModel.fetchTopTracks(artistName)
         } else {
