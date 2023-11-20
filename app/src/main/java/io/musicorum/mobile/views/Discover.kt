@@ -25,8 +25,11 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.musicorum.mobile.R
 import io.musicorum.mobile.components.AlbumListItem
 import io.musicorum.mobile.components.ArtistListItem
 import io.musicorum.mobile.components.CenteredLoadingSpinner
@@ -51,14 +54,15 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
     val busy = viewModel.busy.observeAsState(false).value
 
 
-    Column(modifier = Modifier
-        .padding(vertical = 20.dp)
-        .fillMaxSize()
-        .background(KindaBlack)
-        .verticalScroll(rememberScrollState())
+    Column(
+        modifier = Modifier
+            .padding(vertical = 20.dp)
+            .fillMaxSize()
+            .background(KindaBlack)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
-            "Discover",
+            stringResource(R.string.discover),
             style = Typography.displaySmall,
             modifier = Modifier.padding(start = 20.dp)
         )
@@ -76,7 +80,7 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             modifier = Modifier
                 .padding(top = 10.dp)
                 .align(CenterHorizontally),
-            placeholder = { Text("Search on Last.fm...") },
+            placeholder = { Text(stringResource(R.string.search_on_last_fm)) },
             leadingIcon = { Icon(Icons.Rounded.Search, null) }
         ) {}
 
@@ -87,27 +91,39 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             return
         }
 
-        Header(title = "Tracks", results = tracks.size, icon = Icons.Rounded.Audiotrack)
+        Header(
+            title = stringResource(R.string.tracks),
+            results = tracks.size,
+            icon = Icons.Rounded.Audiotrack
+        )
         if (tracks.isEmpty()) {
-            Text("No results")
+            Text(stringResource(R.string.no_results))
         } else {
             tracks.take(4).forEach {
                 TrackListItem(track = it)
             }
         }
 
-        Header(title = "Albums", results = albums.size, icon = Icons.Outlined.Album)
+        Header(
+            title = stringResource(id = R.string.albums),
+            results = albums.size,
+            icon = Icons.Outlined.Album
+        )
         if (albums.isEmpty()) {
-            Text("No results")
+            Text(stringResource(R.string.no_results))
         } else {
             albums.take(4).forEach {
                 AlbumListItem(it)
             }
         }
 
-        Header(title = "Artists", results = artists.size, icon = Icons.Rounded.Star)
+        Header(
+            title = stringResource(id = R.string.artists),
+            results = artists.size,
+            icon = Icons.Rounded.Star
+        )
         if (artists.isEmpty()) {
-            Text("No results")
+            Text(stringResource(R.string.no_results))
         } else {
             artists.take(4).forEach {
                 ArtistListItem(artist = it)
@@ -122,7 +138,11 @@ private fun Header(title: String, results: Int, icon: ImageVector) {
         headlineContent = { Text(title, style = Typography.headlineSmall) },
         supportingContent = {
             Text(
-                text = "$results results",
+                text = pluralStringResource(
+                    id = R.plurals.search_result_quantity,
+                    count = results,
+                    results
+                ),
                 style = Typography.bodyMedium,
                 color = ContentSecondary
             )

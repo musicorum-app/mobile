@@ -274,8 +274,6 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 if (isOffline.value) {
                     Text(text = stringResource(R.string.youre_offline))
                 } else {
-
-
                     if (friendsActivity == null && friends == null) {
                         if (errored == true) {
                             Text(

@@ -224,7 +224,10 @@ fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
                         modifier = Modifier.size(12.dp)
                     )
                     Spacer(modifier = Modifier.width(5.dp))
-                    Text(text = "NOW PLAYING", style = LabelMedium2.copy(color = Color.White))
+                    Text(
+                        text = stringResource(R.string.now_playing),
+                        style = LabelMedium2.copy(color = Color.White)
+                    )
                 }
             }
         }

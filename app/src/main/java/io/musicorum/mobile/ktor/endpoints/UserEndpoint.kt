@@ -1,9 +1,11 @@
 package io.musicorum.mobile.ktor.endpoints
 
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
@@ -87,7 +89,7 @@ object UserEndpoint {
 
     }
 
-    suspend fun getFriends(user: String, limit: Int?): FriendsResponse?  {
+    suspend fun getFriends(user: String, limit: Int?): FriendsResponse? {
         val result = kotlin.runCatching {
             val res = KtorConfiguration.lastFmClient.get {
                 parameter("method", "user.getFriends")
@@ -104,17 +106,17 @@ object UserEndpoint {
     }
 
     suspend fun getTopTracks(user: String, period: FetchPeriod?, limit: Int?): TopTracks? {
-            val res = KtorConfiguration.lastFmClient.get {
-                parameter("method", "user.getTopTracks")
-                parameter("user", user)
-                parameter("period", period?.value)
-                parameter("limit", limit)
-            }
-            return if (res.status.isSuccess()) {
-                res.body<TopTracks>()
-            } else {
-                null
-            }
+        val res = KtorConfiguration.lastFmClient.get {
+            parameter("method", "user.getTopTracks")
+            parameter("user", user)
+            parameter("period", period?.value)
+            parameter("limit", limit)
+        }
+        return if (res.status.isSuccess()) {
+            res.body<TopTracks>()
+        } else {
+            null
+        }
     }
 
     suspend fun getTopAlbums(user: String, period: FetchPeriod?, limit: Int?): TopAlbumsResponse? {
@@ -168,6 +170,10 @@ object UserEndpoint {
             parameter("sk", sessionKey)
             parameter("method", "track.scrobble")
             parameter("timestamp", timestamp)
+        }
+
+        if (!req.status.isSuccess()) {
+            throw ClientRequestException(req, req.bodyAsText())
         }
         return req.status
     }

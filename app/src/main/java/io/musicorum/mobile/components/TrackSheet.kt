@@ -20,10 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -217,7 +217,7 @@ fun TrackSheet(
                     ctx.startActivity(intent)
                 },
             headlineContent = { Text(text = "Open on Last.fm") },
-            leadingContent = { Icon(Icons.Rounded.OpenInNew, null) },
+            leadingContent = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, null) },
             colors = listColors
         )
         ListItem(

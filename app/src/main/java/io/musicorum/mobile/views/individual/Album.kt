@@ -58,7 +58,7 @@ fun Album(
                 .fillMaxSize()
                 .background(KindaBlack)
         ) {
-            Text(text = "Something went wrong")
+            Text(text = stringResource(R.string.something_went_wrong))
         }
     } else {
         val partialAlbum = Json.decodeFromString<PartialAlbum>(albumData)
@@ -69,10 +69,11 @@ fun Album(
         val palette: MutableState<Palette?> = remember { mutableStateOf(null) }
         val errored = albumViewModel.errored.observeAsState().value
         val localSnack = LocalSnackbar.current
+        val failedText = stringResource(R.string.failed_to_fetch_album)
 
         LaunchedEffect(key1 = errored) {
             if (errored == true) {
-                localSnack.showSnackbar("Failed to fetch album")
+                localSnack.showSnackbar(failedText)
             }
         }
 

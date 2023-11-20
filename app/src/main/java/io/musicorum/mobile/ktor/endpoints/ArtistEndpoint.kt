@@ -17,7 +17,7 @@ object ArtistEndpoint {
             parameter("method", "artist.getInfo")
             parameter("name", artist)
             parameter("artist", artist)
-            parameter("usernameArg", username)
+            parameter("username", username)
         }
         return if (res.status.isSuccess()) {
             return res.body<InnerArtist>()

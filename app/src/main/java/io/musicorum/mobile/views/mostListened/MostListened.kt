@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import io.musicorum.mobile.LocalAnalytics
@@ -37,7 +38,7 @@ import io.musicorum.mobile.viewmodels.MostListenedViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MostListened(viewModel: MostListenedViewModel) {
+fun MostListened(viewModel: MostListenedViewModel = viewModel()) {
     val analytics = LocalAnalytics.current!!
     LaunchedEffect(Unit) {
         analytics.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {

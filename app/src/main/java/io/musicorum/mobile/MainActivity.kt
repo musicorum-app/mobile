@@ -21,7 +21,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -40,7 +39,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -75,7 +73,6 @@ import io.musicorum.mobile.utils.CrowdinUtils
 import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
 import io.musicorum.mobile.utils.MessagingService
-import io.musicorum.mobile.viewmodels.MostListenedViewModel
 import io.musicorum.mobile.views.Account
 import io.musicorum.mobile.views.Collage
 import io.musicorum.mobile.views.Discover
@@ -93,6 +90,7 @@ import io.musicorum.mobile.views.individual.Track
 import io.musicorum.mobile.views.individual.User
 import io.musicorum.mobile.views.login.loginGraph
 import io.musicorum.mobile.views.mostListened.MostListened
+import io.musicorum.mobile.views.settings.PendingScrobbles
 import io.musicorum.mobile.views.settings.ScrobbleSettings
 import io.musicorum.mobile.views.settings.Settings
 import io.sentry.android.core.SentryAndroid
@@ -129,7 +127,6 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(Crowdin.wrapContext(newBase))
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -210,7 +207,6 @@ class MainActivity : ComponentActivity() {
             val useDarkIcons = !isSystemInDarkTheme()
             navController = rememberNavController().withSentryObservableEffect()
 
-            val mostListenedViewModel: MostListenedViewModel = viewModel()
             val ctx = LocalContext.current
             val snackHostState = remember { SnackbarHostState() }
             val systemUiController = rememberSystemUiController()
@@ -349,7 +345,7 @@ class MainActivity : ComponentActivity() {
                                 }
 
                                 composable("mostListened") {
-                                    MostListened(viewModel = mostListenedViewModel)
+                                    MostListened()
                                 }
 
                                 composable(
@@ -411,6 +407,7 @@ class MainActivity : ComponentActivity() {
 
                                 composable("settings") { Settings() }
                                 composable("settings/scrobble") { ScrobbleSettings() }
+                                composable("settings/pendingScrobbles") { PendingScrobbles() }
 
                                 composable(
                                     "tag/{tagName}",
