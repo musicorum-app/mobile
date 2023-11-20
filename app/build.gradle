@@ -47,8 +47,8 @@ android {
         applicationId "io.musicorum.mobile"
         minSdk 28
         targetSdk 34
-        versionCode 67
-        versionName "1.22-release"
+        versionCode 68
+        versionName "1.23-release"
         //compileSdkPreview = "UpsideDownCake"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
