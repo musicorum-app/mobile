@@ -93,7 +93,10 @@ fun User(
                         )
                     }
                     Text(
-                        text = "Scrobbling since ${user?.user?.registered?.asParsedDate}",
+                        text = stringResource(
+                            R.string.scrobbling_since,
+                            user?.user?.registered?.asParsedDate ?: ""
+                        ),
                         style = Typography.bodyLarge,
                         color = ContentSecondary
                     )

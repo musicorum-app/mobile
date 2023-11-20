@@ -123,7 +123,7 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
                 }
 
                 HorizontalDivider(modifier = Modifier.padding(vertical = 18.dp))
-                Section(title = "Top Tracks")
+                Section(title = stringResource(id = R.string.top_tracks))
                 topTracks?.let {
                     TrackListItem(track = it.getOrNull(0), favoriteIcon = false)
                     TrackListItem(track = it.getOrNull(1), favoriteIcon = false)
@@ -133,12 +133,12 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Section(title = "Top Albums")
+                Section(title = stringResource(id = R.string.top_albums))
                 topAlbums?.let {
                     TopAlbumsRow(albums = it)
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Section(title = "Similar to $artistName")
+                Section(title = stringResource(R.string.similar_to, artistName))
 
                 artist.similar?.let {
                     ArtistRow(artists = it.artist)

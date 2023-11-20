@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import io.musicorum.mobile.R
 import io.musicorum.mobile.components.AlbumTrack
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.MusicorumTopBar
@@ -30,7 +32,7 @@ fun AlbumTracklist(partialAlbum: PartialAlbum, model: AlbumViewModel = viewModel
     } else {
         Scaffold(topBar = {
             MusicorumTopBar(
-                text = "Album Tracks",
+                text = stringResource(R.string.album_tracks),
                 scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),
                 fadeable = false
             ) {}

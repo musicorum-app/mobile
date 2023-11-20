@@ -113,7 +113,7 @@ fun ScrobbleSettings(vm: ScrobbleSettingsVm = viewModel()) {
 
     Scaffold(topBar = {
         MusicorumTopBar(
-            text = "Scrobble Settings",
+            text = stringResource(R.string.scrobble_settings),
             scrollBehavior = appBarBehavior,
             fadeable = false
         ) {}

@@ -19,9 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.musicorum.mobile.LocalNavigation
+import io.musicorum.mobile.R
 import io.musicorum.mobile.components.TrackListItem
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.Typography
@@ -36,11 +38,13 @@ fun PendingScrobbles(viewModel: PendingScrobblesViewModel = viewModel()) {
 
     Scaffold(
         topBar = {
-            MediumTopAppBar(title = { Text("Pending Scrobbles") }, navigationIcon = {
-                IconButton(onClick = { nav?.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
-                }
-            })
+            MediumTopAppBar(
+                title = { Text(stringResource(R.string.pending_scrobbles)) },
+                navigationIcon = {
+                    IconButton(onClick = { nav?.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
+                    }
+                })
         }
     ) { paddingValues ->
         Column(
@@ -48,9 +52,9 @@ fun PendingScrobbles(viewModel: PendingScrobblesViewModel = viewModel()) {
                 .padding(paddingValues)
         ) {
             Text(
-                text = "Last sync status: ${
-                    lastState.lowercase().replaceFirstChar { it.uppercase() }
-                }",
+                text = stringResource(
+                    R.string.last_sync_status,
+                    lastState.lowercase().replaceFirstChar { it.uppercase() }),
                 style = Typography.labelMedium,
                 color = ContentSecondary,
                 modifier = Modifier.padding(horizontal = 20.dp)
@@ -64,7 +68,7 @@ fun PendingScrobbles(viewModel: PendingScrobblesViewModel = viewModel()) {
                 ) {
                     Text(
                         modifier = Modifier.align(Alignment.Center),
-                        text = "You have no pending scrobbles",
+                        text = stringResource(R.string.pending_scrobbles_empty),
                         style = Typography.titleLarge,
                         color = ContentSecondary,
 
