@@ -1,10 +1,15 @@
 package io.musicorum.mobile.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,7 +51,7 @@ fun MusicorumTopBar(
                     analytics.logEvent("topbar_back_pressed", null)
                 },
             ) {
-                Icon(Icons.Rounded.ArrowBack, contentDescription = "")
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "")
             }
         },
         scrollBehavior = scrollBehavior,
