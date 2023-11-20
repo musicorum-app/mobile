@@ -17,60 +17,41 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.work.BackoffPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.google.firebase.analytics.FirebaseAnalytics
-import io.ktor.http.isSuccess
 import io.musicorum.mobile.database.PendingScrobblesDb
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
-import io.musicorum.mobile.models.PendingScrobble
 import io.musicorum.mobile.repositories.PendingScrobblesRepository
 import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.userData
+import io.musicorum.mobile.workers.ScrobbleWorker
+import io.musicorum.mobile.workers.SyncScrobblesWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.net.UnknownHostException
-import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class NotificationListener : NotificationListenerService() {
     private val tag = "NotificationListener"
-    private var job: Job? = null
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
             Log.d(tag, "internet connection available. syncing offline scrobbles")
-            CoroutineScope(Dispatchers.IO).launch {
-                val sessionKey = applicationContext.userData.data.map { p ->
-                    p[stringPreferencesKey("session_key")]
-                }.first() ?: return@launch
+            val work = OneTimeWorkRequestBuilder<SyncScrobblesWorker>()
+                .setBackoffCriteria(BackoffPolicy.LINEAR, 1L, TimeUnit.MINUTES)
+                .addTag("SYNC_SCROBBLES")
+                .build()
 
-                if (!this@NotificationListener::offlineScrobblesRepo::isInitialized.get()) {
-                    Log.w(tag, "Couldn't init offline scrobbles repo, aborting.")
-                    return@launch
-                }
-
-                val scrobbles = offlineScrobblesRepo.getAllScrobblesStream().first()
-                if (scrobbles.isEmpty()) {
-                    Log.d(tag, "no scrobbles to sync")
-                } else {
-                    for (scrobble in scrobbles) {
-                        val res = UserEndpoint.scrobble(
-                            track = scrobble.trackName,
-                            artist = scrobble.artistName,
-                            sessionKey = sessionKey,
-                            timestamp = scrobble.timestamp / 1000,
-                            album = scrobble.album
-                        )
-                        if (res.isSuccess()) {
-                            offlineScrobblesRepo.deleteScrobble(scrobble)
-                        }
-                    }
-                }
-            }
+            WorkManager.getInstance(applicationContext)
+                .enqueueUniqueWork("SYNC_SCROBBLES", ExistingWorkPolicy.KEEP, work)
         }
 
         override fun onLost(network: Network) {
@@ -151,7 +132,6 @@ class NotificationListener : NotificationListenerService() {
             }.first()
         }
 
-        val timestamp = Date()
         val analytics = FirebaseAnalytics.getInstance(applicationContext)
 
         if (artist == null || track == null) {
@@ -179,53 +159,21 @@ class NotificationListener : NotificationListenerService() {
             }
         }
         if (timeToScrobble < 0) return
+        val workManager = WorkManager.getInstance(applicationContext)
 
-        job = if (isPlayerPaused) {
-            Log.d(tag, "player has been paused")
-            job?.cancel()
-            if (job?.isCancelled == true) Log.d(tag, "job has been cancelled")
-            null
+        if (isPlayerPaused) {
+            workManager.cancelAllWorkByTag("SCROBBLE")
         } else {
-            job?.cancel()
-            Log.d(tag, "lauching new job...")
-            CoroutineScope(Dispatchers.IO).launch {
-                Log.d("listener job", "this job will wait ${timeToScrobble / 1000} seconds.")
-                delay(timeToScrobble.toLong())
-                Log.d("listener job", "time reached - scrobbling.")
-                try {
-                    val reqStatus = UserEndpoint.scrobble(
-                        track = track,
-                        artist = artist,
-                        album = album,
-                        albumArtist = albumArtist,
-                        sessionKey = sessionKey!!,
-                        timestamp = timestamp.time / 1000
-                    )
-
-                    val success = reqStatus.isSuccess()
-                    Log.d(tag, "is scrobble success? $success")
-                    if (success) {
-                        analytics.logEvent("device_scrobble_success", null)
-                    }
-                } catch (e: Exception) {
-                    if (e is UnknownHostException) {
-                        val offlineScrobble = PendingScrobble(
-                            artistName = artist,
-                            trackName = track,
-                            timestamp = timestamp.time,
-                            album = album
-                        )
-                        offlineScrobblesRepo.insertScrobble(offlineScrobble)
-                        Log.d(tag, "scrobble has been saved offline")
-                    } else {
-                        val bundle = Bundle()
-                        bundle.putString("reason", "exception")
-                        bundle.putString("exception", e.message)
-                        analytics.logEvent("device_scrobble_failed", bundle)
-                    }
-                }
-            }
+            val data = workDataOf(
+                "TRACK_NAME" to track,
+                "TRACK_ARTIST" to artist
+            )
+            val scrobbleWork = OneTimeWorkRequestBuilder<ScrobbleWorker>()
+                .setInitialDelay(timeToScrobble.toLong(), TimeUnit.MILLISECONDS)
+                .setInputData(data)
+                .addTag("SCROBBLE")
+                .build()
+            workManager.enqueueUniqueWork("SCROBBLE", ExistingWorkPolicy.REPLACE, scrobbleWork)
         }
-        Log.d(tag, "----------")
     }
 }

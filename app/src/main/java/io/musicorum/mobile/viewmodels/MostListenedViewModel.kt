@@ -21,17 +21,20 @@ class MostListenedViewModel(application: Application) : AndroidViewModel(applica
     fun fetchMostListened(period: FetchPeriod?, limit: Int?) {
         job = viewModelScope.launch {
             val localUser = LocalUserRepository(ctx).getUser()
-            val res = UserEndpoint.getTopTracks(localUser.username, period, limit)
-            if (res == null) {
-                error.value = true
-                return@launch
+            try {
+                val res = UserEndpoint.getTopTracks(localUser.username, period, limit)
+                if (res == null) {
+                    error.value = true
+                    return@launch
+                }
+                val musicorumTrRes = MusicorumTrackEndpoint.fetchTracks(res.topTracks.tracks)
+                musicorumTrRes.forEachIndexed { i, tr ->
+                    val url = tr?.resources?.getOrNull(0)?.bestImageUrl
+                    res.topTracks.tracks[i].bestImageUrl = url ?: ""
+                }
+                mosListenedTracks.value = res.topTracks.tracks
+            } catch (_: Exception) {
             }
-            val musicorumTrRes = MusicorumTrackEndpoint.fetchTracks(res.topTracks.tracks)
-            musicorumTrRes.forEachIndexed { i, tr ->
-                val url = tr?.resources?.getOrNull(0)?.bestImageUrl
-                res.topTracks.tracks[i].bestImageUrl = url ?: ""
-            }
-            mosListenedTracks.value = res.topTracks.tracks
         }
     }
 

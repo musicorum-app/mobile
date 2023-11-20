@@ -17,9 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -131,7 +131,7 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                                 }
                             }
                         }) {
-                            Icon(Icons.Rounded.Logout, null, tint = MostlyRed)
+                            Icon(Icons.AutoMirrored.Rounded.Logout, null, tint = MostlyRed)
                         }
                     }
                 }
@@ -174,6 +174,14 @@ fun Settings(viewModel: SettingsVm = viewModel()) {
                 trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
                 modifier = Modifier.clickable {
                     nav?.navigate(Routes.scrobbleSettings)
+                }
+            )
+
+            ListItem(
+                headlineContent = { Text("Pending scrobbles") },
+                trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
+                modifier = Modifier.clickable {
+                    nav?.navigate(Routes.pendingScrobbles)
                 }
             )
 
@@ -284,7 +292,7 @@ private fun TopAppBar() {
         title = { Text(stringResource(id = R.string.settings)) },
         navigationIcon = {
             IconButton(onClick = { nav?.popBackStack() }) {
-                Icon(Icons.Rounded.ArrowBack, null)
+                Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
             }
         }
     )

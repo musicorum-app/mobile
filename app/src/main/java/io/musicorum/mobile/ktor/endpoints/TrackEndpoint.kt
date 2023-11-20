@@ -27,7 +27,7 @@ object TrackEndpoint {
             val autoCorrectValue = if (autoCorrect == true) 1 else 0
             parameter("track", trackName)
             parameter("method", "track.getInfo")
-            parameter("usernameArg", username)
+            parameter("username", username)
             parameter("artist", artist)
             parameter("autocorrect", autoCorrectValue)
         }

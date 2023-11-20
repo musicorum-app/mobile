@@ -25,6 +25,7 @@ object Routes {
     const val settings = "settings"
     const val login = "login"
     const val scrobbleSettings = "settings/scrobble"
+    const val pendingScrobbles = "settings/pendingScrobbles"
     fun albumTracklist(data: String) = "album/$data"
     const val scrobbling = "scrobbling"
     const val profile = "profile"
