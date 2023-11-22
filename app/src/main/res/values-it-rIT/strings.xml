@@ -133,21 +133,21 @@
     <string name="last_sync_status">Status ultima sincronizzazione: %1$s</string>
     <string name="pending_scrobbles_empty">Non hai scrobble in sospeso</string>
     <string name="scrobble_settings">Impostazioni Scrobble</string>
-    <string name="search_on_last_fm">Search on Last.fm…</string>
-    <string name="no_results">No results</string>
-    <string name="discover">Discover</string>
-    <string name="now_playing">NOW PLAYING</string>
-    <string name="scrobbling_since">Scrobbling since %1$s</string>
-    <string name="similar_to">Similar to %1$s</string>
-    <string name="album_tracks">Album Tracks</string>
-    <string name="failed_to_fetch_album">Failed to fetch album</string>
-    <string name="something_went_wrong">Something went wrong</string>
+    <string name="search_on_last_fm">Cerca su Last.fm…</string>
+    <string name="no_results">Nessun risultato</string>
+    <string name="discover">Scopri</string>
+    <string name="now_playing">IN RIPRODUZIONE</string>
+    <string name="scrobbling_since">Scrobbling dal %1$s</string>
+    <string name="similar_to">Simile a %1$s</string>
+    <string name="album_tracks">Tracce dell\'album</string>
+    <string name="failed_to_fetch_album">Impossibile recuperare l\'album</string>
+    <string name="something_went_wrong">Qualcosa è andato storto</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Abilitato • %1$d app</item>
         <item quantity="other">Abilitato • %1$d app</item>
     </plurals>
     <plurals name="search_result_quantity">
         <item quantity="one">result</item>
-        <item quantity="other">results</item>
+        <item quantity="other">risultati</item>
     </plurals>
 </resources>
