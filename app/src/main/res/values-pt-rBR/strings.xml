@@ -128,8 +128,26 @@
     <string name="generator_error">Ocorreu um erro interno ao gerar a sua imagem.\n%1$s</string>
     <string name="sharing_item">Compartilhando item…</string>
     <string name="starting_download">Iniciando download…</string>
+    <string name="report_crash">Reporte o que aconteceu quando o aplicativo travou</string>
+    <string name="pending_scrobbles">Pending Scrobbles</string>
+    <string name="last_sync_status">Last sync status: %1$s</string>
+    <string name="pending_scrobbles_empty">You have no pending scrobbles</string>
+    <string name="scrobble_settings">Scrobble Settings</string>
+    <string name="search_on_last_fm">Search on Last.fm…</string>
+    <string name="no_results">No results</string>
+    <string name="discover">Discover</string>
+    <string name="now_playing">NOW PLAYING</string>
+    <string name="scrobbling_since">Scrobbling since %1$s</string>
+    <string name="similar_to">Similar to %1$s</string>
+    <string name="album_tracks">Album Tracks</string>
+    <string name="failed_to_fetch_album">Failed to fetch album</string>
+    <string name="something_went_wrong">Something went wrong</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Ativado • %1$d app</item>
         <item quantity="other">Ativado • %1$d apps</item>
+    </plurals>
+    <plurals name="search_result_quantity">
+        <item quantity="one">result</item>
+        <item quantity="other">results</item>
     </plurals>
 </resources>
