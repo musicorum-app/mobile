@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.AlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.ArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
+import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumAlbumEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumArtistEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.serialization.SearchTrack
+import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.serialization.entities.Album
 import io.musicorum.mobile.serialization.entities.Artist
 import kotlinx.coroutines.async
@@ -26,7 +28,7 @@ class DiscoverVm : ViewModel() {
     val trackResults = MutableLiveData<List<SearchTrack>>(emptyList())
     val albumResults = MutableLiveData<List<Album>>(emptyList())
     val artistResults = MutableLiveData<List<Artist>>(emptyList())
-
+    val userResult = MutableLiveData<List<User>>(null)
 
     fun updateQuery(value: String) {
         query.value = value
@@ -98,6 +100,13 @@ class DiscoverVm : ViewModel() {
                             }
                             artistResults.value = list
                         }
+                    }
+                },
+
+                async {
+                    val res = UserEndpoint.getUser(query.value!!)
+                    res?.let {
+                        userResult.value = listOf(it)
                     }
                 }
             )

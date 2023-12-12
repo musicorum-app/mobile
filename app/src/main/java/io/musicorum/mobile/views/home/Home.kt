@@ -1,4 +1,4 @@
-package io.musicorum.mobile.views
+package io.musicorum.mobile.views.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,14 +27,12 @@ import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -75,29 +73,15 @@ import io.musicorum.mobile.ui.theme.SkeletonSecondaryColor
 import io.musicorum.mobile.ui.theme.Subtitle1
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.getDarkenGradient
-import io.musicorum.mobile.viewmodels.HomeViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Route("home")
 fun Home(vm: HomeViewModel = hiltViewModel()) {
-    val user = vm.user.observeAsState().value
-    val recentTracks by vm.recentTracks.observeAsState()
-    val palette by vm.userPalette.observeAsState()
-    val weekTracks by vm.weekTracks.observeAsState()
-    val friends by vm.friends.observeAsState()
-    val friendsActivity by vm.friendsActivity.observeAsState()
-    val errored by vm.errored.observeAsState()
-    val nav = LocalNavigation.current!!
-    val isRefreshing = vm.isRefreshing.collectAsState()
-    val weeklyScrobbles by vm.weeklyScrobbles.observeAsState()
-    val isOffline = vm.isOffline.observeAsState(initial = false)
-    val hasPendingScrobbles by vm.hasPendingScrobbles.observeAsState(false)
-    val showRewindCard by vm.showRewindCard.observeAsState(initial = false)
-    val crashBadge by vm.showSettingsBadge.observeAsState(false)
+    val state by vm.state.collectAsState()
+    val nav = LocalNavigation.current
 
     SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing.value),
+        state = rememberSwipeRefreshState(state.isRefreshing),
         onRefresh = { vm.refresh() }) {
         Column(
             Modifier
@@ -121,11 +105,11 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable {
-                            nav.navigate(Routes.settings)
+                            nav?.navigate(Routes.settings)
                         }
                         .padding(12.dp),
                     badge = {
-                        if (crashBadge) Badge(containerColor = MostlyRed)
+                        if (state.showSettingsBade) Badge(containerColor = MostlyRed)
                     }
                 ) {
                     //IconButton(onClick = { nav.navigate("settings") }) {
@@ -134,16 +118,15 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 }
             }
 
-            if (showRewindCard) {
-                val rewindMessage by vm.rewindCardMessage.observeAsState()
-                RewindCard(description = rewindMessage ?: "") {
+            if (state.showRewindCard) {
+                RewindCard(description = state.rewindCardMessage) {
                     vm.launchRewind()
                 }
 
             }
 
-            if (user != null && palette != null) {
-                UserCard(user, palette!!, weeklyScrobbles)
+            if (state.user != null && state.userPalette != null) {
+                UserCard(state.user!!, state.userPalette!!, state.weeklyScrobbles)
             } else {
                 Box(
                     modifier = Modifier
@@ -161,7 +144,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
 
             Spacer(Modifier.height(20.dp))
 
-            if (isOffline.value) {
+            if (state.isOffline) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
@@ -189,7 +172,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                         }
                     }
                 }
-                if (hasPendingScrobbles) {
+                if (state.hasPendingScrobbles) {
                     Row(modifier = Modifier.padding(start = 20.dp, top = 10.dp)) {
                         Icon(
                             Icons.Rounded.Error,
@@ -215,7 +198,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .clickable { nav.navigate("recentScrobbles") },
+                    .clickable { nav?.navigate("recentScrobbles") },
                 verticalAlignment = CenterVertically
             ) {
                 Text(
@@ -223,13 +206,13 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     style = Typography.headlineSmall,
                     modifier = Modifier.padding(start = 20.dp)
                 )
-                IconButton(onClick = { nav.navigate("recentScrobbles") }) {
+                IconButton(onClick = { nav?.navigate("recentScrobbles") }) {
                     Icon(Icons.Rounded.ChevronRight, contentDescription = null)
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalTracksRow(
-                tracks = recentTracks,
+                tracks = state.recentTracks,
                 labelType = LabelType.DATE
             )
 
@@ -239,7 +222,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .clickable { nav.navigate("mostListened") },
+                    .clickable { nav?.navigate("mostListened") },
                 verticalAlignment = CenterVertically
             ) {
                 Text(
@@ -247,13 +230,13 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     style = Typography.headlineSmall,
                     modifier = Modifier.padding(start = 20.dp)
                 )
-                IconButton(onClick = { nav.navigate("mostListened") }) {
+                IconButton(onClick = { nav?.navigate("mostListened") }) {
                     Icon(Icons.Rounded.ChevronRight, contentDescription = null)
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
             HorizontalTracksRow(
-                tracks = weekTracks,
+                tracks = state.weekTracks,
                 labelType = LabelType.ARTIST_NAME
             )
 
@@ -271,11 +254,11 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                if (isOffline.value) {
+                if (state.isOffline) {
                     Text(text = stringResource(R.string.youre_offline))
                 } else {
-                    if (friendsActivity == null && friends == null) {
-                        if (errored == true) {
+                    if (state.friendsActivity == null && state.friends == null) {
+                        if (state.hasError == true) {
                             Text(
                                 text = stringResource(R.string.empty_friendlist_message),
                                 softWrap = true,
@@ -287,11 +270,11 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                             GenericCardPlaceholder(visible = true)
                         }
                     } else {
-                        friendsActivity?.forEachIndexed { i, rt ->
+                        state.friendsActivity?.forEachIndexed { i, rt ->
                             FriendActivity(
                                 track = rt.recentTracks.tracks[0],
-                                friendImageUrl = friends?.get(i)?.bestImageUrl,
-                                friendUsername = friends?.get(i)?.name
+                                friendImageUrl = state.friends?.get(i)?.bestImageUrl,
+                                friendUsername = state.friends?.get(i)?.name
                             )
                         }
                     }

@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
@@ -74,13 +76,13 @@ import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.LocalSnackbarContext
 import io.musicorum.mobile.utils.MessagingService
 import io.musicorum.mobile.views.Account
-import io.musicorum.mobile.views.Collage
 import io.musicorum.mobile.views.Discover
-import io.musicorum.mobile.views.Home
 import io.musicorum.mobile.views.RecentScrobbles
 import io.musicorum.mobile.views.Scrobbling
 import io.musicorum.mobile.views.charts.BaseChartDetail
 import io.musicorum.mobile.views.charts.Charts
+import io.musicorum.mobile.views.collage.Collage
+import io.musicorum.mobile.views.home.Home
 import io.musicorum.mobile.views.individual.Album
 import io.musicorum.mobile.views.individual.AlbumTracklist
 import io.musicorum.mobile.views.individual.Artist
@@ -240,15 +242,11 @@ class MainActivity : ComponentActivity() {
                 onDispose { }
             }
 
+            val bottomBarDestinations =
+                listOf("home", "scrobbling", "profile", "charts", "discover")
             val showNav =
-                when (navController.currentBackStackEntryAsState().value?.destination?.route) {
-                    "home" -> true
-                    "scrobbling" -> true
-                    "profile" -> true
-                    "charts" -> true
-                    "discover" -> true
-                    else -> false
-                }
+                navController.currentBackStackEntryAsState().value?.destination?.route in bottomBarDestinations
+
 
             CompositionLocalProvider(
                 LocalSnackbar provides LocalSnackbarContext(snackHostState),
@@ -274,11 +272,24 @@ class MainActivity : ComponentActivity() {
                                 .padding(pv)
                         ) {
                             val animationCurve = CubicBezierEasing(0.76f, 0f, 0.24f, 1f)
+                            val newRoute = navController.currentBackStackEntry?.destination?.route
                             NavHost(
                                 navController = navController,
                                 startDestination = "home",
-                                enterTransition = { slideInHorizontally(tween(350)) { fullWidth -> fullWidth } },
-                                exitTransition = { slideOutHorizontally(tween(350)) { fullWidth -> -fullWidth / 2 } },
+                                enterTransition = {
+                                    if (newRoute in bottomBarDestinations) {
+                                        fadeIn(tween(200))
+                                    } else {
+                                        slideInHorizontally(tween(350)) { fullWidth -> fullWidth }
+                                    }
+                                },
+                                exitTransition = {
+                                    if (newRoute in bottomBarDestinations) {
+                                        fadeOut(tween(200))
+                                    } else {
+                                        slideOutHorizontally(tween(350)) { fullWidth -> -fullWidth / 2 }
+                                    }
+                                },
                                 popExitTransition = {
                                     slideOutHorizontally(
                                         tween(
@@ -286,14 +297,19 @@ class MainActivity : ComponentActivity() {
                                             easing = animationCurve
                                         )
                                     ) { fullWidth -> fullWidth }
+
                                 },
                                 popEnterTransition = {
-                                    slideInHorizontally(
-                                        tween(
-                                            500,
-                                            easing = animationCurve
+                                    if (newRoute in bottomBarDestinations) {
+                                        fadeIn(tween(200))
+                                    } else {
+                                        slideInHorizontally(
+                                            tween(
+                                                500,
+                                                easing = animationCurve
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             ) {
                                 /* WIP val views =
@@ -325,7 +341,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                     )
                                 ) {
-                                    Collage(args = it.arguments!!)
+                                    Collage()
                                 }
 
                                 composable(

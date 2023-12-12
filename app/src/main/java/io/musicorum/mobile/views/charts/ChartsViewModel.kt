@@ -1,6 +1,7 @@
-package io.musicorum.mobile.viewmodels
+package io.musicorum.mobile.views.charts
 
 import android.app.Application
+import android.net.ConnectivityManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.AndroidViewModel
@@ -16,6 +17,8 @@ import io.musicorum.mobile.serialization.entities.TopArtist
 import io.musicorum.mobile.serialization.entities.TopTracksData
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 class ChartsViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,16 +28,23 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
     val topTracks: MutableLiveData<TopTracksData> = MutableLiveData()
     val period = MutableLiveData(FetchPeriod.WEEK)
     val busy = MutableLiveData(false)
-    private val _application = application
+    val offline = MutableLiveData(false)
+    val _application = application
 
     init {
-        viewModelScope.launch {
-            val user = LocalUserRepository(application.applicationContext).getUser()
-            fetchAll(user.username)
+        val connectivityManager = application.getSystemService(Application.CONNECTIVITY_SERVICE)
+                as ConnectivityManager
+        if (connectivityManager.activeNetwork != null) {
+            getUserColor()
+            viewModelScope.launch {
+                fetchAll()
+            }
+        } else {
+            offline.value = true
         }
     }
 
-    fun getUserColor() {
+    private fun getUserColor() {
         viewModelScope.launch {
             val user = LocalUserRepository(_application).getUser()
             val bmp = getBitmap(user.imageUrl, _application)
@@ -47,7 +57,7 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    suspend fun getTopArtists(user: String) {
+    private suspend fun getTopArtists(user: String) {
         val res = UserEndpoint.getTopArtists(username = user, period = period.value, limit = 4)
         res?.let {
             val musRes = MusicorumArtistEndpoint.fetchArtist(res.topArtists.artists)
@@ -58,14 +68,14 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    suspend fun getTopAlbums(user: String) {
+    private suspend fun getTopAlbums(user: String) {
         val res = UserEndpoint.getTopAlbums(user = user, period = period.value, limit = 4)
         res?.let {
             topAlbums.value = it.topAlbums.albums
         }
     }
 
-    suspend fun getTopTracks(user: String) {
+    private suspend fun getTopTracks(user: String) {
         val res = UserEndpoint.getTopTracks(user = user, period = period.value, limit = 4)
         res?.let {
             val musRes = MusicorumTrackEndpoint.fetchTracks(res.topTracks.tracks)
@@ -76,25 +86,38 @@ class ChartsViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun fetchAll(user: String) {
-        busy.value = true
-        viewModelScope.launch {
-            getTopAlbums(user)
-            getTopArtists(user)
-            getTopTracks(user)
-            busy.value = false
+    fun fetchAll() {
+        val connectivityManager = _application.getSystemService(Application.CONNECTIVITY_SERVICE)
+                as ConnectivityManager
+        if (connectivityManager.activeNetwork != null) {
+            busy.value = true
+            offline.value = false
+            viewModelScope.launch {
+                val user = LocalUserRepository(_application.applicationContext).getUser().username
+                runCatching {
+                    awaitAll(
+                        async {
+                            getTopAlbums(user)
+                        },
+                        async {
+                            getTopArtists(user)
+                        },
+                        async {
+                            getTopTracks(user)
+                        }
+                    )
+                }
+                busy.value = false
+            }
+        } else {
+            offline.value = true
         }
     }
 
     fun updatePeriod(newPeriod: FetchPeriod) {
         viewModelScope.launch {
-            val user = LocalUserRepository(_application.applicationContext).getUser()
             period.value = newPeriod
-            fetchAll(user.username)
+            fetchAll()
         }
-    }
-
-    init {
-        getUserColor()
     }
 }

@@ -36,7 +36,7 @@ fun BottomNavBar(nav: NavHostController) {
         Icons.Rounded.Person
     )
     val navItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = MostlyRed.copy(alpha = 0.5f),
+        indicatorColor = MostlyRed,
         selectedIconColor = Color.White,
         selectedTextColor = Color.White
     )

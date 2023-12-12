@@ -1,14 +1,18 @@
 package io.musicorum.mobile.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.rounded.Audiotrack
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.DockedSearchBar
@@ -18,22 +22,29 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.R
+import io.musicorum.mobile.coil.PlaceholderType
+import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.AlbumListItem
 import io.musicorum.mobile.components.ArtistListItem
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackListItem
+import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
@@ -48,10 +59,12 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
     val artists = viewModel.artistResults.observeAsState(emptyList()).value
     val tracks = viewModel.trackResults.observeAsState(emptyList()).value
     val albums = viewModel.albumResults.observeAsState(emptyList()).value
+    val users by viewModel.userResult.observeAsState(emptyList())
     val searchBarColors = SearchBarDefaults.colors(
         containerColor = LighterGray
     )
     val busy = viewModel.busy.observeAsState(false).value
+    val nav = LocalNavigation.current
 
 
     Column(
@@ -96,9 +109,8 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             results = tracks.size,
             icon = Icons.Rounded.Audiotrack
         )
-        if (tracks.isEmpty()) {
-            Text(stringResource(R.string.no_results))
-        } else {
+
+        if (tracks.isNotEmpty()) {
             tracks.take(4).forEach {
                 TrackListItem(track = it)
             }
@@ -109,9 +121,7 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             results = albums.size,
             icon = Icons.Outlined.Album
         )
-        if (albums.isEmpty()) {
-            Text(stringResource(R.string.no_results))
-        } else {
+        if (albums.isNotEmpty()) {
             albums.take(4).forEach {
                 AlbumListItem(it)
             }
@@ -122,12 +132,37 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             results = artists.size,
             icon = Icons.Rounded.Star
         )
-        if (artists.isEmpty()) {
-            Text(stringResource(R.string.no_results))
-        } else {
+        if (artists.isNotEmpty()) {
             artists.take(4).forEach {
                 ArtistListItem(artist = it)
             }
+        }
+
+        Header(
+            title = "Users",
+            results = users.size,
+            icon = Icons.Rounded.Person
+        )
+        if (users.isNotEmpty()) {
+            val model = defaultImageRequestBuilder(
+                url = users.first().user.bestImageUrl,
+                PlaceholderType.USER
+            )
+            ListItem(
+                headlineContent = { Text(users.first().user.name) },
+                leadingContent = {
+                    AsyncImage(
+                        model = model,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape)
+                    )
+                },
+                modifier = Modifier.clickable {
+                    nav?.navigate(Routes.user(users.first().user.name))
+                }
+            )
         }
     }
 }

@@ -167,7 +167,7 @@
     </plurals>
 
     <plurals name="search_result_quantity">
-        <item quantity="one">result</item>
-        <item quantity="other">results</item>
+        <item quantity="one">%1$d result</item>
+        <item quantity="other">%1$d results</item>
     </plurals>
 </resources>
