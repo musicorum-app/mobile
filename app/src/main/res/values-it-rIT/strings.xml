@@ -142,6 +142,7 @@
     <string name="album_tracks">Tracce dell\'album</string>
     <string name="failed_to_fetch_album">Impossibile recuperare l\'album</string>
     <string name="something_went_wrong">Qualcosa è andato storto</string>
+    <string name="scrobbling_from">Scrobbling from %1$s</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Abilitato • %1$d app</item>
         <item quantity="other">Abilitato • %1$d app</item>
