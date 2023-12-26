@@ -142,6 +142,7 @@
     <string name="album_tracks">Album Tracks</string>
     <string name="failed_to_fetch_album">Failed to fetch album</string>
     <string name="something_went_wrong">Something went wrong</string>
+    <string name="scrobbling_from">Scrobbling from %1$s</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Ativado • %1$d app</item>
         <item quantity="other">Ativado • %1$d apps</item>
