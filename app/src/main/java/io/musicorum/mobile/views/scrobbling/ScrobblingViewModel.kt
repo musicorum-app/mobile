@@ -1,16 +1,18 @@
-package io.musicorum.mobile.viewmodels
+package io.musicorum.mobile.views.scrobbling
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.ComponentName
 import android.content.Context
+import android.media.session.MediaSessionManager
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.database.CachedScrobblesDb
 import io.musicorum.mobile.database.PendingScrobblesDb
+import io.musicorum.mobile.datastore.ScrobblePreferences
 import io.musicorum.mobile.ktor.endpoints.TrackEndpoint
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.models.CachedScrobble
@@ -18,8 +20,13 @@ import io.musicorum.mobile.repositories.CachedScrobblesRepository
 import io.musicorum.mobile.repositories.LocalUserRepository
 import io.musicorum.mobile.repositories.PendingScrobblesRepository
 import io.musicorum.mobile.repositories.ScrobbleRepository
+import io.musicorum.mobile.scrobblePrefs
 import io.musicorum.mobile.serialization.entities.Track
+import io.musicorum.mobile.services.NotificationListener
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import javax.inject.Inject
@@ -32,13 +39,13 @@ class ScrobblingViewModel @Inject constructor(
     AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     val ctx = application as Context
-    val nowPlayingTrack = MutableLiveData<Track>(null)
-    val refreshing = MutableLiveData(false)
-    val isTrackLoved = MutableLiveData(false)
-    val recentScrobbles = MutableLiveData<List<Track>?>(null)
+    val state = MutableStateFlow(ScrobblingState())
+
 
     fun updateScrobbles() {
-        refreshing.value = true
+        state.update {
+            it.copy(isRefreshing = true)
+        }
         val cachedScrobblesDao = CachedScrobblesDb.getDatabase(ctx).cachedScrobblesDao()
         val cachedRepo = CachedScrobblesRepository(cachedScrobblesDao)
         viewModelScope.launch {
@@ -60,16 +67,24 @@ class ScrobblingViewModel @Inject constructor(
                         )
                     }
                     if (res.recentTracks.tracks.isEmpty()) return@launch
-                    recentScrobbles.value = res.recentTracks.tracks
+                    state.update {
+                        it.copy(recentScrobbles = res.recentTracks.tracks)
+                    }
 
                     if (res.recentTracks.tracks[0].attributes?.nowPlaying == "true") {
-                        nowPlayingTrack.value = res.recentTracks.tracks[0]
+                        state.update {
+                            it.copy(playingTrack = res.recentTracks.tracks[0])
+                        }
                         if (res.recentTracks.tracks[0].loved) {
-                            isTrackLoved.value = true
+                            state.update {
+                                it.copy(isTrackLoved = true)
+                            }
                         }
                     }
                 }
-                refreshing.value = false
+                state.update {
+                    it.copy(isRefreshing = false)
+                }
             }
 
             if (result.exceptionOrNull() is UnknownHostException) {
@@ -87,8 +102,9 @@ class ScrobblingViewModel @Inject constructor(
                     list.add(t.toTrack())
                 }
                 list.sortByDescending { it.date?.uts }
-                recentScrobbles.value = list
-                refreshing.value = false
+                state.update {
+                    it.copy(recentScrobbles = list, isRefreshing = false)
+                }
             }
         }
     }
@@ -97,7 +113,34 @@ class ScrobblingViewModel @Inject constructor(
         if (track == null) return
         viewModelScope.launch {
             TrackEndpoint.updateFavoritePreference(track, lovedState, ctx)
-            isTrackLoved.value = !isTrackLoved.value!!
+            state.update {
+                it.copy(isTrackLoved = !it.isTrackLoved)
+            }
+        }
+    }
+
+    private fun getMediaSessionPackage() {
+        val mediaService =
+            ctx.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
+        val component = ComponentName(ctx, NotificationListener::class.java)
+        val session = mediaService.getActiveSessions(component).getOrNull(0)
+        session?.let {
+            val pkg = session.packageName
+            val pm = ctx.packageManager.getApplicationInfo(pkg, 0)
+            val icon = ctx.packageManager.getApplicationIcon(pm)
+            viewModelScope.launch {
+                val allowedApps =
+                    ctx.scrobblePrefs.data.map { p -> p[ScrobblePreferences.ALLOWED_APPS_KEY] }
+                        .first() ?: emptySet()
+
+                if (pkg !in allowedApps) return@launch
+                state.update {
+                    it.copy(
+                        scrobblingAppName = pm.loadLabel(ctx.packageManager).toString(),
+                        scrobblingAppIcon = icon
+                    )
+                }
+            }
         }
     }
 
@@ -107,5 +150,6 @@ class ScrobblingViewModel @Inject constructor(
                 param(FirebaseAnalytics.Param.SCREEN_NAME, "scrobbling")
             }
         updateScrobbles()
+        getMediaSessionPackage()
     }
 }

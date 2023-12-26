@@ -12,13 +12,13 @@ import androidx.navigation.navArgument
 import io.musicorum.mobile.views.Account
 import io.musicorum.mobile.views.Discover
 import io.musicorum.mobile.views.RecentScrobbles
-import io.musicorum.mobile.views.Scrobbling
 import io.musicorum.mobile.views.charts.Charts
 import io.musicorum.mobile.views.home.Home
 import io.musicorum.mobile.views.individual.Album
 import io.musicorum.mobile.views.individual.Track
 import io.musicorum.mobile.views.individual.User
 import io.musicorum.mobile.views.login.loginGraph
+import io.musicorum.mobile.views.scrobbling.Scrobbling
 
 private val startTransition = slideInHorizontally(tween(800)) { fullWidth -> fullWidth }
 private val exitTransition = slideOutHorizontally(tween(800)) { fullWidth -> -fullWidth / 2 }

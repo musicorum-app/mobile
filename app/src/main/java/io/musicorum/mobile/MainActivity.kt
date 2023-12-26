@@ -78,7 +78,6 @@ import io.musicorum.mobile.utils.MessagingService
 import io.musicorum.mobile.views.Account
 import io.musicorum.mobile.views.Discover
 import io.musicorum.mobile.views.RecentScrobbles
-import io.musicorum.mobile.views.Scrobbling
 import io.musicorum.mobile.views.charts.BaseChartDetail
 import io.musicorum.mobile.views.charts.Charts
 import io.musicorum.mobile.views.collage.Collage
@@ -92,6 +91,7 @@ import io.musicorum.mobile.views.individual.Track
 import io.musicorum.mobile.views.individual.User
 import io.musicorum.mobile.views.login.loginGraph
 import io.musicorum.mobile.views.mostListened.MostListened
+import io.musicorum.mobile.views.scrobbling.Scrobbling
 import io.musicorum.mobile.views.settings.PendingScrobbles
 import io.musicorum.mobile.views.settings.ScrobbleSettings
 import io.musicorum.mobile.views.settings.Settings

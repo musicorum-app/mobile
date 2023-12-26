@@ -1,10 +1,12 @@
-package io.musicorum.mobile.views
+package io.musicorum.mobile.views.scrobbling
 
+import android.graphics.drawable.Drawable
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring.StiffnessLow
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,9 +33,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,10 +46,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
@@ -68,7 +72,6 @@ import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.darkenColor
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.utils.getDarkenGradient
-import io.musicorum.mobile.viewmodels.ScrobblingViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,15 +79,14 @@ fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
     val state = rememberLazyListState()
     val firstItemOffset = remember { derivedStateOf { state.firstVisibleItemScrollOffset } }
     val firstItemIndex = remember { derivedStateOf { state.firstVisibleItemIndex } }
+    val viewModelState by vm.state.collectAsState()
     // 0: closed; 1: open;
     val interpolated = Utils.interpolateValues(firstItemOffset.value.toFloat(), 0f, 200f, 1f, 0f)
     val clamped = interpolated.coerceIn(0f..1f)
     val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f, label = "")
-    val recentTracks = vm.recentScrobbles.observeAsState(null).value
-    val npTrack = vm.nowPlayingTrack.observeAsState(null).value
 
 
-    if (recentTracks == null) {
+    if (viewModelState.recentScrobbles == null) {
         CenteredLoadingSpinner()
     } else {
         Column(
@@ -100,18 +102,34 @@ fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
             )
             Column {
                 NowPlayingCard(
-                    track = npTrack,
+                    track = viewModelState.playingTrack,
                     fraction = value.value,
-                    vm = vm
-                )
+                    playingApp = viewModelState.scrobblingAppName,
+                    playingAppIcon = viewModelState.scrobblingAppIcon,
+                    loved = viewModelState.isTrackLoved
+                ) {
+                    vm.updateFavorite(viewModelState.playingTrack, viewModelState.isTrackLoved)
+                }
             }
-            TrackList(vm = vm, state = state)
+            TrackList(
+                isRefreshing = viewModelState.isRefreshing,
+                state = state,
+                onRefresh = { vm.updateScrobbles() },
+                tracks = viewModelState.recentScrobbles
+            )
         }
     }
 }
 
 @Composable
-fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
+fun NowPlayingCard(
+    track: Track?,
+    fraction: Float,
+    loved: Boolean,
+    playingApp: String,
+    playingAppIcon: Drawable?,
+    updateFavCallback: () -> Unit
+) {
     val isPlaying = track?.attributes?.nowPlaying == "true"
     val iconAlignment = BiasAlignment(1f, fraction)
     val textAlignment = BiasAlignment.Vertical(fraction * -1)
@@ -119,7 +137,6 @@ fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
     val nowPlayingHeight = (fraction * 20f).dp
     val nowPlayingAlpha = fraction * 0.65f
     val padding = (10f + fraction * 4f).dp
-    val loved = vm.isTrackLoved.observeAsState(false).value
     val ctx = LocalContext.current
     var palette by remember { mutableStateOf<Palette?>(null) }
 
@@ -163,7 +180,7 @@ fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
     ) {
         if (isPlaying) {
             IconButton(
-                onClick = { vm.updateFavorite(track, loved) },
+                onClick = { updateFavCallback() },
                 modifier = Modifier
                     .align(iconAlignment)
                     .animateContentSize()
@@ -217,17 +234,38 @@ fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
             if (isPlaying) {
                 Row(
                     modifier = Modifier.padding(bottom = 10.dp),
-                    horizontalArrangement = Arrangement.Start
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Rive.AnimationFor(
-                        id = R.raw.nowplaying,
-                        modifier = Modifier.size(12.dp)
-                    )
+                    if (playingApp.isNotEmpty()) {
+                        playingAppIcon?.toBitmap()?.asImageBitmap()
+                            ?.let {
+                                Image(
+                                    bitmap = it,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(15.dp)
+                                )
+                            }
+                    } else {
+                        Rive.AnimationFor(
+                            id = R.raw.nowplaying,
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = stringResource(R.string.now_playing),
-                        style = LabelMedium2.copy(color = Color.White)
-                    )
+                    if (playingApp.isNotEmpty()) {
+                        Text(
+                            text = stringResource(R.string.scrobbling_from, playingApp).uppercase(),
+                            style = LabelMedium2.copy(color = Color.White)
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.now_playing).uppercase(),
+                            style = LabelMedium2.copy(color = Color.White)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(5.dp))
                 }
             }
         }
@@ -236,19 +274,25 @@ fun NowPlayingCard(track: Track?, fraction: Float, vm: ScrobblingViewModel) {
 }
 
 @Composable
-private fun TrackList(vm: ScrobblingViewModel, state: LazyListState) {
-    val refreshValue = vm.refreshing.observeAsState(false).value
-    val refreshing = rememberSwipeRefreshState(isRefreshing = refreshValue)
-    SwipeRefresh(state = refreshing, onRefresh = { vm.updateScrobbles() }) {
-        Column(modifier = Modifier
-            .fillMaxHeight()
-            .padding(horizontal = 4.dp) // sum up with 16dp of list padding
+private fun TrackList(
+    isRefreshing: Boolean,
+    state: LazyListState,
+    tracks: List<Track>?,
+    onRefresh: () -> Unit
+) {
+    if (tracks == null) return
+    val refreshing = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+    SwipeRefresh(state = refreshing, onRefresh = { onRefresh() }) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(horizontal = 4.dp) // sum up with 16dp of list padding
         ) {
             val list =
-                if (vm.recentScrobbles.value!!.firstOrNull()?.attributes?.nowPlaying == "true") {
-                    vm.recentScrobbles.value!!.drop(1)
+                if (tracks.firstOrNull()?.attributes?.nowPlaying == "true") {
+                    tracks.drop(1)
                 } else {
-                    vm.recentScrobbles.value!!
+                    tracks
                 }
 
             LazyColumn(state = state) {

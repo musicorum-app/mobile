@@ -22,9 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -104,9 +104,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 BadgedBox(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .clickable {
-                            nav?.navigate(Routes.settings)
-                        }
+                        .clickable { nav?.navigate(Routes.settings) }
                         .padding(12.dp),
                     badge = {
                         if (state.showSettingsBade) Badge(containerColor = MostlyRed)
@@ -122,7 +120,6 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 RewindCard(description = state.rewindCardMessage) {
                     vm.launchRewind()
                 }
-
             }
 
             if (state.user != null && state.userPalette != null) {
@@ -154,7 +151,7 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
                 ) {
                     Row {
                         Icon(
-                            Icons.Rounded.CloudOff,
+                            Icons.Rounded.WifiOff,
                             contentDescription = null,
                             modifier = Modifier
                                 .align(CenterVertically)
