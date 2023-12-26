@@ -1,4 +1,4 @@
-package io.musicorum.mobile.viewmodels
+package io.musicorum.mobile.views.collage
 
 import android.Manifest
 import android.app.Application
@@ -13,7 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.R
 import io.musicorum.mobile.ktor.endpoints.musicorum.generator.Generator
@@ -21,52 +21,96 @@ import io.musicorum.mobile.models.FetchPeriod
 import io.musicorum.mobile.models.MusicorumTheme
 import io.musicorum.mobile.models.ResourceEntity
 import io.musicorum.mobile.repositories.LocalUserRepository
+import io.musicorum.mobile.utils.PeriodResolver
 import io.sentry.Sentry
 import io.sentry.SpanStatus
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import java.net.URL
 import java.util.Locale
+import javax.inject.Inject
 
-class CollageViewModel(application: Application) : AndroidViewModel(application) {
-    val imageUrl: MutableLiveData<String> = MutableLiveData()
-    val ready = MutableLiveData(false)
-    val isGenerating = MutableLiveData(false)
-    val errorMessage = MutableLiveData("")
-    val ctx = application as Context
+class CollageViewModel @Inject constructor(
+    application: Application,
+    savedStateHandle: SavedStateHandle
+) : AndroidViewModel(application) {
+    val state = MutableStateFlow(CollageState())
+    val ctx = application
 
-    val selectedTheme = MutableLiveData(MusicorumTheme.GRID)
-    val selectedPeriod = MutableLiveData(FetchPeriod.WEEK)
-    val selectedEntity = MutableLiveData(ResourceEntity.Album)
-    val hideUsername = MutableLiveData(false)
-    val storyMode = MutableLiveData(true)
-    val gridRowCount = MutableLiveData(6)
-    val gridColCount = MutableLiveData(6)
-    val duotonePalette = MutableLiveData("Purplish")
+    fun updateDuotonePalette(newPalette: String) {
+        state.update {
+            it.copy(duotonePalette = newPalette)
+        }
+    }
+
+    fun updatePeriod(period: FetchPeriod) {
+        state.update {
+            it.copy(selectedPeriod = period)
+        }
+    }
+
+    fun updateTheme(theme: MusicorumTheme) {
+        state.update {
+            it.copy(selectedTheme = theme)
+        }
+    }
+
+    fun updateColCount(count: Int) {
+        state.update {
+            it.copy(gridColCount = count)
+        }
+    }
+
+    fun updateRowCount(count: Int) {
+        state.update {
+            it.copy(gridRowCount = count)
+        }
+    }
+
+    fun updateStoryMode(value: Boolean) {
+        state.update {
+            it.copy(storyMode = value)
+        }
+    }
+
+    fun updateHideUsername(value: Boolean) {
+        state.update {
+            it.copy(hideUsername = value)
+        }
+    }
+
+    fun updateSelectedEntity(entity: ResourceEntity) {
+        state.update {
+            it.copy(selectedEntity = entity)
+        }
+    }
 
     fun generateGrid(
         showNames: Boolean
     ) {
         val transaction = Sentry.startTransaction("generate", "task")
-        transaction.setTag("entity", selectedEntity.value!!.entityName)
+        transaction.setTag("entity", state.value.selectedEntity.entityName)
         transaction.setTag("collageType", "grid")
-        ready.value = false
-        isGenerating.value = true
+        state.update {
+            it.copy(ready = false, isGenerating = true)
+        }
         viewModelScope.launch {
             val localUser = LocalUserRepository(ctx).getUser()
             val url =
                 Generator.generateGrid(
                     localUser.username,
-                    gridRowCount.value!!,
-                    gridColCount.value!!,
-                    selectedEntity.value!!.entityName,
-                    selectedPeriod.value!!.value.uppercase(Locale.ROOT),
+                    state.value.gridRowCount,
+                    state.value.gridColCount,
+                    state.value.selectedEntity.entityName,
+                    state.value.selectedPeriod.value.uppercase(Locale.ROOT),
                     showNames
                 )
-            imageUrl.value = url
-            ready.value = true
-            isGenerating.value = false
+            state.update {
+                it.copy(imageUrl = url, ready = true, isGenerating = false)
+            }
             if (url == null) {
                 transaction.status = SpanStatus.INTERNAL_ERROR
             } else {
@@ -78,34 +122,40 @@ class CollageViewModel(application: Application) : AndroidViewModel(application)
 
     fun generateDuotone() {
         val transaction = Sentry.startTransaction("generate", "task")
-        transaction.setTag("entity", selectedEntity.value?.entityName ?: "????")
+        transaction.setTag("entity", state.value.selectedEntity.entityName)
         transaction.setTag("collageType", "duotone")
-        ready.value = false
-        isGenerating.value = true
+        state.update {
+            it.copy(ready = false, isGenerating = true)
+        }
         viewModelScope.launch {
             val localUser = LocalUserRepository(ctx).getUser()
             try {
                 val res = Generator.generateDuotone(
                     localUser.username,
-                    selectedEntity.value!!.entityName,
-                    selectedPeriod.value!!.value,
-                    duotonePalette.value!!,
-                    storyMode.value!!,
-                    hideUsername.value!!
+                    state.value.selectedEntity.entityName,
+                    state.value.selectedPeriod.value,
+                    state.value.duotonePalette,
+                    state.value.storyMode,
+                    state.value.hideUsername
                 )
-                imageUrl.value = res
+                state.update {
+                    it.copy(imageUrl = res)
+                }
             } catch (e: Exception) {
-                errorMessage.value = e.message
+                state.update {
+                    it.copy(errorMessage = e.message)
+                }
             } finally {
-                ready.value = true
-                isGenerating.value = false
+                state.update {
+                    it.copy(ready = true, isGenerating = false)
+                }
             }
         }
     }
 
     fun downloadFile(): Boolean {
         val manager = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val uri = imageUrl.value ?: return false
+        val uri = state.value.imageUrl ?: return false
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             if (ContextCompat.checkSelfPermission(
@@ -131,7 +181,7 @@ class CollageViewModel(application: Application) : AndroidViewModel(application)
 
     fun shareFile() {
         Toast.makeText(ctx, ctx.getString(R.string.sharing_item), Toast.LENGTH_SHORT).show()
-        val uri = imageUrl.value ?: return
+        val uri = state.value.imageUrl ?: return
         val tmpFile = File.createTempFile("chart", ".webp", ctx.cacheDir)
         viewModelScope.launch(context = Dispatchers.IO) {
             val stream = URL(uri).openStream()
@@ -144,11 +194,11 @@ class CollageViewModel(application: Application) : AndroidViewModel(application)
                 action = Intent.ACTION_SEND
                 setDataAndType(imageUri, "image/jpeg")
                 putExtra(Intent.EXTRA_STREAM, imageUri)
-                val text = if (selectedTheme.value == MusicorumTheme.GRID) {
+                val text = if (state.value.selectedTheme == MusicorumTheme.GRID) {
                     ctx.getString(
                         R.string.grid_collage_sheet_text,
-                        gridRowCount.value!!,
-                        gridColCount.value!!
+                        state.value.gridRowCount,
+                        state.value.gridColCount
                     )
                 } else {
                     ctx.getString(R.string.duotone_collage_sheet_text)
@@ -166,5 +216,10 @@ class CollageViewModel(application: Application) : AndroidViewModel(application)
     }
 
     init {
+        savedStateHandle.get<String>("period")?.let { period ->
+            state.update {
+                it.copy(selectedPeriod = PeriodResolver.resolve(period))
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
-package io.musicorum.mobile.views
+package io.musicorum.mobile.views.collage
 
 import android.Manifest
-import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -46,8 +45,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -77,20 +76,17 @@ import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.LighterGray
 import io.musicorum.mobile.ui.theme.MostlyRed
-import io.musicorum.mobile.utils.PeriodResolver
-import io.musicorum.mobile.viewmodels.CollageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
+fun Collage(viewModel: CollageViewModel = viewModel()) {
+    val state by viewModel.state.collectAsState()
     val scrollbarBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val themeDropdown = remember { mutableStateOf(false) }
     val typeDropdown = remember { mutableStateOf(false) }
     val periodDropdown = remember { mutableStateOf(false) }
-    val generatedImageUrl = viewModel.imageUrl.observeAsState().value
-    val ready = viewModel.ready.observeAsState().value!!
-    val isGenerating = viewModel.isGenerating.observeAsState().value!!
     val nav = LocalNavigation.current
+
     val permLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -114,19 +110,10 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
             "Overall" to FetchPeriod.OVERALL
         )
 
-    val selectedTheme by viewModel.selectedTheme.observeAsState(MusicorumTheme.GRID)
-    args.getString("period")?.let {
-        viewModel.selectedPeriod.value = PeriodResolver.resolve(it)
-    }
     val showNames = remember { mutableStateOf(true) }
-
-    val rowCount by viewModel.gridRowCount.observeAsState(6)
-    val colCount by viewModel.gridColCount.observeAsState(6)
-
-    val rowError = rowCount !in 3..10
-    val colError = colCount !in 3..10
-
-    val generateEnabled = if (isGenerating) {
+    val rowError = state.gridRowCount !in 3..10
+    val colError = state.gridColCount !in 3..10
+    val generateEnabled = if (state.isGenerating) {
         false
     } else if (rowError) false else !colError
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -156,31 +143,31 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                 options = themeOptions,
                 fieldLabel = stringResource(R.string.theme)
             ) {
-                viewModel.selectedTheme.value = it as MusicorumTheme
+                viewModel.updateTheme(it as MusicorumTheme)
             }
             DropdownMenu(
                 openState = typeDropdown,
                 options = entityOptions,
                 fieldLabel = stringResource(R.string.type)
             ) {
-                viewModel.selectedEntity.value = it as ResourceEntity
+                viewModel.updateSelectedEntity(it as ResourceEntity)
             }
             DropdownMenu(
                 openState = periodDropdown,
                 options = periodOptions,
                 fieldLabel = stringResource(R.string.period)
             ) {
-                viewModel.selectedPeriod.value = it as FetchPeriod
+                viewModel.updatePeriod(it as FetchPeriod)
             }
 
             /* ROWS AND COLS */
-            AnimatedVisibility(visible = selectedTheme == MusicorumTheme.GRID) {
+            AnimatedVisibility(visible = state.selectedTheme == MusicorumTheme.GRID) {
                 Column {
                     Row {
                         OutlinedTextField(
-                            value = rowCount.toString(),
+                            value = state.gridRowCount.toString(),
                             onValueChange = {
-                                viewModel.gridRowCount.value = it.toIntOrNull() ?: 6
+                                viewModel.updateRowCount(it.toIntOrNull() ?: 6)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             label = { Text(text = stringResource(R.string.rows)) },
@@ -191,9 +178,9 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         OutlinedTextField(
-                            value = colCount.toString(),
+                            value = state.gridColCount.toString(),
                             onValueChange = {
-                                viewModel.gridColCount.value = it.toIntOrNull() ?: 6
+                                viewModel.updateColCount(it.toIntOrNull() ?: 6)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             label = { Text(text = stringResource(R.string.columns)) },
@@ -223,7 +210,7 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                 }
             }
 
-            AnimatedVisibility(visible = selectedTheme == MusicorumTheme.DUOTONE) {
+            AnimatedVisibility(visible = state.selectedTheme == MusicorumTheme.DUOTONE) {
                 val duotoneThemeState = remember {
                     mutableStateOf(false)
                 }
@@ -275,20 +262,19 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                             }
                         }
                     ) {
-                        viewModel.duotonePalette.value = it as String
+                        viewModel.updateDuotonePalette(it as String)
                     }
-                    val storyModeState by viewModel.storyMode.observeAsState(true)
-                    val hideUsername by viewModel.hideUsername.observeAsState(false)
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(checked = storyModeState, onCheckedChange = {
-                            viewModel.storyMode.value = it
+                        Switch(checked = state.storyMode, onCheckedChange = {
+                            viewModel.updateStoryMode(it)
                         })
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(stringResource(R.string.story_format))
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(checked = hideUsername, onCheckedChange = {
-                            viewModel.hideUsername.value = it
+                        Switch(checked = state.hideUsername, onCheckedChange = {
+                            viewModel.updateHideUsername(it)
                         })
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(stringResource(R.string.hide_username))
@@ -302,7 +288,7 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
             Button(
                 onClick = {
                     keyboardController?.hide()
-                    if (selectedTheme == MusicorumTheme.GRID) {
+                    if (state.selectedTheme == MusicorumTheme.GRID) {
                         viewModel.generateGrid(showNames.value)
                     } else {
                         viewModel.generateDuotone()
@@ -312,7 +298,7 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                 enabled = generateEnabled,
                 colors = buttonColors
             ) {
-                if (isGenerating) {
+                if (state.isGenerating) {
                     CircularProgressIndicator(modifier = Modifier.size(25.dp), strokeWidth = 3.dp)
                 } else {
                     Text(text = stringResource(R.string.generate), textAlign = TextAlign.Center)
@@ -320,11 +306,11 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
             }
 
             /* DISPLAY IMAGE */
-            AnimatedVisibility(visible = ready && viewModel.imageUrl.value != null) {
+            AnimatedVisibility(visible = state.ready && state.imageUrl != null) {
                 val ctx = LocalContext.current
                 val imageModel = ImageRequest.Builder(ctx)
                     .crossfade(true)
-                    .data(generatedImageUrl)
+                    .data(state.imageUrl)
                     .build()
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -370,12 +356,11 @@ fun Collage(viewModel: CollageViewModel = viewModel(), args: Bundle) {
                 }
             }
 
-            AnimatedVisibility(visible = ready && viewModel.imageUrl.value == null) {
-                val errorMessage by viewModel.errorMessage.observeAsState("")
+            AnimatedVisibility(visible = state.ready && state.imageUrl == null) {
                 Text(
                     text = stringResource(
                         R.string.generator_error,
-                        errorMessage
+                        state.errorMessage ?: ""
                     )
                 )
             }

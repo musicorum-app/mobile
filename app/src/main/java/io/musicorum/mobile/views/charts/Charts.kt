@@ -7,9 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -27,9 +29,11 @@ import androidx.compose.material.icons.outlined.Album
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,7 +84,6 @@ import io.musicorum.mobile.utils.Placeholders
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import io.musicorum.mobile.utils.getDarkenGradient
-import io.musicorum.mobile.viewmodels.ChartsViewModel
 
 @Composable
 fun Charts() {
@@ -93,6 +96,7 @@ fun Charts() {
     val showBottomSheet = remember { mutableStateOf(false) }
     val busy by model.busy.observeAsState()
     val nav = LocalNavigation.current
+    val offline by model.offline.observeAsState(false)
 
     if (showBottomSheet.value) {
         PeriodBottomSheet(state = showBottomSheet) {
@@ -109,12 +113,36 @@ fun Charts() {
                     .navigationBarsPadding()
                     .fillMaxHeight(.94f)
                     .verticalScroll(rememberScrollState())
+                    .height(IntrinsicSize.Max)
             ) {
                 Text(
                     text = "Charts",
                     style = Typography.displaySmall,
                     modifier = Modifier.padding(20.dp)
                 )
+
+                if (offline) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.align(Alignment.Center)) {
+                            Icon(
+                                Icons.Rounded.WifiOff,
+                                contentDescription = null,
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                                tint = ContentSecondary
+                            )
+                            Text(
+                                text = "Go online to see your charts",
+                                style = Typography.bodyMedium,
+                                color = ContentSecondary,
+                                modifier = Modifier.padding(start = 20.dp, top = 10.dp)
+                            )
+                            OutlinedButton(onClick = { model.fetchAll() }) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                    return@Scaffold
+                }
 
                 Box(modifier = Modifier.padding(15.dp)) {
                     Box(

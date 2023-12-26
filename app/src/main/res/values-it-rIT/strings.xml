@@ -128,8 +128,27 @@
     <string name="generator_error">Sì è verificato un errore durante la creazione della tua immagine.\n%1$s</string>
     <string name="sharing_item">Condivisione elemento…</string>
     <string name="starting_download">Avvio download…</string>
+    <string name="report_crash">Segnala cosa è successo quando l\'app è crashata</string>
+    <string name="pending_scrobbles">Scrobble in sospeso</string>
+    <string name="last_sync_status">Status ultima sincronizzazione: %1$s</string>
+    <string name="pending_scrobbles_empty">Non hai scrobble in sospeso</string>
+    <string name="scrobble_settings">Impostazioni Scrobble</string>
+    <string name="search_on_last_fm">Cerca su Last.fm…</string>
+    <string name="no_results">Nessun risultato</string>
+    <string name="discover">Scopri</string>
+    <string name="now_playing">IN RIPRODUZIONE</string>
+    <string name="scrobbling_since">Scrobbling dal %1$s</string>
+    <string name="similar_to">Simile a %1$s</string>
+    <string name="album_tracks">Tracce dell\'album</string>
+    <string name="failed_to_fetch_album">Impossibile recuperare l\'album</string>
+    <string name="something_went_wrong">Qualcosa è andato storto</string>
+    <string name="scrobbling_from">Scrobbling from %1$s</string>
     <plurals name="scrobble_apps">
         <item quantity="one">Abilitato • %1$d app</item>
         <item quantity="other">Abilitato • %1$d app</item>
+    </plurals>
+    <plurals name="search_result_quantity">
+        <item quantity="one">%1$d risultato</item>
+        <item quantity="other">%1$d results</item>
     </plurals>
 </resources>

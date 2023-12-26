@@ -36,7 +36,7 @@ fun BottomNavBar(nav: NavHostController) {
         Icons.Rounded.Person
     )
     val navItemColors = NavigationBarItemDefaults.colors(
-        indicatorColor = MostlyRed.copy(alpha = 0.5f),
+        indicatorColor = MostlyRed,
         selectedIconColor = Color.White,
         selectedTextColor = Color.White
     )
@@ -49,7 +49,7 @@ fun BottomNavBar(nav: NavHostController) {
             items.forEachIndexed { index, s ->
                 NavigationBarItem(
                     selected = currentDestination?.hierarchy?.any { it.route?.lowercase() == s.lowercase() } == true,
-                    label = { Text(text = s) },
+                    label = { Text(text = s, maxLines = 1) },
                     onClick = {
                         nav.navigate(s.lowercase(Locale.ROOT))
                         {
