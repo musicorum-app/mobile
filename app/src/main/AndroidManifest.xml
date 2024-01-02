@@ -36,7 +36,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:testOnly="false"
-        android:theme="@style/Theme.Musicorum"
+        android:theme="@style/Theme.Musicorum.Starting"
         tools:targetApi="31">
 
         <meta-data
@@ -102,7 +102,6 @@
             android:exported="true"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Musicorum.SplashScreenTheme"
             android:windowSoftInputMode="adjustResize">
 
             <intent-filter>
