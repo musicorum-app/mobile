@@ -2,28 +2,25 @@ package io.musicorum.mobile.components
 
 import android.app.SearchManager
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Album
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,11 +40,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.drawable.toBitmap
 import coil.compose.AsyncImage
 import io.musicorum.mobile.LocalNavigation
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
@@ -68,7 +63,7 @@ import kotlinx.serialization.json.Json
 fun TrackSheet(
     track: Track,
     show: MutableState<Boolean>,
-    additionalSheetItems: (@Composable () -> Unit)? = null
+    additionalSheetItems: (@Composable (ColumnScope.() -> Unit))? = null
 ) {
     val coroutine = rememberCoroutineScope()
     val trackLoved = rememberSaveable { mutableStateOf(track.loved) }
@@ -78,17 +73,19 @@ fun TrackSheet(
         containerColor = LighterGray
     )
     val sheetState = rememberModalBottomSheetState()
-    val spotifyIntent = ctx.packageManager.getLaunchIntentForPackage("com.spotify.music")
-        ?.setAction(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH)
-        ?.putExtra(SearchManager.QUERY, "${track.artist.name} ${track.name}")
+    val playIntent = Intent(MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH).apply {
+        putExtra(MediaStore.EXTRA_MEDIA_FOCUS, "vnd.android.cursor.item/audio")
+        putExtra(MediaStore.EXTRA_MEDIA_TITLE, track.name)
+        putExtra(MediaStore.EXTRA_MEDIA_ARTIST, track.artist.name)
+        putExtra(SearchManager.QUERY, track.name)
+    }
 
     ModalBottomSheet(
         onDismissRequest = { show.value = false },
         containerColor = LighterGray,
         sheetState = sheetState,
-
-        ) {
-
+        modifier = Modifier.safeDrawingPadding()
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -184,30 +181,16 @@ fun TrackSheet(
             leadingContent = { Icon(Icons.Rounded.Album, null) }
         )
 
-        val spotify = try {
-            ctx.packageManager.getApplicationIcon("com.spotify.music")
-                .toBitmap()
-                .asImageBitmap()
-        } catch (_: PackageManager.NameNotFoundException) {
-            null
-        }
-
-        spotify?.let {
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { ctx.startActivity(spotifyIntent) },
-                headlineContent = { Text(text = "Play on Spotify") },
+                    .clickable { ctx.startActivity(playIntent) },
+                headlineContent = { Text(text = "Play") },
                 leadingContent = {
-                    Image(
-                        bitmap = it,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = null)
                 },
                 colors = listColors
             )
-        }
 
         ListItem(
             modifier = Modifier
@@ -228,6 +211,6 @@ fun TrackSheet(
             leadingContent = { Icon(Icons.Rounded.Share, null) },
             colors = listColors
         )
-        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        //Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
     }
 }
