@@ -19,6 +19,7 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ import io.musicorum.mobile.components.AlbumListItem
 import io.musicorum.mobile.components.ArtistListItem
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackListItem
+import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.ContentSecondary
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -67,102 +69,105 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
     val nav = LocalNavigation.current
 
 
-    Column(
-        modifier = Modifier
-            .padding(vertical = 20.dp)
-            .fillMaxSize()
-            .background(KindaBlack)
-            .verticalScroll(rememberScrollState())
-    ) {
-        Text(
-            stringResource(R.string.discover),
-            style = Typography.displaySmall,
-            modifier = Modifier.padding(start = 20.dp)
-        )
-
-        DockedSearchBar(
-            query = query,
-            onQueryChange = { viewModel.updateQuery(it) },
-            onSearch = {
-                viewModel.search()
-                presentResults.value = true
-            },
-            active = false,
-            onActiveChange = {},
-            colors = searchBarColors,
+    Scaffold(bottomBar = { BottomNavBar() }) { pv ->
+        Column(
             modifier = Modifier
-                .padding(top = 10.dp)
-                .align(CenterHorizontally),
-            placeholder = { Text(stringResource(R.string.search_on_last_fm)) },
-            leadingIcon = { Icon(Icons.Rounded.Search, null) }
-        ) {}
-
-        if (!presentResults.value) return
-
-        if (busy) {
-            CenteredLoadingSpinner()
-            return
-        }
-
-        Header(
-            title = stringResource(R.string.tracks),
-            results = tracks.size,
-            icon = Icons.Rounded.Audiotrack
-        )
-
-        if (tracks.isNotEmpty()) {
-            tracks.take(4).forEach {
-                TrackListItem(track = it)
-            }
-        }
-
-        Header(
-            title = stringResource(id = R.string.albums),
-            results = albums.size,
-            icon = Icons.Outlined.Album
-        )
-        if (albums.isNotEmpty()) {
-            albums.take(4).forEach {
-                AlbumListItem(it)
-            }
-        }
-
-        Header(
-            title = stringResource(id = R.string.artists),
-            results = artists.size,
-            icon = Icons.Rounded.Star
-        )
-        if (artists.isNotEmpty()) {
-            artists.take(4).forEach {
-                ArtistListItem(artist = it)
-            }
-        }
-
-        Header(
-            title = "Users",
-            results = users.size,
-            icon = Icons.Rounded.Person
-        )
-        if (users.isNotEmpty()) {
-            val model = defaultImageRequestBuilder(
-                url = users.first().user.bestImageUrl,
-                PlaceholderType.USER
+                .padding(vertical = 20.dp)
+                .padding(pv)
+                .fillMaxSize()
+                .background(KindaBlack)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                stringResource(R.string.discover),
+                style = Typography.displaySmall,
+                modifier = Modifier.padding(start = 20.dp)
             )
-            ListItem(
-                headlineContent = { Text(users.first().user.name) },
-                leadingContent = {
-                    AsyncImage(
-                        model = model,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                    )
+
+            DockedSearchBar(
+                query = query,
+                onQueryChange = { viewModel.updateQuery(it) },
+                onSearch = {
+                    viewModel.search()
+                    presentResults.value = true
                 },
-                modifier = Modifier.clickable {
-                    nav?.navigate(Routes.user(users.first().user.name))
-                }
+                active = false,
+                onActiveChange = {},
+                colors = searchBarColors,
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .align(CenterHorizontally),
+                placeholder = { Text(stringResource(R.string.search_on_last_fm)) },
+                leadingIcon = { Icon(Icons.Rounded.Search, null) }
+            ) {}
+
+            if (!presentResults.value) return@Column
+
+            if (busy) {
+                CenteredLoadingSpinner()
+                return@Column
+            }
+
+            Header(
+                title = stringResource(R.string.tracks),
+                results = tracks.size,
+                icon = Icons.Rounded.Audiotrack
             )
+
+            if (tracks.isNotEmpty()) {
+                tracks.take(4).forEach {
+                    TrackListItem(track = it)
+                }
+            }
+
+            Header(
+                title = stringResource(id = R.string.albums),
+                results = albums.size,
+                icon = Icons.Outlined.Album
+            )
+            if (albums.isNotEmpty()) {
+                albums.take(4).forEach {
+                    AlbumListItem(it)
+                }
+            }
+
+            Header(
+                title = stringResource(id = R.string.artists),
+                results = artists.size,
+                icon = Icons.Rounded.Star
+            )
+            if (artists.isNotEmpty()) {
+                artists.take(4).forEach {
+                    ArtistListItem(artist = it)
+                }
+            }
+
+            Header(
+                title = "Users",
+                results = users.size,
+                icon = Icons.Rounded.Person
+            )
+            if (users.isNotEmpty()) {
+                val model = defaultImageRequestBuilder(
+                    url = users.first().user.bestImageUrl,
+                    PlaceholderType.USER
+                )
+                ListItem(
+                    headlineContent = { Text(users.first().user.name) },
+                    leadingContent = {
+                        AsyncImage(
+                            model = model,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(50.dp)
+                                .clip(CircleShape)
+                        )
+                    },
+                    modifier = Modifier.clickable {
+                        nav?.navigate(Routes.user(users.first().user.name))
+                    }
+                )
+            }
         }
     }
 }

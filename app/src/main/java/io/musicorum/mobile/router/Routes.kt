@@ -41,4 +41,5 @@ object Routes {
         val entityString = entity?.entityName ?: "ARTIST"
         return "collage?period=$periodString&entity=$entityString"
     }
+    const val friends = "friends"
 }

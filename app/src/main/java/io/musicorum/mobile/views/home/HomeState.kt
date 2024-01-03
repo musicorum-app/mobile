@@ -20,5 +20,6 @@ data class HomeState(
     val rewindCardMessage: String = "",
     val showSettingsBade: Boolean = false,
     val isOffline: Boolean = false,
-    val friendsActivity: List<RecentTracks>? = null
+    val friendsActivity: List<RecentTracks>? = null,
+    val pinnedUsers: Set<String> = emptySet()
 )

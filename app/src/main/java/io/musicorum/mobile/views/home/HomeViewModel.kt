@@ -5,6 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.material3.SnackbarHostState
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.ktx.crashlytics
@@ -13,6 +15,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.musicorum.mobile.database.CachedScrobblesDb
 import io.musicorum.mobile.database.PendingScrobblesDb
+import io.musicorum.mobile.datastore.UserData
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
 import io.musicorum.mobile.ktor.endpoints.musicorum.MusicorumTrackEndpoint
 import io.musicorum.mobile.models.CachedScrobble
@@ -24,15 +27,18 @@ import io.musicorum.mobile.repositories.ScrobbleRepository
 import io.musicorum.mobile.serialization.Image
 import io.musicorum.mobile.serialization.RecentTracks
 import io.musicorum.mobile.serialization.entities.Track
+import io.musicorum.mobile.userData
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
 import java.time.Instant
 import javax.inject.Inject
+import io.musicorum.mobile.serialization.UserData as LastFmUser
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -44,7 +50,7 @@ class HomeViewModel @Inject constructor(
     val ctx = application as Context
     private val remoteConfig = FirebaseRemoteConfig.getInstance()
     val state = MutableStateFlow(HomeState())
-
+    val snackbarHostState = SnackbarHostState()
 
     fun refresh() {
         state.update {
@@ -65,70 +71,91 @@ class HomeViewModel @Inject constructor(
         ctx.startActivity(intent)
     }
 
-    private fun fetchRecentTracks(username: String, from: String?) {
+    fun unpinUser(username: String?) {
         viewModelScope.launch {
-            val cachedDao = CachedScrobblesDb.getDatabase(ctx).cachedScrobblesDao()
-            val cacheRepository = CachedScrobblesRepository(cachedDao)
-            val res = kotlin.runCatching {
-                val res = UserEndpoint.getRecentTracks(username, from, 15, true)
-                state.update { state ->
-                    state.copy(isOffline = false)
-                }
-                if (res != null) {
-                    val musRes = MusicorumTrackEndpoint.fetchTracks(res.recentTracks.tracks)
-                    res.recentTracks.tracks.onEachIndexed { index, track ->
-                        track.bestImageUrl =
-                            musRes.getOrNull(index)?.bestResource?.bestImageUrl
-                                ?: return@onEachIndexed
-                    }
-                    scrobbleRepository.recentScrobbles.value = res
-                    state.update {
-                        it.copy(
-                            recentTracks = scrobbleRepository.recentScrobbles.value?.recentTracks?.tracks,
-                            weeklyScrobbles =
-                            res.recentTracks.recentTracksAttributes.total.toInt(),
-                            isRefreshing = false
-                        )
-                    }
-                    cacheRepository.deleteAll()
-                    state.value.recentTracks?.take(10)?.forEach {
-                        cacheRepository.insert(
-                            CachedScrobble(
-                                trackName = it.name,
-                                artistName = it.artist.name,
-                                scrobbleDate = it.date?.uts?.toLong() ?: 0,
-                                imageUrl = it.bestImageUrl,
-                                isTopTrack = false
-                            )
-                        )
-                    }
-                }
+            val pinned = ctx.userData.data.map {
+                it[UserData.PINNED_USERS] ?: emptySet()
+            }.first()
+            val newSet = pinned.toMutableSet()
+            newSet.remove(username)
+            ctx.userData.edit {
+                it[UserData.PINNED_USERS] = newSet.toSet()
             }
-            if (res.exceptionOrNull() is UnknownHostException) {
-                val pendingDao = PendingScrobblesDb.getDatabase(ctx).pendingScrobblesDao()
-                val pendingRepo = PendingScrobblesRepository(pendingDao)
-                val pendingScrobbles = pendingRepo.getAllScrobblesStream().first()
-                state.update {
-                    it.copy(isOffline = true)
-                }
-                val list = mutableListOf<Track>()
+            val currentPinned = state.value.pinnedUsers.toMutableSet()
+            currentPinned.remove(username)
+            state.update {
+                it.copy(pinnedUsers = currentPinned.toSet())
+            }
+            snackbarHostState.showSnackbar("$username unpinned")
+        }
+    }
 
-                for (s in pendingScrobbles) {
-                    list.add(s.toTrack())
-                }
-
-                if (pendingScrobbles.isNotEmpty()) {
-                    state.update {
-                        it.copy(hasPendingScrobbles = true)
+    private fun fetchRecentTracks(username: String, from: String?) {
+        runCatching {
+            viewModelScope.launch {
+                val cachedDao = CachedScrobblesDb.getDatabase(ctx).cachedScrobblesDao()
+                val cacheRepository = CachedScrobblesRepository(cachedDao)
+                val res = kotlin.runCatching {
+                    val res = UserEndpoint.getRecentTracks(username, from, 15, true)
+                    state.update { state ->
+                        state.copy(isOffline = false)
+                    }
+                    if (res != null) {
+                        val musRes = MusicorumTrackEndpoint.fetchTracks(res.recentTracks.tracks)
+                        res.recentTracks.tracks.onEachIndexed { index, track ->
+                            track.bestImageUrl =
+                                musRes.getOrNull(index)?.bestResource?.bestImageUrl
+                                    ?: return@onEachIndexed
+                        }
+                        scrobbleRepository.recentScrobbles.value = res
+                        state.update {
+                            it.copy(
+                                recentTracks = scrobbleRepository.recentScrobbles.value?.recentTracks?.tracks,
+                                weeklyScrobbles =
+                                res.recentTracks.recentTracksAttributes.total.toInt(),
+                                isRefreshing = false
+                            )
+                        }
+                        cacheRepository.deleteAll()
+                        state.value.recentTracks?.take(10)?.forEach {
+                            cacheRepository.insert(
+                                CachedScrobble(
+                                    trackName = it.name,
+                                    artistName = it.artist.name,
+                                    scrobbleDate = it.date?.uts?.toLong() ?: 0,
+                                    imageUrl = it.bestImageUrl,
+                                    isTopTrack = false
+                                )
+                            )
+                        }
                     }
                 }
-                val cache = cacheRepository.getAllFromCache().first()
-                cache.forEach {
-                    list.add(it.toTrack())
-                }
-                list.sortByDescending { it.date?.uts }
-                state.update {
-                    it.copy(recentTracks = list, weeklyScrobbles = 0, isRefreshing = false)
+                if (res.exceptionOrNull() is UnknownHostException) {
+                    val pendingDao = PendingScrobblesDb.getDatabase(ctx).pendingScrobblesDao()
+                    val pendingRepo = PendingScrobblesRepository(pendingDao)
+                    val pendingScrobbles = pendingRepo.getAllScrobblesStream().first()
+                    state.update {
+                        it.copy(isOffline = true)
+                    }
+                    val list = mutableListOf<Track>()
+
+                    for (s in pendingScrobbles) {
+                        list.add(s.toTrack())
+                    }
+
+                    if (pendingScrobbles.isNotEmpty()) {
+                        state.update {
+                            it.copy(hasPendingScrobbles = true)
+                        }
+                    }
+                    val cache = cacheRepository.getAllFromCache().first()
+                    cache.forEach {
+                        list.add(it.toTrack())
+                    }
+                    list.sortByDescending { it.date?.uts }
+                    state.update {
+                        it.copy(recentTracks = list, weeklyScrobbles = 0, isRefreshing = false)
+                    }
                 }
             }
         }
@@ -147,65 +174,80 @@ class HomeViewModel @Inject constructor(
     private fun fetchTopTracks(username: String) {
         val cachedDao = CachedScrobblesDb.getDatabase(ctx).cachedScrobblesDao()
         val cachedRepo = CachedScrobblesRepository(cachedDao)
-        viewModelScope.launch {
-            val res = kotlin.runCatching {
-                val topTracksRes = UserEndpoint.getTopTracks(username, FetchPeriod.WEEK, 10)
-                if (topTracksRes == null) {
-                    state.update {
-                        it.copy(hasError = true)
+        runCatching {
+            viewModelScope.launch {
+                val res = kotlin.runCatching {
+                    val topTracksRes = UserEndpoint.getTopTracks(username, FetchPeriod.WEEK, 10)
+                    if (topTracksRes == null) {
+                        state.update {
+                            it.copy(hasError = true)
+                        }
+                        return@launch
                     }
-                    return@launch
-                }
-                val musicorumTrRes =
-                    MusicorumTrackEndpoint.fetchTracks(topTracksRes.topTracks.tracks)
-                musicorumTrRes.forEachIndexed { i, track ->
-                    val url = track?.resources?.getOrNull(0)?.bestImageUrl
-                    topTracksRes.topTracks.tracks[i].images = listOf(Image("unknown", url ?: ""))
-                    topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
-                }
-                state.update {
-                    it.copy(weekTracks = topTracksRes.topTracks.tracks)
-                }
-                for (t in topTracksRes.topTracks.tracks) {
-                    cachedRepo.insert(
-                        CachedScrobble(
-                            isTopTrack = true,
-                            scrobbleDate = t.date?.uts?.toLong() ?: 0,
-                            imageUrl = t.bestImageUrl,
-                            artistName = t.artist.name,
-                            trackName = t.name
+                    val musicorumTrRes =
+                        MusicorumTrackEndpoint.fetchTracks(topTracksRes.topTracks.tracks)
+                    musicorumTrRes.forEachIndexed { i, track ->
+                        val url = track?.resources?.getOrNull(0)?.bestImageUrl
+                        topTracksRes.topTracks.tracks[i].images =
+                            listOf(Image("unknown", url ?: ""))
+                        topTracksRes.topTracks.tracks[i].bestImageUrl = url ?: ""
+                    }
+                    state.update {
+                        it.copy(weekTracks = topTracksRes.topTracks.tracks)
+                    }
+                    for (t in topTracksRes.topTracks.tracks) {
+                        cachedRepo.insert(
+                            CachedScrobble(
+                                isTopTrack = true,
+                                scrobbleDate = t.date?.uts?.toLong() ?: 0,
+                                imageUrl = t.bestImageUrl,
+                                artistName = t.artist.name,
+                                trackName = t.name
+                            )
                         )
-                    )
+                    }
                 }
-            }
 
-            if (res.exceptionOrNull() is UnknownHostException) {
-                val topTracks = cachedRepo.getAllTopsFromCache().first()
-                val list = mutableListOf<Track>()
-                for (t in topTracks) {
-                    list.add(t.toTrack())
-                }
-                state.update {
-                    it.copy(weekTracks = list)
+                if (res.exceptionOrNull() is UnknownHostException) {
+                    val topTracks = cachedRepo.getAllTopsFromCache().first()
+                    val list = mutableListOf<Track>()
+                    for (t in topTracks) {
+                        list.add(t.toTrack())
+                    }
+                    state.update {
+                        it.copy(weekTracks = list)
+                    }
                 }
             }
         }
     }
 
-    private fun fetchFriends(username: String) {
+    fun fetchFriends(username: String) {
         viewModelScope.launch {
-            val friendsRes = UserEndpoint.getFriends(username, 3)
+            val pinnedUsers = ctx.userData.data.map {
+                it[UserData.PINNED_USERS] ?: emptySet()
+            }.first()
+            val remaining = 3 - pinnedUsers.size
+
+            val friendsRes = UserEndpoint.getFriends(username, null)
             if (friendsRes == null) {
                 state.update {
                     it.copy(hasError = true)
                 }
                 return@launch
             }
+            val friendsToFetch = mutableListOf<LastFmUser>()
+            friendsToFetch.addAll(
+                friendsRes.friends.users.filter { pinnedUsers.contains(it.name) }
+            )
+            friendsToFetch.addAll(
+                friendsRes.friends.users.take(remaining)
+            )
             state.update {
-                it.copy(friends = friendsRes.friends.users)
+                it.copy(friends = friendsToFetch)
             }
             val mutableList: MutableList<RecentTracks> = mutableListOf()
-            friendsRes.friends.users.forEach { user ->
+            friendsToFetch.forEach { user ->
                 val friendRecentAct =
                     UserEndpoint.getRecentTracks(user.name, null, 1, false)
                 friendRecentAct?.let { mutableList.add(it) }
@@ -223,6 +265,9 @@ class HomeViewModel @Inject constructor(
             state.update {
                 it.copy(user = localUser)
             }
+            val pinnedUsers = ctx.userData.data.map {
+                it[UserData.PINNED_USERS] ?: emptySet()
+            }.first()
             getPalette(localUser.imageUrl, ctx)
             fetchRecentTracks(localUser.username, fromTimestamp)
             fetchTopTracks(localUser.username)
@@ -233,7 +278,11 @@ class HomeViewModel @Inject constructor(
                 "Check out this year's Rewind!"
             }
             state.update { current ->
-                current.copy(showRewindCard = rewindEnabled, rewindCardMessage = rewindMessage)
+                current.copy(
+                    showRewindCard = rewindEnabled,
+                    rewindCardMessage = rewindMessage,
+                    pinnedUsers = pinnedUsers
+                )
             }
 
         }
