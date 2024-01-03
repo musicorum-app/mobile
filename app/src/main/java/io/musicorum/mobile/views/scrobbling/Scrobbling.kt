@@ -30,6 +30,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,6 +62,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.components.TrackListItem
+import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.ui.theme.EvenLighterGray
 import io.musicorum.mobile.ui.theme.KindaBlack
@@ -85,38 +87,40 @@ fun Scrobbling(vm: ScrobblingViewModel = hiltViewModel()) {
     val clamped = interpolated.coerceIn(0f..1f)
     val value = animateFloatAsState(if (firstItemIndex.value == 0) clamped else 0f, label = "")
 
-
-    if (viewModelState.recentScrobbles == null) {
-        CenteredLoadingSpinner()
-    } else {
-        Column(
-            modifier = Modifier
-                .background(KindaBlack)
-                .padding(top = 20.dp)
-                .fillMaxSize()
-        ) {
-            Text(
-                text = "Scrobbling",
-                style = Typography.displaySmall,
-                modifier = Modifier.padding(bottom = 20.dp, start = 20.dp)
-            )
-            Column {
-                NowPlayingCard(
-                    track = viewModelState.playingTrack,
-                    fraction = value.value,
-                    playingApp = viewModelState.scrobblingAppName,
-                    playingAppIcon = viewModelState.scrobblingAppIcon,
-                    loved = viewModelState.isTrackLoved
-                ) {
-                    vm.updateFavorite(viewModelState.playingTrack, viewModelState.isTrackLoved)
+    Scaffold(bottomBar = { BottomNavBar() }) { pv ->
+        if (viewModelState.recentScrobbles == null) {
+            CenteredLoadingSpinner()
+        } else {
+            Column(
+                modifier = Modifier
+                    .background(KindaBlack)
+                    .padding(pv)
+                    .padding(top = 20.dp)
+                    .fillMaxSize()
+            ) {
+                Text(
+                    text = "Scrobbling",
+                    style = Typography.displaySmall,
+                    modifier = Modifier.padding(bottom = 20.dp, start = 20.dp)
+                )
+                Column {
+                    NowPlayingCard(
+                        track = viewModelState.playingTrack,
+                        fraction = value.value,
+                        playingApp = viewModelState.scrobblingAppName,
+                        playingAppIcon = viewModelState.scrobblingAppIcon,
+                        loved = viewModelState.isTrackLoved
+                    ) {
+                        vm.updateFavorite(viewModelState.playingTrack, viewModelState.isTrackLoved)
+                    }
                 }
+                TrackList(
+                    isRefreshing = viewModelState.isRefreshing,
+                    state = state,
+                    onRefresh = { vm.updateScrobbles() },
+                    tracks = viewModelState.recentScrobbles
+                )
             }
-            TrackList(
-                isRefreshing = viewModelState.isRefreshing,
-                state = state,
-                onRefresh = { vm.updateScrobbles() },
-                tracks = viewModelState.recentScrobbles
-            )
         }
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -29,6 +30,8 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -62,6 +65,7 @@ import io.musicorum.mobile.components.LabelType
 import io.musicorum.mobile.components.RewindCard
 import io.musicorum.mobile.components.skeletons.GenericCardPlaceholder
 import io.musicorum.mobile.models.PartialUser
+import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.router.Route
 import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.ui.theme.ContentSecondary
@@ -80,199 +84,222 @@ fun Home(vm: HomeViewModel = hiltViewModel()) {
     val state by vm.state.collectAsState()
     val nav = LocalNavigation.current
 
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(state.isRefreshing),
-        onRefresh = { vm.refresh() }) {
-        Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .background(KindaBlack)
-                .fillMaxSize()
-                .padding(top = 20.dp, bottom = 20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = CenterVertically
+    Scaffold(
+        snackbarHost = { SnackbarHost(vm.snackbarHostState) },
+        bottomBar = { BottomNavBar() }) { pv ->
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(state.isRefreshing),
+            modifier = Modifier.padding(pv),
+            onRefresh = { vm.refresh() }) {
+            Column(
+                Modifier
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState())
+                    .background(KindaBlack)
+                    .fillMaxSize()
+                    .padding(top = 20.dp, bottom = 20.dp)
             ) {
-                Text(
-                    text = "Home",
-                    style = Typography.displaySmall,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-
-                BadgedBox(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable { nav?.navigate(Routes.settings) }
-                        .padding(12.dp),
-                    badge = {
-                        if (state.showSettingsBade) Badge(containerColor = MostlyRed)
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = CenterVertically
                 ) {
-                    //IconButton(onClick = { nav.navigate("settings") }) {
-                    Icon(Icons.Rounded.Settings, contentDescription = null)
-                    //}
-                }
-            }
+                    Text(
+                        text = "Home",
+                        style = Typography.displaySmall,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
 
-            if (state.showRewindCard) {
-                RewindCard(description = state.rewindCardMessage) {
-                    vm.launchRewind()
-                }
-            }
-
-            if (state.user != null && state.userPalette != null) {
-                UserCard(state.user!!, state.userPalette!!, state.weeklyScrobbles)
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .padding(20.dp, 20.dp, 20.dp)
-                        .clip(RoundedCornerShape(15.dp))
-                        .placeholder(
-                            true,
-                            color = LighterGray,
-                            highlight = PlaceholderHighlight.shimmer()
-                        )
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            if (state.isOffline) {
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth()
-                        .border(1.dp, EvenLighterGray, RoundedCornerShape(12.dp))
-                        .padding(16.dp)
-                ) {
-                    Row {
-                        Icon(
-                            Icons.Rounded.WifiOff,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .align(CenterVertically)
-                                .size(30.dp)
-                        )
-                        Column(modifier = Modifier.padding(start = 22.dp)) {
-                            Text(
-                                stringResource(id = R.string.youre_offline),
-                                style = Typography.titleMedium
-                            )
-                            Text(
-                                stringResource(R.string.outdated_data_notice),
-                                style = Typography.bodySmall
-                            )
+                    BadgedBox(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { nav?.navigate(Routes.settings) }
+                            .padding(12.dp),
+                        badge = {
+                            if (state.showSettingsBade) Badge(containerColor = MostlyRed)
                         }
+                    ) {
+                        //IconButton(onClick = { nav.navigate("settings") }) {
+                        Icon(Icons.Rounded.Settings, contentDescription = null)
+                        //}
                     }
                 }
-                if (state.hasPendingScrobbles) {
-                    Row(modifier = Modifier.padding(start = 20.dp, top = 10.dp)) {
-                        Icon(
-                            Icons.Rounded.Error,
-                            null,
-                            tint = ContentSecondary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            stringResource(R.string.pending_scrobbles_notice),
-                            style = Typography.labelSmall,
-                            color = ContentSecondary,
-                            modifier = Modifier
-                                .align(CenterVertically)
-                                .padding(start = 10.dp)
-                        )
+
+                if (state.showRewindCard) {
+                    RewindCard(description = state.rewindCardMessage) {
+                        vm.launchRewind()
                     }
-                    Spacer(Modifier.height(20.dp))
                 }
-            }
 
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .clickable { nav?.navigate("recentScrobbles") },
-                verticalAlignment = CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.recent_scrobbles),
-                    style = Typography.headlineSmall,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-                IconButton(onClick = { nav?.navigate("recentScrobbles") }) {
-                    Icon(Icons.Rounded.ChevronRight, contentDescription = null)
-                }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalTracksRow(
-                tracks = state.recentTracks,
-                labelType = LabelType.DATE
-            )
-
-            Spacer(Modifier.height(20.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .clickable { nav?.navigate("mostListened") },
-                verticalAlignment = CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.most_listened_week),
-                    style = Typography.headlineSmall,
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-                IconButton(onClick = { nav?.navigate("mostListened") }) {
-                    Icon(Icons.Rounded.ChevronRight, contentDescription = null)
-                }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            HorizontalTracksRow(
-                tracks = state.weekTracks,
-                labelType = LabelType.ARTIST_NAME
-            )
-
-            Spacer(Modifier.height(20.dp))
-            Text(
-                text = stringResource(R.string.friends_activity),
-                style = Typography.headlineSmall,
-                modifier = Modifier.padding(start = 20.dp)
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                modifier = Modifier
-                    .padding(start = 20.dp)
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                if (state.isOffline) {
-                    Text(text = stringResource(R.string.youre_offline))
+                if (state.user != null && state.userPalette != null) {
+                    UserCard(state.user!!, state.userPalette!!, state.weeklyScrobbles)
                 } else {
-                    if (state.friendsActivity == null && state.friends == null) {
-                        if (state.hasError == true) {
-                            Text(
-                                text = stringResource(R.string.empty_friendlist_message),
-                                softWrap = true,
-                                style = Subtitle1
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .padding(20.dp, 20.dp, 20.dp)
+                            .clip(RoundedCornerShape(15.dp))
+                            .placeholder(
+                                true,
+                                color = LighterGray,
+                                highlight = PlaceholderHighlight.shimmer()
                             )
-                        } else {
-                            GenericCardPlaceholder(visible = true)
-                            GenericCardPlaceholder(visible = true)
-                            GenericCardPlaceholder(visible = true)
+                    )
+                }
+
+                Spacer(Modifier.height(20.dp))
+
+                if (state.isOffline) {
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth()
+                            .border(1.dp, EvenLighterGray, RoundedCornerShape(12.dp))
+                            .padding(16.dp)
+                    ) {
+                        Row {
+                            Icon(
+                                Icons.Rounded.WifiOff,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(CenterVertically)
+                                    .size(30.dp)
+                            )
+                            Column(modifier = Modifier.padding(start = 22.dp)) {
+                                Text(
+                                    stringResource(id = R.string.youre_offline),
+                                    style = Typography.titleMedium
+                                )
+                                Text(
+                                    stringResource(R.string.outdated_data_notice),
+                                    style = Typography.bodySmall
+                                )
+                            }
                         }
-                    } else {
-                        state.friendsActivity?.forEachIndexed { i, rt ->
-                            FriendActivity(
-                                track = rt.recentTracks.tracks[0],
-                                friendImageUrl = state.friends?.get(i)?.bestImageUrl,
-                                friendUsername = state.friends?.get(i)?.name
+                    }
+                    if (state.hasPendingScrobbles) {
+                        Row(modifier = Modifier.padding(start = 20.dp, top = 10.dp)) {
+                            Icon(
+                                Icons.Rounded.Error,
+                                null,
+                                tint = ContentSecondary,
+                                modifier = Modifier.size(20.dp)
                             )
+                            Text(
+                                stringResource(R.string.pending_scrobbles_notice),
+                                style = Typography.labelSmall,
+                                color = ContentSecondary,
+                                modifier = Modifier
+                                    .align(CenterVertically)
+                                    .padding(start = 10.dp)
+                            )
+                        }
+                        Spacer(Modifier.height(20.dp))
+                    }
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clickable { nav?.navigate("recentScrobbles") },
+                    verticalAlignment = CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.recent_scrobbles),
+                        style = Typography.headlineSmall,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                    IconButton(onClick = { nav?.navigate("recentScrobbles") }) {
+                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalTracksRow(
+                    tracks = state.recentTracks,
+                    labelType = LabelType.DATE
+                )
+
+                Spacer(Modifier.height(20.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clickable { nav?.navigate("mostListened") },
+                    verticalAlignment = CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.most_listened_week),
+                        style = Typography.headlineSmall,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                    IconButton(onClick = { nav?.navigate(Routes.mostListened) }) {
+                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                HorizontalTracksRow(
+                    tracks = state.weekTracks,
+                    labelType = LabelType.ARTIST_NAME
+                )
+
+                Spacer(Modifier.height(20.dp))
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .clickable { nav?.navigate(Routes.friends) },
+                    verticalAlignment = CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.friends_activity),
+                        style = Typography.headlineSmall,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                    IconButton(onClick = { nav?.navigate(Routes.friends) }) {
+                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .padding(start = 20.dp)
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    if (state.isOffline) {
+                        Text(text = stringResource(R.string.youre_offline))
+                    } else {
+                        if (state.friendsActivity == null && state.friends == null) {
+                            if (state.hasError) {
+                                Text(
+                                    text = stringResource(R.string.empty_friendlist_message),
+                                    softWrap = true,
+                                    style = Subtitle1
+                                )
+                            } else {
+                                GenericCardPlaceholder(visible = true)
+                                GenericCardPlaceholder(visible = true)
+                                GenericCardPlaceholder(visible = true)
+                            }
+                        } else {
+                            state.friendsActivity?.forEachIndexed { i, rt ->
+                                FriendActivity(
+                                    isPinned = state.friends?.get(i)?.name in state.pinnedUsers,
+                                    track = rt.recentTracks.tracks[0],
+                                    friendImageUrl = state.friends?.get(i)?.bestImageUrl,
+                                    friendUsername = state.friends?.get(i)?.name,
+                                    onUnpin = {
+                                        vm.unpinUser(state.friends?.get(i)?.name)
+                                        state.user?.username?.let { vm.fetchFriends(it) }
+                                    }
+                                )
+                            }
                         }
                     }
                 }

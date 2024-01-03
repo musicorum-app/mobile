@@ -12,7 +12,7 @@
     </item>
     <item
         android:drawable="@drawable/ic_launcher_foreground"
-        android:width="512dp"
-        android:height="512dp"
+        android:width="288dp"
+        android:height="288dp"
         android:gravity="center" />
 </layer-list>

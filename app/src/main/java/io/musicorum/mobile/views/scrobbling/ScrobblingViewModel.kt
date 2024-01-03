@@ -119,7 +119,7 @@ class ScrobblingViewModel @Inject constructor(
         }
     }
 
-    private fun getMediaSessionPackage() {
+    private fun getMediaSessionPackage() = runCatching {
         val mediaService =
             ctx.getSystemService(Context.MEDIA_SESSION_SERVICE) as MediaSessionManager
         val component = ComponentName(ctx, NotificationListener::class.java)

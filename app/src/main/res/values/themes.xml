@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Musicorum.SplashScreenTheme" parent="Theme.Musicorum">
-        <item name="android:statusBarColor">@color/ic_launcher_background</item>
-        <item name="android:navigationBarColor">@color/ic_launcher_background</item>
-        <item name="android:colorBackground">@color/ic_launcher_background</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowActionBar">false</item>
-        <!--        <item name="android:windowTranslucentStatus">true</item>-->
-        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
+    <style name="Theme.Musicorum.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#111111</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_background</item>
+        <item name="postSplashScreenTheme">@style/Theme.Musicorum</item>
     </style>
 
-    <style name="Theme.Musicorum" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Musicorum" parent="Theme.AppCompat.NoActionBar" />
+
 </resources>

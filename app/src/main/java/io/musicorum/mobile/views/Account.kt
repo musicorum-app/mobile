@@ -5,7 +5,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.viewmodels.AccountVm
-import io.musicorum.mobile.views.individual.User
+import io.musicorum.mobile.views.individual.user.User
 
 @Composable
 fun Account(model: AccountVm = viewModel()) {

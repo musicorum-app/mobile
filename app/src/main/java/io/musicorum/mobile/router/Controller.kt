@@ -16,7 +16,7 @@ import io.musicorum.mobile.views.charts.Charts
 import io.musicorum.mobile.views.home.Home
 import io.musicorum.mobile.views.individual.Album
 import io.musicorum.mobile.views.individual.Track
-import io.musicorum.mobile.views.individual.User
+import io.musicorum.mobile.views.individual.user.User
 import io.musicorum.mobile.views.login.loginGraph
 import io.musicorum.mobile.views.scrobbling.Scrobbling
 

@@ -3,11 +3,25 @@ package io.musicorum.mobile.components
 import android.text.format.DateUtils
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
@@ -17,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,7 +60,9 @@ import kotlinx.serialization.json.Json
 fun FriendActivity(
     track: Track,
     friendImageUrl: String?,
-    friendUsername: String?
+    friendUsername: String?,
+    isPinned: Boolean,
+    onUnpin: (() -> Unit)? = null,
 ) {
     val analytics = LocalAnalytics.current!!
     val nav = LocalNavigation.current
@@ -78,6 +95,19 @@ fun FriendActivity(
                     }
                 }
             )
+            if (isPinned) {
+                ListItem(
+                    colors = colors,
+                    headlineContent = { Text("Unpin $friendUsername") },
+                    leadingContent = {
+                        Icon(Icons.Rounded.Close, null)
+                    },
+                    modifier = Modifier.clickable {
+                        showSheet.value = false
+                        onUnpin?.invoke()
+                    }
+                )
+            }
         }
     }
 
@@ -122,6 +152,26 @@ fun FriendActivity(
                         nav?.navigate("user/$friendUsername")
                     }
             )
+            if (isPinned) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(5.dp, (-10).dp)
+                        .size(30.dp)
+                        .clip(CircleShape)
+                        .background(color = LighterGray, shape = CircleShape)
+                        .border(3.dp, KindaBlack, CircleShape)
+                        .padding(7.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.PushPin,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .rotate((30f))
+                            .align(Alignment.Center)
+                    )
+                }
+            }
         }
         Spacer(Modifier.height(10.dp))
         Row {

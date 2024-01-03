@@ -72,6 +72,7 @@ import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.components.CenteredLoadingSpinner
 import io.musicorum.mobile.models.ResourceEntity
+import io.musicorum.mobile.router.BottomNavBar
 import io.musicorum.mobile.router.Routes
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.serialization.entities.Album
@@ -106,7 +107,9 @@ fun Charts() {
 
     val userGradient = getDarkenGradient(userColor)
 
-    Scaffold(floatingActionButton = { CollageFab() }) { paddingValues ->
+    Scaffold(
+        floatingActionButton = { CollageFab() },
+        bottomBar = { BottomNavBar() }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
             Column(
                 modifier = Modifier
