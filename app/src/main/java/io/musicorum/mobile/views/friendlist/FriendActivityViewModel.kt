@@ -15,8 +15,8 @@ class FriendActivityViewModel(application: Application) : AndroidViewModel(appli
     val state = MutableStateFlow(FriendActivityState())
     val app = application
 
-    fun fetchActivity(username: String) {
-        if (state.value.track != null) return
+    fun fetchActivity(username: String) = runCatching {
+        if (state.value.track != null) return@runCatching
         viewModelScope.launch {
             state.update {
                 it.copy(loading = true)
@@ -47,11 +47,5 @@ class FriendActivityViewModel(application: Application) : AndroidViewModel(appli
                 }
             }
         }
-    }
-
-    fun launchWebProfile(username: String) {
-        val uri = Uri.parse("https://last.fm/user/$username")
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        app.startActivity(intent)
     }
 }
