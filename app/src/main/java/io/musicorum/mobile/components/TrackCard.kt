@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,8 +60,10 @@ fun TrackCard(track: Track, labelType: LabelType) {
     val navTrack = NavigationTrack(track.name.encodeURLPathPart(), track.artist.name)
     val dest = Json.encodeToString(navTrack)
     val showTrackSheet = remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
 
     if (showTrackSheet.value) {
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         TrackSheet(track = track, show = showTrackSheet)
     }
 
