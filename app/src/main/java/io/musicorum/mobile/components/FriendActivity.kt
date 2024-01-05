@@ -32,7 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -67,6 +69,7 @@ fun FriendActivity(
     val analytics = LocalAnalytics.current!!
     val nav = LocalNavigation.current
     val showSheet = remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
 
     if (showSheet.value) {
         val colors = ListItemDefaults.colors(
@@ -130,7 +133,10 @@ fun FriendActivity(
                                 param(FirebaseAnalytics.Param.ITEM_NAME, "friend_activity_track")
                             }
                         },
-                        onLongClick = { showSheet.value = true }
+                        onLongClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showSheet.value = true
+                        }
                     )
             )
             AsyncImage(
