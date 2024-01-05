@@ -1,8 +1,6 @@
 package io.musicorum.mobile.views.friendlist
 
 import android.app.Application
-import android.content.Intent
-import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import io.musicorum.mobile.ktor.endpoints.UserEndpoint
@@ -23,7 +21,13 @@ class FriendActivityViewModel(application: Application) : AndroidViewModel(appli
             }
             val res = UserEndpoint.getRecentTracks(username, null, 1)
             res?.let {
-                val track = res.recentTracks.tracks.first()
+                val track = res.recentTracks.tracks.firstOrNull()
+                if (track == null) {
+                    state.update {
+                        it.copy(loading = false)
+                    }
+                    return@launch
+                }
                 state.update {
                     it.copy(
                         track = track,
