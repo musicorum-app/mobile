@@ -2,8 +2,11 @@ package io.musicorum.mobile.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -27,11 +30,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -67,6 +72,7 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
     )
     val busy = viewModel.busy.observeAsState(false).value
     val nav = LocalNavigation.current
+    val keyboard = LocalSoftwareKeyboardController.current
 
 
     Scaffold(bottomBar = { BottomNavBar() }) { pv ->
@@ -88,6 +94,7 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
                 query = query,
                 onQueryChange = { viewModel.updateQuery(it) },
                 onSearch = {
+                    keyboard?.hide()
                     viewModel.search()
                     presentResults.value = true
                 },
@@ -104,8 +111,15 @@ fun Discover(viewModel: DiscoverVm = viewModel()) {
             if (!presentResults.value) return@Column
 
             if (busy) {
-                CenteredLoadingSpinner()
-                return@Column
+                Box(
+                    modifier = Modifier
+                        .height(IntrinsicSize.Max)
+                        .padding(top = 0.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CenteredLoadingSpinner()
+                }
+                return@Scaffold
             }
 
             Header(
