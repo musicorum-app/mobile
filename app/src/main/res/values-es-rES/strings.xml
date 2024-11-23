@@ -3,16 +3,16 @@
     <string name="bottom_navigation_item_scrobbling">Scrobbles</string>
     <string name="bottom_navigation_item_profile">Perfil</string>
     <!-- Common -->
-    <string name="view_more">View more</string>
-    <string name="artists">Artists</string>
-    <string name="artist">Artist</string>
-    <string name="albums">Albums</string>
-    <string name="album">Album</string>
-    <string name="tracks">Tracks</string>
-    <string name="track">Track</string>
-    <string name="users">Users</string>
-    <string name="user">User</string>
-    <string name="top_tracks">Top tracks</string>
+    <string name="view_more">Ver más</string>
+    <string name="artists">Artistas</string>
+    <string name="artist">Artista</string>
+    <string name="albums">Álbumes</string>
+    <string name="album">Álbum</string>
+    <string name="tracks">Pistas</string>
+    <string name="track">Pista</string>
+    <string name="users">Usuarios</string>
+    <string name="user">Usuario</string>
+    <string name="top_tracks">Top de canciones</string>
     <string name="top_albums">Top albums</string>
     <string name="top_artists">Top artists</string>
     <plurals name="tracks_quantity">
