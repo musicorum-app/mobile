@@ -17,56 +17,56 @@
     <string name="top_artists">Top artists</string>
     <plurals name="tracks_quantity">
         <item quantity="one">%1$s track</item>
-        <item quantity="other">%1$s tracks</item>
+        <item quantity="other">%1$s Pistas</item>
     </plurals>
     <plurals name="albums_quantity">
-        <item quantity="one">%1$s album</item>
-        <item quantity="other">%1$s albums</item>
+        <item quantity="one">%1$s Álbum</item>
+        <item quantity="other">%1$s Álbumes</item>
     </plurals>
     <plurals name="artists_quantity">
-        <item quantity="one">%1$s artist</item>
-        <item quantity="other">%1$s artists</item>
+        <item quantity="one">%1$s Artista</item>
+        <item quantity="other">%1$s Artistas</item>
     </plurals>
-    <string name="listeners">Listeners</string>
-    <string name="scrobbles">Scrobbles</string>
+    <string name="listeners">Oyentes</string>
+    <string name="scrobbles">Srobblings</string>
     <string name="your_scrobbles">Your scrobbles</string>
     <string name="settings">Settings</string>
     <string name="search">Search</string>
     <string name="back">Back</string>
     <!-- Home -->
-    <string name="home_page_scrobbles_text">%1$s scrobbles • last 7 days</string>
-    <string name="home_page_image_content_user">User profile image</string>
+    <string name="home_page_scrobbles_text">%1$s Scroblings • Últimos 7 días</string>
+    <string name="home_page_image_content_user">Imagen de perfil de usuario</string>
     <!-- Discover -->
     <plurals name="discover_page_results_text">
-        <item quantity="one">%1$s result</item>
-        <item quantity="other">%1$s results</item>
+        <item quantity="one">%1$s Resultado</item>
+        <item quantity="other">%1$s Resultados</item>
     </plurals>
-    <string name="discover_page_no_results">Nothing found</string>
+    <string name="discover_page_no_results">Nada encontrado</string>
     <!-- Artist -->
-    <string name="similar_artists">Similar artists</string>
-    <string name="recent_scrobbles">Recent scrobbles</string>
-    <string name="most_listened_week">Most listened • last 7 days</string>
-    <string name="friends_activity">Friends activity</string>
+    <string name="similar_artists">Artistas similares</string>
+    <string name="recent_scrobbles">Scrobblings recientes</string>
+    <string name="most_listened_week">Más escuchado • Últimos 7 días</string>
+    <string name="friends_activity">Actividad de amigos</string>
     <plurals name="total_scrobbles_week">
-        <item quantity="one">%1$d scrobble • last 7 days</item>
-        <item quantity="other">%1$d scrobbles • last 7 days</item>
+        <item quantity="one">%1$d Scrobbling • Últimos 7 días</item>
+        <item quantity="other">%1$d Scrobblings • Últimos 7 días</item>
     </plurals>
-    <string name="from">From</string>
-    <string name="appears_on">Appears on</string>
-    <string name="most_listened_tracks">Most listened tracks</string>
+    <string name="from">De</string>
+    <string name="appears_on">Aparece en</string>
+    <string name="most_listened_tracks">Pistas más escuchadas</string>
     <string name="homescreen_welcome">Welcome to the Musicorum app</string>
-    <string name="homescreen_lfm_access">We need to access your Last.fm account to continue</string>
-    <string name="homescreen_login_button">LOG IN WITH LAST.FM</string>
-    <string name="scrobbling_now">Scrobbling now</string>
-    <string name="similar_tracks">Similar Tracks</string>
-    <string name="section_coming_soon">This section is coming soon. Stay tuned for updates!</string>
-    <string name="analytics_warning">Analytics is essential during internal testing for us to keep track of application crashes. Disabling analytics may difficult our job to provide high-quality builds and minimize the percentage of crash-free users.</string>
+    <string name="homescreen_lfm_access">Necesitamos acceder a tu cuenta de Last.fm para continuar</string>
+    <string name="homescreen_login_button">Iniciar sesión con Last.fm</string>
+    <string name="scrobbling_now">Haciendo scrobbling ahora</string>
+    <string name="similar_tracks">Pistas similares</string>
+    <string name="section_coming_soon">Esta sección estará disponible pronto. ¡Mantente atento a las actualizaciones!</string>
+    <string name="analytics_warning">Los análisis son esenciales durante las pruebas internas para que podamos rastrear los fallos de la aplicación. Deshabilitar los análisis puede dificultar nuestro trabajo para ofrecer versiones de alta calidad y minimizar el porcentaje de usuarios libres de fallos.</string>
     <string name="confirmation_continue">Continue</string>
-    <string name="disable_anyway">Disable anyway</string>
-    <string name="cancel">Cancel</string>
-    <string name="welcome">Welcome, %1$s!</string>
-    <string name="analytics_description">Share crash reports and device information</string>
-    <string name="hold_on">Hold on</string>
+    <string name="disable_anyway">Deshabilitar de todas maneras</string>
+    <string name="cancel">Cancelar</string>
+    <string name="welcome">¡Bienvenido, %1$s!</string>
+    <string name="analytics_description">Compartir informes de cierres inesperados e información del dispositivo</string>
+    <string name="hold_on">Espera</string>
     <string name="last_month">Last 30 days</string>
     <string name="no_data_available">No data available</string>
     <string name="device_scrobbling_description">Register the songs you listen on this device to your Last.fm account</string>
