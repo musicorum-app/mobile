@@ -32,7 +32,7 @@
     <string name="your_scrobbles">Tus scrobblings</string>
     <string name="settings">Ajustes</string>
     <string name="search">Buscar</string>
-    <string name="back">Atras</string>
+    <string name="back">Atrás</string>
     <!-- Home -->
     <string name="home_page_scrobbles_text">%1$s Scroblings • Últimos 7 días</string>
     <string name="home_page_image_content_user">Imagen de perfil de usuario</string>
@@ -72,7 +72,7 @@
     <string name="device_scrobbling_description">Registra las canciones que escuchas en este dispositivo en tu cuenta de Last.fm</string>
     <string name="enable_scrobbling">Habilitar Scrobbling</string>
     <string name="notification_access">Acceso a las notificaciones</string>
-    <string name="notification_permission_help_text">El acceso a las notificaciones es necesario para saber que canción estás escuchando en este dispositivo. Toca aquí para habilitarlo</string>
+    <string name="notification_permission_help_text">El acceso a las notificaciones es necesario para saber qué canción estás escuchando en este dispositivo. Toca aquí para habilitarlo</string>
     <string name="scrobble_point">Punto de scrobble</string>
     <string name="scrobble_point_description">El porcentaje en la que una canción debe estar para ser considerada como escuchada</string>
     <string name="media_apps">Reproductores</string>
