@@ -90,7 +90,7 @@
     <string name="view_source_code_on_github">Ver código fuente en GitHub</string>
     <string name="last_fm_website">Sitio de Last.fm</string>
     <string name="made_by">Hecho por Pedro Piva y Matheus Dias. Potenciado por Musicorum</string>
-    <string name="grant_notification_access">¿Dar acceso a las notificaciones?</string>
+    <string name="grant_notification_access">¿Permitir acceso a notificaciones?</string>
     <string name="grant_nofication_access_onboard_description">Debes permitir el acceso a las notificaciones para poder ver qué escuchas si quieres hacer scrobbles desde este dispositivo</string>
     <string name="open_notification_settings">Abrir ajustes de notificaciones</string>
     <string name="notification_access_skip">Lo haré luego</string>
@@ -99,19 +99,19 @@
     <string name="update_now_playing">Actualizar Reproduciendo ahora</string>
     <string name="update_now_playing_description">Esto actualizará tu perfil con la canción que se está reproduciendo actualmente, incluso si está aún no se ha terminado de scrobblear</string>
     <string name="nothing_playing">Sin nada reproduciendo</string>
-    <string name="empty_friendlist_message">Cuando sigas gente, su actividad de escucha aparecerá aquí</string>
-    <string name="empty_tracklist_message">Tus pistas se mostrarán aqui</string>
+    <string name="empty_friendlist_message">Al seguir a alguien, sus reproducciones aparecerán aquí</string>
+    <string name="empty_tracklist_message">Tus pistas se mostrarán aquí</string>
     <string name="youre_offline">Estás desconectado.</string>
     <string name="pending_scrobbles_notice">Tienes scrobblings pendientes</string>
     <string name="outdated_data_notice">Tu información puede estar desactualizada.</string>
     <string name="last_7_days">Últimos 7 días</string>
-    <string name="last_30_days">Últimos 30 días</string>
-    <string name="last_90_days">Últimos 90 días</string>
-    <string name="last_6_months">Últimos 6 meses</string>
-    <string name="last_12_months">Últimos 12 meses</string>
-    <string name="overall">Todo</string>
+    <string name="last_30_days">últimos 30 días</string>
+    <string name="last_90_days">últimos 90 días</string>
+    <string name="last_6_months">últimos 6 meses</string>
+    <string name="last_12_months">últimos 12 meses</string>
+    <string name="overall">todo</string>
     <string name="grid_collage_sheet_text">Mira mi collage de %1$dx%2$d, hecho con la app de Musicorum para Android.</string>
-    <string name="duotone_collage_sheet_text">Mira mi collage de Duotono, hecho con la app de Musicorum para Android.</string>
+    <string name="duotone_collage_sheet_text">Mira mi collage Duotono, hecho con la app de Musicorum para Android.</string>
     <string name="hide_username">Ocultar nombre de usuario</string>
     <string name="story_format">Formato de historia</string>
     <string name="palette">Paleta</string>
@@ -136,7 +136,7 @@
     <string name="search_on_last_fm">Buscar en Last.fm…</string>
     <string name="no_results">Sin resultados</string>
     <string name="discover">Descubrir</string>
-    <string name="now_playing">Reproduciendo ahora mismo</string>
+    <string name="now_playing">EN REPRODUCCIÓN</string>
     <string name="scrobbling_since">Scrobbling desde %1$s</string>
     <string name="similar_to">Similar a %1$s</string>
     <string name="album_tracks">Pistas del álbum</string>
@@ -144,8 +144,8 @@
     <string name="something_went_wrong">Algo salió mal</string>
     <string name="scrobbling_from">Scrobbling desde %1$s</string>
     <plurals name="scrobble_apps">
-        <item quantity="one">Activado • %1$d app</item>
-        <item quantity="other">Activado • %1$d apps</item>
+        <item quantity="one">Activada • %1$d app</item>
+        <item quantity="other">Activadas • %1$d apps</item>
     </plurals>
     <plurals name="search_result_quantity">
         <item quantity="one">%1$d resultado</item>
