@@ -4,8 +4,8 @@
     <string name="bottom_navigation_item_profile">الملَف الشخصي</string>
     <!-- Common -->
     <string name="view_more">عرض المزيد</string>
-    <string name="artists">فنانين</string>
-    <string name="artist">فنان</string>
+    <string name="artists">مغنيين</string>
+    <string name="artist">مغني</string>
     <string name="albums">ألبومات</string>
     <string name="album">البوم</string>
     <string name="tracks">مقطوعات</string>
@@ -14,10 +14,10 @@
     <string name="user">مستخدم</string>
     <string name="top_tracks">افضل المقطوعات</string>
     <string name="top_albums">أفضل الألبومات</string>
-    <string name="top_artists">افضل الفنانين</string>
+    <string name="top_artists">افضل المغنيين</string>
     <plurals name="tracks_quantity">
         <item quantity="zero">%1$s tracks</item>
-        <item quantity="one">%1$s track</item>
+        <item quantity="one">%1$s مقطع</item>
         <item quantity="two">%1$s tracks</item>
         <item quantity="few">%1$s tracks</item>
         <item quantity="many">%1$s tracks</item>
@@ -25,7 +25,7 @@
     </plurals>
     <plurals name="albums_quantity">
         <item quantity="zero">%1$s albums</item>
-        <item quantity="one">%1$s album</item>
+        <item quantity="one">%1$s البوم</item>
         <item quantity="two">%1$s albums</item>
         <item quantity="few">%1$s albums</item>
         <item quantity="many">%1$s albums</item>
@@ -33,21 +33,21 @@
     </plurals>
     <plurals name="artists_quantity">
         <item quantity="zero">%1$s artists</item>
-        <item quantity="one">%1$s artist</item>
+        <item quantity="one">%1$s مغني</item>
         <item quantity="two">%1$s artists</item>
         <item quantity="few">%1$s artists</item>
         <item quantity="many">%1$s artists</item>
-        <item quantity="other">%1$s artists</item>
+        <item quantity="other">%1$s مغني</item>
     </plurals>
-    <string name="listeners">Listeners</string>
-    <string name="scrobbles">Scrobbles</string>
-    <string name="your_scrobbles">Your scrobbles</string>
-    <string name="settings">Settings</string>
-    <string name="search">Search</string>
-    <string name="back">Back</string>
+    <string name="listeners">مستمعين</string>
+    <string name="scrobbles">تسجيلات</string>
+    <string name="your_scrobbles">تسجيلاتك</string>
+    <string name="settings">إعدادات</string>
+    <string name="search">بحث</string>
+    <string name="back">عودة</string>
     <!-- Home -->
-    <string name="home_page_scrobbles_text">%1$s scrobbles • last 7 days</string>
-    <string name="home_page_image_content_user">User profile image</string>
+    <string name="home_page_scrobbles_text">%1$s تسجيل • آخر 7 أيام</string>
+    <string name="home_page_image_content_user">الصورة الخاصة بالمستخدم</string>
     <!-- Discover -->
     <plurals name="discover_page_results_text">
         <item quantity="zero">%1$s results</item>
@@ -55,37 +55,37 @@
         <item quantity="two">%1$s results</item>
         <item quantity="few">%1$s results</item>
         <item quantity="many">%1$s results</item>
-        <item quantity="other">%1$s results</item>
+        <item quantity="other">%1$s نتيجة</item>
     </plurals>
-    <string name="discover_page_no_results">Nothing found</string>
+    <string name="discover_page_no_results">لم يوجد شيء</string>
     <!-- Artist -->
-    <string name="similar_artists">Similar artists</string>
-    <string name="recent_scrobbles">Recent scrobbles</string>
-    <string name="most_listened_week">Most listened • last 7 days</string>
-    <string name="friends_activity">Friends activity</string>
+    <string name="similar_artists">مغنيين مماثلين</string>
+    <string name="recent_scrobbles">احدث التسجيلات</string>
+    <string name="most_listened_week">الأكثر استماع • آخر 7 أيام</string>
+    <string name="friends_activity">نشاط الأصدقاء</string>
     <plurals name="total_scrobbles_week">
         <item quantity="zero">%1$d scrobbles • last 7 days</item>
         <item quantity="one">%1$d scrobble • last 7 days</item>
         <item quantity="two">%1$d scrobbles • last 7 days</item>
         <item quantity="few">%1$d scrobbles • last 7 days</item>
         <item quantity="many">%1$d scrobbles • last 7 days</item>
-        <item quantity="other">%1$d scrobbles • last 7 days</item>
+        <item quantity="other">%1$d تسجيل • آخر 7 أيام</item>
     </plurals>
-    <string name="from">From</string>
-    <string name="appears_on">Appears on</string>
-    <string name="most_listened_tracks">Most listened tracks</string>
-    <string name="homescreen_welcome">Welcome to the Musicorum app</string>
-    <string name="homescreen_lfm_access">We need to access your Last.fm account to continue</string>
-    <string name="homescreen_login_button">LOG IN WITH LAST.FM</string>
-    <string name="scrobbling_now">Scrobbling now</string>
-    <string name="similar_tracks">Similar Tracks</string>
-    <string name="section_coming_soon">This section is coming soon. Stay tuned for updates!</string>
-    <string name="analytics_warning">Analytics is essential during internal testing for us to keep track of application crashes. Disabling analytics may difficult our job to provide high-quality builds and minimize the percentage of crash-free users.</string>
-    <string name="confirmation_continue">Continue</string>
-    <string name="disable_anyway">Disable anyway</string>
-    <string name="cancel">Cancel</string>
-    <string name="welcome">Welcome, %1$s!</string>
-    <string name="analytics_description">Share crash reports and device information</string>
+    <string name="from">من</string>
+    <string name="appears_on">يظهر على</string>
+    <string name="most_listened_tracks">المقطوعات الأكثر استماعاً</string>
+    <string name="homescreen_welcome">مرحبا بك في تطبيق Musicorum</string>
+    <string name="homescreen_lfm_access">نحن بحاجة للوصول إلى حساب Last.fm الخاص بك للاستمرار</string>
+    <string name="homescreen_login_button">تسجيل الدخول باستخدام LAST.FM</string>
+    <string name="scrobbling_now">يسجل الآن</string>
+    <string name="similar_tracks">مقطوعات مماثلة</string>
+    <string name="section_coming_soon">هذا القسم قادم قريباً. ترقب التحديثات!</string>
+    <string name="analytics_warning">التحليلات ضرورية في أثناء الاختبار الداخلي لنا لتعقب أعطال التطبيق. تعطيل التحليلات قد يصعب علينا توفير إصدارات عالية الجودة وتقليل النسبة المئوية للمستخدمين الذين يعانون الأعطال.</string>
+    <string name="confirmation_continue">استمرار</string>
+    <string name="disable_anyway">تعطيل بأي حال</string>
+    <string name="cancel">إلغاء</string>
+    <string name="welcome">مرحبا، %1$s!</string>
+    <string name="analytics_description">شارك تقارير الأعطال ومعلومات الجهاز</string>
     <string name="hold_on">Hold on</string>
     <string name="last_month">Last 30 days</string>
     <string name="no_data_available">No data available</string>
@@ -131,9 +131,9 @@
     <string name="last_12_months">last 12 months</string>
     <string name="overall">overall</string>
     <string name="grid_collage_sheet_text">Check out my %1$dx%2$d grid collage, made with the Musicorum Android app.</string>
-    <string name="duotone_collage_sheet_text">Check out my duotone collage, made with the Musicorum Android app.</string>
-    <string name="hide_username">Hide username</string>
-    <string name="story_format">Story format</string>
+    <string name="duotone_collage_sheet_text">ألقي النظرَة علي تجميعي الثنائي، المصنوعة بتطبيق Musicorum لاندرويد.</string>
+    <string name="hide_username">إخفاء اسم المستخدم</string>
+    <string name="story_format">صيغة القصة</string>
     <string name="palette">Palette</string>
     <string name="show_names">Show names</string>
     <string name="columns">Columns</string>
