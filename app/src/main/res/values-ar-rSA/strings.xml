@@ -6,7 +6,7 @@
     <string name="view_more">عرض المزيد</string>
     <string name="artists">مغنيين</string>
     <string name="artist">مغني</string>
-    <string name="albums">ألبومات</string>
+    <string name="albums">البومات</string>
     <string name="album">البوم</string>
     <string name="tracks">مقطوعات</string>
     <string name="track">مقطوعة</string>
@@ -21,7 +21,7 @@
         <item quantity="two">%1$s tracks</item>
         <item quantity="few">%1$s tracks</item>
         <item quantity="many">%1$s tracks</item>
-        <item quantity="other">%1$s tracks</item>
+        <item quantity="other">%1$s مقطوعة</item>
     </plurals>
     <plurals name="albums_quantity">
         <item quantity="zero">%1$s albums</item>
@@ -29,7 +29,7 @@
         <item quantity="two">%1$s albums</item>
         <item quantity="few">%1$s albums</item>
         <item quantity="many">%1$s albums</item>
-        <item quantity="other">%1$s albums</item>
+        <item quantity="other">%1$s البوم</item>
     </plurals>
     <plurals name="artists_quantity">
         <item quantity="zero">%1$s artists</item>
@@ -51,7 +51,7 @@
     <!-- Discover -->
     <plurals name="discover_page_results_text">
         <item quantity="zero">%1$s results</item>
-        <item quantity="one">%1$s result</item>
+        <item quantity="one">%1$s نتيجة</item>
         <item quantity="two">%1$s results</item>
         <item quantity="few">%1$s results</item>
         <item quantity="many">%1$s results</item>
@@ -65,7 +65,7 @@
     <string name="friends_activity">نشاط الأصدقاء</string>
     <plurals name="total_scrobbles_week">
         <item quantity="zero">%1$d scrobbles • last 7 days</item>
-        <item quantity="one">%1$d scrobble • last 7 days</item>
+        <item quantity="one">%1$d تسجيل • آخر 7 أيام</item>
         <item quantity="two">%1$d scrobbles • last 7 days</item>
         <item quantity="few">%1$d scrobbles • last 7 days</item>
         <item quantity="many">%1$d scrobbles • last 7 days</item>
@@ -155,28 +155,28 @@
     <string name="scrobble_settings">إعدادات التسجيل</string>
     <string name="search_on_last_fm">البحث في Last.fm…</string>
     <string name="no_results">لا توجد نتائج</string>
-    <string name="discover">Discover</string>
-    <string name="now_playing">NOW PLAYING</string>
-    <string name="scrobbling_since">Scrobbling since %1$s</string>
-    <string name="similar_to">Similar to %1$s</string>
-    <string name="album_tracks">Album Tracks</string>
-    <string name="failed_to_fetch_album">Failed to fetch album</string>
-    <string name="something_went_wrong">Something went wrong</string>
-    <string name="scrobbling_from">Scrobbling from %1$s</string>
+    <string name="discover">اكتشف</string>
+    <string name="now_playing">يلعب الآن</string>
+    <string name="scrobbling_since">يسجل منذ %1$s</string>
+    <string name="similar_to">مشابهة لـ %1$s</string>
+    <string name="album_tracks">مقاطع الألبوم</string>
+    <string name="failed_to_fetch_album">أخفق جلب الألبوم</string>
+    <string name="something_went_wrong">حدث خطأ ما</string>
+    <string name="scrobbling_from">يسجل منذ %1$s</string>
     <plurals name="scrobble_apps">
         <item quantity="zero">Enabled • %1$d apps</item>
-        <item quantity="one">Enabled • %1$d app</item>
+        <item quantity="one">مفعلة • %1$d تطبيق</item>
         <item quantity="two">Enabled • %1$d apps</item>
         <item quantity="few">Enabled • %1$d apps</item>
         <item quantity="many">Enabled • %1$d apps</item>
-        <item quantity="other">Enabled • %1$d apps</item>
+        <item quantity="other">مفعلة • %1$d تطبيق</item>
     </plurals>
     <plurals name="search_result_quantity">
         <item quantity="zero">%1$d results</item>
-        <item quantity="one">%1$d result</item>
+        <item quantity="one">%1$d نتيجة</item>
         <item quantity="two">%1$d results</item>
         <item quantity="few">%1$d results</item>
         <item quantity="many">%1$d results</item>
-        <item quantity="other">%1$d results</item>
+        <item quantity="other">%1$d نتيجة</item>
     </plurals>
 </resources>
