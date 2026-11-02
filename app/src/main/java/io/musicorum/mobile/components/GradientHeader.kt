@@ -22,7 +22,12 @@ import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.coil.defaultImageRequestBuilder
 import io.musicorum.mobile.ui.theme.KindaBlack
 
-val HEADER_HEIGHT = 400.dp
+internal object DetailHeaderDefaults {
+    val height = 400.dp
+    val coverSize = 300.dp
+    val coverTopPadding = 200.dp
+    const val initialAppBarContentOffset = 700f
+}
 
 @Composable
 fun GradientHeader(
@@ -42,12 +47,12 @@ fun GradientHeader(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(HEADER_HEIGHT)
+                .height(DetailHeaderDefaults.height)
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(HEADER_HEIGHT)
+                .height(DetailHeaderDefaults.height)
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
@@ -64,10 +69,10 @@ fun GradientHeader(
                     model = defaultImageRequestBuilder(url = coverUrl, placeholderType),
                     contentDescription = "",
                     modifier = Modifier
-                        .padding(top = 200.dp)
+                        .padding(top = DetailHeaderDefaults.coverTopPadding)
                         .shadow(elevation = 20.dp, shape = shape, spotColor = Color.Black)
                         .clip(shape)
-                        .size(300.dp),
+                        .size(DetailHeaderDefaults.coverSize),
                     contentScale = ContentScale.Crop
                 )
             }

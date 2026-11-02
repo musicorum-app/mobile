@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.musicorum.mobile.ktor.KtorConfiguration
 import io.musicorum.mobile.serialization.BaseIndividualTrack
@@ -15,15 +18,22 @@ import io.musicorum.mobile.serialization.entities.Track
 import io.musicorum.mobile.userData
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.decodeFromString
 
 object TrackEndpoint {
     suspend fun getTrack(
         trackName: String,
         artist: String,
         username: String?,
-        autoCorrect: Boolean?
+        autoCorrect: Boolean?,
+        refresh: Boolean = false
     ): BaseIndividualTrack? {
         val res = KtorConfiguration.lastFmClient.get {
+            if (refresh) {
+                headers.remove(HttpHeaders.CacheControl)
+                header(HttpHeaders.CacheControl, "no-cache")
+            }
             val autoCorrectValue = if (autoCorrect == true) 1 else 0
             parameter("track", trackName)
             parameter("method", "track.getInfo")
@@ -31,11 +41,8 @@ object TrackEndpoint {
             parameter("artist", artist)
             parameter("autocorrect", autoCorrectValue)
         }
-        return if (res.status.isSuccess()) {
-            res.body<BaseIndividualTrack>()
-        } else {
-            null
-        }
+        if (!res.status.isSuccess()) return null
+        return decodeTrackResponse(res.bodyAsText())
     }
 
     suspend fun updateFavoritePreference(track: Track, ctx: Context) {
@@ -92,4 +99,12 @@ object TrackEndpoint {
         } else null
     }
 
+}
+
+internal fun decodeTrackResponse(response: String): BaseIndividualTrack? {
+    return try {
+        KtorConfiguration.jsonConfig.decodeFromString(response)
+    } catch (_: SerializationException) {
+        null
+    }
 }

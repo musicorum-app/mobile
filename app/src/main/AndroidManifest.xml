@@ -89,7 +89,7 @@
 
         <provider
             android:name=".utils.CustomProvider"
-            android:authorities="io.musicorum.mobile.provider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

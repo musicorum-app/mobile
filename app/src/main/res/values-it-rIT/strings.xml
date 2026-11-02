@@ -141,6 +141,7 @@
     <string name="similar_to">Simile a %1$s</string>
     <string name="album_tracks">Tracce dell\'album</string>
     <string name="failed_to_fetch_album">Impossibile recuperare l\'album</string>
+    <string name="retry">Riprova</string>
     <string name="something_went_wrong">Qualcosa è andato storto</string>
     <string name="scrobbling_from">Scrobbling dal %1$s</string>
     <plurals name="scrobble_apps">

@@ -11,7 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import io.musicorum.mobile.R
 import io.musicorum.mobile.components.AlbumTrack
 import io.musicorum.mobile.components.CenteredLoadingSpinner
@@ -20,11 +20,11 @@ import io.musicorum.mobile.viewmodels.AlbumViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlbumTracklist(partialAlbum: PartialAlbum, model: AlbumViewModel = viewModel()) {
+fun AlbumTracklist(partialAlbum: PartialAlbum, model: AlbumViewModel = hiltViewModel()) {
     val album = model.album.observeAsState().value?.album
 
-    LaunchedEffect(Unit) {
-        model.getAlbum(partialAlbum.name, partialAlbum.artist)
+    LaunchedEffect(partialAlbum.name, partialAlbum.artist) {
+        model.loadAlbum(partialAlbum.name, partialAlbum.artist)
     }
 
     if (album == null) {

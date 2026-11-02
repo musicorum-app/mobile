@@ -14,6 +14,7 @@ import io.musicorum.mobile.serialization.SearchTrack
 import io.musicorum.mobile.serialization.User
 import io.musicorum.mobile.serialization.entities.Album
 import io.musicorum.mobile.serialization.entities.Artist
+import io.musicorum.mobile.serialization.musicorum.TrackResponse
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ class DiscoverVm : ViewModel() {
     val trackResults = MutableLiveData<List<SearchTrack>>(emptyList())
     val albumResults = MutableLiveData<List<Album>>(emptyList())
     val artistResults = MutableLiveData<List<Artist>>(emptyList())
-    val userResult = MutableLiveData<List<User>>(null)
+    val userResult = MutableLiveData<List<User>>(emptyList())
 
     fun updateQuery(value: String) {
         query.value = value
@@ -50,10 +51,9 @@ class DiscoverVm : ViewModel() {
                                 it
                             )
                             val musRes = MusicorumTrackEndpoint.fetchTracks(list)
-                            if (musRes.isNotEmpty()) {
-                                list.onEachIndexed { i, t ->
-                                    t.images[0].url =
-                                        musRes.getOrNull(i)?.bestResource?.bestImageUrl ?: ""
+                            list.forEachIndexed { index, track ->
+                                musRes.bestImageUrlAt(index)?.let { imageUrl ->
+                                    track.images.firstOrNull()?.url = imageUrl
                                 }
                             }
                             trackResults.value = list
@@ -71,10 +71,9 @@ class DiscoverVm : ViewModel() {
                                 decoded
                             )
                             val musRes = MusicorumAlbumEndpoint.fetchAlbums(list)
-                            if (musRes.isNotEmpty()) {
-                                list.onEachIndexed { index, album ->
-                                    album.bestImageUrl =
-                                        musRes[index]?.bestResource?.bestImageUrl ?: ""
+                            list.forEachIndexed { index, album ->
+                                musRes.bestImageUrlAt(index)?.let { imageUrl ->
+                                    album.bestImageUrl = imageUrl
                                 }
                             }
                             albumResults.value = list
@@ -92,10 +91,9 @@ class DiscoverVm : ViewModel() {
                                 decoded
                             )
                             val musRes = MusicorumArtistEndpoint.fetchArtist(list)
-                            if (musRes.isNotEmpty()) {
-                                list.onEachIndexed { index, artist ->
-                                    artist.bestImageUrl =
-                                        musRes[index].bestResource?.bestImageUrl ?: ""
+                            list.forEachIndexed { index, artist ->
+                                musRes.bestImageUrlAt(index)?.let { imageUrl ->
+                                    artist.bestImageUrl = imageUrl
                                 }
                             }
                             artistResults.value = list
@@ -114,4 +112,8 @@ class DiscoverVm : ViewModel() {
         }
     }
 
+}
+
+internal fun List<TrackResponse?>.bestImageUrlAt(index: Int): String? {
+    return getOrNull(index)?.bestResource?.bestImageUrl
 }

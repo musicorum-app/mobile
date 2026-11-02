@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.palette.graphics.Palette
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -27,6 +27,7 @@ import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
+import io.musicorum.mobile.components.skeletons.DetailLoadingSkeleton
 import io.musicorum.mobile.ui.theme.KindaBlack
 import io.musicorum.mobile.ui.theme.Typography
 import io.musicorum.mobile.utils.createPalette
@@ -36,7 +37,7 @@ import io.musicorum.mobile.viewmodels.ArtistViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
+fun Artist(artistName: String, artistViewModel: ArtistViewModel = hiltViewModel()) {
     val analytics = LocalAnalytics.current
     LaunchedEffect(Unit) {
         analytics?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW) {
@@ -50,13 +51,15 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
     val paletteReady = remember { mutableStateOf(false) }
     val ctx = LocalContext.current
 
-    LaunchedEffect(artist) {
-        if (artist == null) {
-            artistViewModel.fetchArtist(artistName)
-            artistViewModel.fetchTopAlbums(artistName)
-            artistViewModel.fetchTopTracks(artistName)
-        } else {
-            val bmp = getBitmap(artist.bestImageUrl, ctx)
+    LaunchedEffect(artistName) {
+        artistViewModel.loadArtist(artistName)
+    }
+
+    val artistImageUrl = artist?.bestImageUrl
+    LaunchedEffect(artistImageUrl) {
+        paletteReady.value = false
+        if (artistImageUrl != null) {
+            val bmp = getBitmap(artistImageUrl, ctx)
             val p = createPalette(bmp)
             palette.value = p
             paletteReady.value = true
@@ -64,9 +67,14 @@ fun Artist(artistName: String, artistViewModel: ArtistViewModel = viewModel()) {
     }
 
     if (artist == null) {
-        CenteredLoadingSpinner()
+        DetailLoadingSkeleton(
+            coverShape = CircleShape,
+            showSubtitle = false
+        )
     } else {
-        val appBarState = rememberTopAppBarState(initialContentOffset = 700f)
+        val appBarState = rememberTopAppBarState(
+            initialContentOffset = DetailHeaderDefaults.initialAppBarContentOffset
+        )
         val appBarBehavior =
             TopAppBarDefaults.pinnedScrollBehavior(state = appBarState)
         Scaffold(

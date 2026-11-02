@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.palette.graphics.Palette
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -28,13 +28,13 @@ import io.musicorum.mobile.LocalAnalytics
 import io.musicorum.mobile.R
 import io.musicorum.mobile.coil.PlaceholderType
 import io.musicorum.mobile.components.*
+import io.musicorum.mobile.components.skeletons.DetailLoadingSkeleton
 import io.musicorum.mobile.serialization.NavigationTrack
 import io.musicorum.mobile.ui.theme.*
-import io.musicorum.mobile.utils.LocalSnackbar
 import io.musicorum.mobile.utils.createPalette
 import io.musicorum.mobile.utils.getBitmap
+import io.musicorum.mobile.viewmodels.TrackLoadState
 import io.musicorum.mobile.viewmodels.TrackViewModel
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 
@@ -43,7 +43,7 @@ import kotlinx.serialization.json.Json
 @Composable
 fun Track(
     trackData: String?,
-    trackViewModel: TrackViewModel = viewModel()
+    trackViewModel: TrackViewModel = hiltViewModel()
 ) {
     val analytics = LocalAnalytics.current!!
     LaunchedEffect(Unit) {
@@ -66,45 +66,49 @@ fun Track(
         var coverPalette: Palette? by remember { mutableStateOf(null) }
         var paletteReady by remember { mutableStateOf(false) }
         val similarTracks = trackViewModel.similar.observeAsState().value
-        val artistCover = trackViewModel.artistCover.observeAsState().value
-        val errored = trackViewModel.error.observeAsState().value
-        val localSnack = LocalSnackbar.current
+        val loadState = trackViewModel.loadState.observeAsState(TrackLoadState.LOADING).value
 
-        LaunchedEffect(key1 = errored) {
-            if (errored == true) {
-                localSnack.showSnackbar("Failed to fetch track")
+        LaunchedEffect(partialTrack.trackName, partialTrack.trackArtist) {
+            trackViewModel.fetchTrack(
+                partialTrack.trackName,
+                partialTrack.trackArtist,
+                null
+            )
+        }
+        LaunchedEffect(track?.name, track?.artist?.name) {
+            track?.let {
+                trackViewModel.fetchSimilar(it, 5, null)
             }
         }
-
-        LaunchedEffect(key1 = track) {
-            if (track == null) {
+        val albumImageUrl = track?.album?.bestImageUrl
+        LaunchedEffect(albumImageUrl) {
+            coverPalette = null
+            paletteReady = false
+            if (!albumImageUrl.isNullOrBlank()) {
+                val bitmap = getBitmap(albumImageUrl, ctx)
+                coverPalette = createPalette(bitmap)
+            }
+            paletteReady = true
+        }
+        if (loadState == TrackLoadState.ERROR) {
+            TrackLoadError {
                 trackViewModel.fetchTrack(
                     partialTrack.trackName,
                     partialTrack.trackArtist,
                     null
                 )
-            } else {
-                launch {
-                    trackViewModel.fetchSimilar(track, 5, null)
-                }
-
-                launch {
-                    if (!track.album?.images.isNullOrEmpty()) {
-                        val bmp = getBitmap(track.album?.bestImageUrl, ctx)
-                        coverPalette = createPalette(bmp)
-                    }
-                    paletteReady = true
-                }
-                launch {
-                    trackViewModel.fetchArtistCover(track.artist)
-                }
             }
-        }
-        if (track == null) {
-            CenteredLoadingSpinner()
+        } else if (track == null) {
+            DetailLoadingSkeleton(
+                coverShape = RoundedCornerShape(6.dp),
+                showSubtitle = true,
+                showContext = true
+            )
         } else {
             val screenScrollState = rememberScrollState()
-            val appBarState = rememberTopAppBarState(initialContentOffset = 700f)
+            val appBarState = rememberTopAppBarState(
+                initialContentOffset = DetailHeaderDefaults.initialAppBarContentOffset
+            )
             val appBarBehavior =
                 TopAppBarDefaults.pinnedScrollBehavior(state = appBarState)
             val loved = remember { mutableStateOf(track.loved) }
@@ -119,8 +123,9 @@ fun Track(
                         IconButton(
                             onClick = {
                                 analytics.logEvent("topbar_like_pressed", null)
-                                trackViewModel.updateFavoritePreference(track)
-                                loved.value = !loved.value
+                                val currentlyLoved = loved.value
+                                trackViewModel.updateFavoritePreference(track, currentlyLoved)
+                                loved.value = !currentlyLoved
                             }) {
                             if (loved.value) {
                                 Icon(Icons.Rounded.Favorite, null)
@@ -141,7 +146,7 @@ fun Track(
                     verticalArrangement = Arrangement.Center
                 ) {
                     GradientHeader(
-                        artistCover,
+                        track.artist.bestImageUrl,
                         track.album?.bestImageUrl,
                         RoundedCornerShape(6.dp),
                         PlaceholderType.TRACK
@@ -201,6 +206,22 @@ fun Track(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun TrackLoadError(onRetry: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(KindaBlack)
+    ) {
+        Text(stringResource(R.string.something_went_wrong))
+        OutlinedButton(onClick = onRetry) {
+            Text(stringResource(R.string.retry))
         }
     }
 }

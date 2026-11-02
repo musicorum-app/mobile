@@ -28,7 +28,7 @@ import io.sentry.Sentry
 import kotlinx.serialization.json.Json
 
 object KtorConfiguration {
-    private val jsonConfig = Json { ignoreUnknownKeys = true; isLenient = true }
+    internal val jsonConfig = Json { ignoreUnknownKeys = true; isLenient = true }
     private val KEY_REQUIRED_METHODS =
         listOf(
             "user.getInfo",
